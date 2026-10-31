@@ -2,43 +2,100 @@
 
 ## Status
 
-The visual design has **not been decided yet**. The current styling in [index.html](index.html) is intentionally minimal and functional so the game logic can be built and tested first. All copy that the owner has not named explicitly is lorem ipsum.
+The visual design is **decided** and applied in [index.html](index.html) (all CSS lives in its `<style>` block). Copy that the owner has not named explicitly is still lorem ipsum.
 
 Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry.
 
-## Current design language
+## Style: "clean study app"
 
-- **Tone**: neutral, plain, no imagery or icons.
-- **Font**: system UI font stack (`--font`).
-- **Layout**: single centered column, `max-width: 720px`, 16px padding. Menus use a responsive grid (`.grid`, `minmax(150px, 1fr)`). Works down to phone width.
-- **Colors**: defined as CSS variables on `:root` — change them there, not inline.
+- Calm, focused and minimal, but not boring. For adults, teens and kids.
+- Neutral surfaces everywhere; color comes only from the **level accent** and from the **correct / wrong** states.
+- Soft white cards (`.card`, menu buttons) on a page background lightly tinted with the level color. Rounded corners (14px cards, 10px controls), very soft shadows, no hard lines.
+- Works on phones and computers: single centered column (`max-width: 760px`, 16px side gutter), all tap targets at least 44–48px tall, menu grids are 2 columns on phones and auto-fill on wider screens, primary actions are full width on phones.
 
-| Token | Use |
-|---|---|
-| `--bg`, `--surface`, `--fg`, `--muted`, `--border` | base surfaces and text |
-| `--accent` / `--accent-fg` | primary buttons, selection, switch, timer bar |
-| `--ok` / `--ok-bg` | correct answers |
-| `--bad` / `--bad-bg` | incorrect answers, low-time timer bar |
-| `--warn` | timer bar during the +10 s extension |
-| `--radius`, `--gap` | corner radius and spacing |
+## Level colors
+
+Each level's color is the accent (`--accent`) on **every screen inside that level** (category, topic, type, difficulty, quiz, results). It is set by `document.body.dataset.level`, which `showScreen()` updates.
+
+| Level | Light mode | Dark mode |
+|---|---|---|
+| A1 teal | `#0F7A6C` | `#5CC9B8` |
+| A2 blue | `#2F6FB8` | `#7DB1EC` |
+| B1 violet | `#6B4FC0` | `#A894EE` |
+| B2 rose | `#A8436F` | `#E89BBB` |
+| C1 gold | `#A0670B` | `#E7B54F` |
+
+- **Level selection screen** (no level chosen yet): neutral slate accent (`--neutral-accent`: `#44505C` / `#B4BEC9`). Each level button is tinted in its own level color as a preview (`.level-btn`, `--chip`).
+- **Backgrounds** use tints of the accent made with `color-mix()`: `--page-bg` (page, ~7% light / ~10% dark), `--accent-soft` (hover, selection, word bank; ~12% / ~18%). In dark mode the same mix produces dark tints automatically.
+- Text on accent-colored buttons: white in light mode, near-black in dark mode (`--on-accent`), because the dark-mode level colors are light.
+
+## Other colors
+
+| Token | Light | Dark | Use |
+|---|---|---|---|
+| `--ok` | `#1E7B3C` | `#6CCB8A` | correct answers only |
+| `--bad` | `#B3261E` | `#F08A80` | wrong answers only |
+| `--extra` | `#C2410C` | `#FB923C` | timer during the +10 s extra time |
+| `--bg` / `--surface` | `#F6F6F3` / `#FFFFFF` | `#121417` / `#1A1D21` | page base / cards |
+| `--fg` / `--muted` / `--border` | `#1D2125` / `#5F6670` / `#E3E3DE` | `#E6E8EB` / `#9AA1AA` / `#2C3137` | text / secondary text / lines |
+
+- Green and red are used **only** for correct and wrong answers (buttons, feedback box, results cards).
+- **Timer**: normal and low time use the level accent. Low time (< 25%) is shown with a gentle pulse and the ticking sound, not with red. Extra time uses deep orange **plus a diagonal stripe pattern** and an "Extra time" label, so it is clearly different from C1 gold (also in dark mode).
+
+## Light and dark mode
+
+- Follows the device setting by default (`prefers-color-scheme`).
+- Theme button (top-right) cycles **Auto → Light → Dark → Auto**. The choice is remembered in `localStorage` (`lg-theme`); a tiny script in `<head>` applies it before the first paint to avoid a flash.
+- Tokens are defined on `:root` (light), redefined under `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }` and under `:root[data-theme="dark"]`. Only token values change between modes; layout, spacing and motion stay the same so the calm feel is identical.
+
+## Typography
+
+- **Inter** from Google Fonts, weights **400 (regular)** and **500 (medium)** only, `display=swap`.
+- Fallback: the device's system font (`system-ui, -apple-system, "Segoe UI", Roboto, …`) — used automatically when offline or while Inter loads.
+- Headings and buttons use 500; body text uses 400. No bold (600/700) weights. Numbers in the timer and score use tabular figures.
+
+## Motion
+
+All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distances).
+
+- Screens and the feedback box fade/rise in by 4–6px.
+- **Correct answer**: the correct element(s) do a gentle "pop" (scale to 1.035 and back, 320ms).
+- Buttons press down slightly (`scale(.98)`).
+- Low-time timer bar pulses softly.
+- **Confetti** on the results screen for a high score: graded quizzes with a final score **≥ 80**; Matching (not graded) when **≥ 7 of 8** questions are fully correct. Drawn on a temporary `<canvas>` in the five level colors, removed when done or when leaving the screen.
+- **Reduce motion**: when the device has "reduce motion" on, all CSS animations/transitions are disabled and confetti is skipped.
+
+## Sound
+
+Generated with the Web Audio API inside `index.html` (no audio files):
+
+- **Correct**: soft two-note sine chime (E5 → B5).
+- **Wrong**: gentle low triangle tone gliding down (A3 → F3).
+- **Tick**: very quiet short sine blip once per second in the last 5 seconds of the normal timer and of the extra time.
+- Sound is **on by default**. The mute button (top-right) remembers the choice in `localStorage` (`lg-muted`).
+
+## Controls placement
+
+- Top bar (`.topbar`, right-aligned): **theme** and **mute** round icon buttons (inline SVG icons). Shown on every screen **except the quiz screen**, to keep the quiz focused.
+- Back button: top-left text button on every screen except the level screen.
+- Footer: Credits link on every screen except the quiz screen.
 
 ## Components
 
-- **Menu button** (`.menu-btn`): large grid button; optional `<small>` sub-label (used for seconds on difficulty buttons).
-- **Primary button** (`button.primary`): Next, Check, Retry, main modal action.
-- **Back button** (`.back-btn`): top-left of every screen except the level screen.
-- **Switch** (`.switch-row` / `.switch`): checkbox styled as a toggle.
-- **Quiz header**: progress, running score, timer text (`.quiz-meta`) and a timer bar (`.timer-bar`; red when < 25 % left, orange during extension).
-- **Feedback box** (`.feedback.ok` / `.feedback.bad`).
-- **Word bank + blank** (`.word-bank`, `.chip`, `.blank`, `.drag-ghost`): dashed bank area above the sentence; blank is an underlined drop zone highlighted while dragging over it.
-- **Matching columns** (`.match-columns`, `.match-item`): two columns; selected item is outlined; paired items share a number badge.
-- **Modal** (`.modal-overlay`, `.modal`): used for credits, quit confirm, time out and game over. Only the credits modal can be dismissed by clicking outside / Escape.
-- **Results list** (`.results-list li.st-*`): one card per question with a colored left border by status.
-- **Footer** (`#credits-footer`): Credits link; hidden on the quiz screen.
+- **Menu button** (`.menu-btn`): white card button in a grid; optional `<small>` sub-label (seconds on difficulty buttons).
+- **Level button** (`.level-btn`): bigger, tinted in its own level color.
+- **Primary button** (`button.primary`): accent background; Next, Check, Retry, main modal action.
+- **Icon button** (`.icon-btn`): 44px round, theme and mute.
+- **Switch** (`.switch-row` / `.switch`): card row with a toggle in the accent color.
+- **Quiz header**: progress, running score, timer text (`.quiz-meta`) and a rounded timer bar (`.timer-bar`, states `.is-low`, `.is-extension`).
+- **Question card** (`#quiz-question.card`): options are full-width 56px buttons; True/False are side by side.
+- **Feedback box** (`.feedback.ok` / `.feedback.bad`): green or red tint.
+- **Word bank + blank** (`.word-bank`, `.chip`, `.blank`, `.drag-ghost`): dashed accent-tinted bank with pill chips; blank is an accent-underlined drop zone.
+- **Matching** (`.match-columns`, `.match-item`): two columns; selected item gets accent outline + tint; paired items share a round number badge.
+- **Modal** (`.modal-overlay`, `.modal`): card with soft shadow over a dimmed, slightly blurred page.
+- **Results**: hero card with big score in the accent color, summary, actions; then one card per question with a colored left border (green / red / grey).
 
 ## Open design work
 
-- Visual identity (colors, typography, illustrations).
 - Real copy for headings, instructions, modals and credits.
-- Dark mode.
-- Animations / transitions for feedback and screen changes.
+- Illustrations or icons for topics / question types (if wanted).
