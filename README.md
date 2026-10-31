@@ -13,14 +13,14 @@ Level (A1 A2 B1 B2 C1)
      └─ Topic (per section: 15 vocabulary themes for A1 Vocabulary, 21 grammar topics for A1 Grammar, 10 lorem ipsum topics elsewhere)
          └─ Question type (Multiple Choice, Fill in the Blanks, True or False, Matching)
              └─ Difficulty (Easy, Medium, Hard, Very Hard) + "same duration" switch
-                 └─ "Words in this game" pop-up (Start / Skip)
+                 └─ "Words in this game" pop-up (Start)
                      └─ Quiz (8 questions; Matching 2–4)
                      └─ Results
 ```
 
 - Every screen is a `<section id="screen-NAME" class="screen">`; `showScreen(name)` shows one and hides the others.
 - Back buttons use `data-back="NAME"` (fixed parent screen, not a history stack). The level screen is the root and has no back button.
-- **"Words in this game" pop-up** (`openWordPreview()`, called by `startQuiz()`): every time a quiz starts, including Retry, a pop-up lists the quiz's tested words (`quizTargetWords()`: Multiple Choice answers, Fill answers, True or False `target`s, Matching left words), each with **all of its word types at that level** and a short meaning for each, from the level's glossary (`glossarySenses()`; lorem placeholders when a word has no entry). **The word type used in that game is underlined** (`.word-type.is-used`); a word with one type has that one underlined. Meanings are shown in every question type, Matching too (owner's decision: it is practice, and pre-teaching helps). Buttons **Start** and **Skip** both close it and show the first question; the timer starts only then. The pop-up can't be dismissed by Escape or clicking outside.
+- **"Words in this game" pop-up** (`openWordPreview()`, called by `startQuiz()`): every time a quiz starts, including Retry, a pop-up lists the quiz's tested words (`quizTargetWords()`: Multiple Choice answers, Fill answers, True or False `target`s, Matching left words), each with **all of its word types at that level** and a short meaning for each, from the level's glossary (`glossarySenses()`; lorem placeholders when a word has no entry). **The word type used in that game is underlined** (`.word-type.is-used`); a word with one type has that one underlined. Meanings are shown in every question type, Matching too (owner's decision: it is practice, and pre-teaching helps). One button, **Start**, closes it and shows the first question (owner's decision: a second **Skip** button did the same job, and "Skip" suggested the words don't matter); the timer starts only then. The pop-up can't be dismissed by Escape or clicking outside.
 - The quiz screen's Back button opens a "Quit quiz?" confirm (timer paused). Quit → difficulty screen, progress lost. Cancel → timer resumes.
 - Results screen: Back (→ difficulty), Retry (same settings), Main menu (→ level).
 - Breadcrumb (`.breadcrumb` in each screen) is built from `state.nav` up to the screen's depth (`SCREEN_DEPTH`).
@@ -137,7 +137,7 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 
 | Type | Stored data shape | Interaction |
 |---|---|---|
-| `mc` | `{ type, prompt, options: [correct, wrong1, wrong2, wrong3], explanation }` (+ `targetType` when the answer has several word types, on every type) | click an option = submit |
+| `mc` | `{ type, prompt, options: [correct, wrong1, wrong2, wrong3], explanation }` (+ `targetType` when the answer has several word types, on every type; + `target` on Multiple Choice and Fill when the answer is not written in its dictionary form, e.g. `"laughs"` → `"target": "laugh"`, `"Hello"` → `"hello"`, so the pop-up, the glossary and the check script use the dictionary word) | click an option = submit |
 | `tf` | `{ type, prompt, answer: true\|false, target, explanation }` (`target` = the word the statement is about; used by the check script) | click True/False = submit |
 | `fill` | `{ type, before, after, answer, bank: [answer, wrong1, wrong2(, wrong3)], explanation }` | type one bank word into the blank, then **Check** (or Enter) |
 | `match` | `{ type, prompt, pairs: [{left, right}] ×4, explanation }` (correct pairing is `left i ↔ right i`) | click a left item, then a right item to pair; click a paired item to undo; **Check** when all pairs are made |
@@ -151,6 +151,7 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 
 - The bank of 3–4 words is shown **above the sentence** (display only); the student **types** one of them into the blank (`.blank-input`), then presses **Check** or Enter. Check is disabled while the input is empty. The input is focused when the question opens.
 - The input has a fixed width (it never hints at the word's length) and has autocorrect, auto-capitalization and spell check turned off, so phones don't fix the spelling for the student.
+- **Sentence** = `before` + blank + `after`. `fillBefore()` / `fillAfter()` add a space around the blank like normal print: none after an opening quote (`before` ending in `"`) and none before punctuation or a closing quote (`after` starting with `. , ! ? ; : " '`). So `before` can be just `"` when the blank starts a quote.
 - **Comparing the answer** (`judgeFill(input, q)`, `editDistance()`, `normalizeAnswer()`): ignore capital letters, extra spaces and curly apostrophes. `editDistance()` counts the letters that differ (insert, delete, replace, or a swap of two neighboring letters such as *fisrt* = 1).
   - **Exactly the answer** → correct, full points.
   - **Exactly a wrong bank word** → incorrect.
@@ -165,6 +166,8 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 - Paired items show the same number badge (`data-pair`, rendered via CSS `::after`).
 
 ## Content (questions)
+
+**Written so far:** A1 Vocabulary, Greetings and Feelings (pilot theme, plan approved 2026-10-31): Multiple Choice and Fill in the Blanks, all 4 difficulties, with glossary entries for the 34 words they test. Everything else is still lorem.
 
 - **Question bank:** a JSON block in `index.html`, `<script type="application/json" id="question-bank">`, before the main script. `loadQuestionBank()` parses it once at startup (invalid JSON → console warning and lorem questions). It is JSON (not a JS object) so the check script can read it.
 - **Glossary:** a second JSON block, `<script type="application/json" id="glossary">`, parsed by the same `loadJsonBlock()`. Shape: `{ "A1": { "banana": { "type": "noun", "meaning": "a long yellow fruit" }, "drink": [ { "type": "noun", "meaning": "…" }, { "type": "verb", "meaning": "…" } ] } }`, keys in lower case. **One entry per tested word per level**, written once and reused in every quiz, so a word always has the same meanings. An entry is one sense (object) or, when the word has several word types at that level, a list with **one sense per word type**.
@@ -183,8 +186,9 @@ powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_questions.ps1
 
 - It reads the question bank from `index.html` (or `-BankFile sample.json` for testing), the organized word files (`ORG_<LEVEL>_WORDS.md`, lower levels included) and the target-word plans (`PLAN_<LEVEL>_<CATEGORY>.md`, or `-PlanDir`). It never changes files and never writes questions.
 - It prints, per quiz, **ERRORS** (must fix) and **warnings** (review as a teacher), and exits with 1 if there are errors.
-- The 22 checks: **A. Structure** (1 valid key, 2 question count / plan's Matching count, 3 fields, 4 shapes, 5 True or False 4/4, 6 explanation 1–3 sentences); **B. Word rules** (7 every word in the lists or a normal form or a name, unknown forms listed for a hand check, 8 tested words only from the quiz's category or Both, 9 exception words only in their own grammar topic, 10 no British spellings); **C. Plan match** (11 targets = the approved plan, 12 no target twice in a quiz and every planned word tested); **D. Never ambiguous** (13 Multiple Choice options share a word type with the answer, 14 no wrong Fill bank word within the spelling tolerance of the answer, 15 the answer not already in the sentence, 16 a Matching meaning doesn't contain a left word, 17 no duplicate or near-duplicate questions); **E. Variety** (18 not more than 2 questions starting with the same two words, 19 no repeated sentence pattern, 20 a name or city at most twice per quiz, 21 A1 sentences at most about 12 words, 22 no sentence reused in another quiz of the theme); **F. Glossary** (23 every tested word has a glossary entry with one sense per word type of its level, no other types; a word with several senses has `targetType` / pair `type` naming one of them; meanings use words of the level, American spelling, and don't contain the word itself). `-GlossaryFile` reads a test glossary instead of index.html.
+- The 22 checks: **A. Structure** (1 valid key, 2 question count / plan's Matching count, 3 fields (a `target` must be a form of the answer), 4 shapes, 5 True or False 4/4, 6 explanation 1–3 sentences); **B. Word rules** (7 every word in the lists or a normal form or a name, unknown forms listed for a hand check, 8 tested words only from the quiz's category or Both, 9 exception words only in their own grammar topic, 10 no British spellings); **C. Plan match** (11 targets = the approved plan, 12 no target twice in a quiz and every planned word tested); **D. Never ambiguous** (13 Multiple Choice options share a word type with the answer, 14 no wrong Fill bank word within the spelling tolerance of the answer, 15 the answer not already in the sentence, 16 a Matching meaning doesn't contain a left word, 17 no duplicate or near-duplicate questions); **E. Variety** (18 not more than 2 questions starting with the same two words, 19 no repeated sentence pattern, 20 a name or city in at most 2 questions per quiz (*Anna's* counts as *Anna*), 21 each A1 sentence at most about 12 words (a prompt may have several sentences), 22 no sentence reused in another quiz of the theme); **F. Glossary** (23 every tested word has a glossary entry with one sense per word type of its level, no other types; a word with several senses has `targetType` / pair `type` naming one of them; meanings use words of the level, American spelling, and don't contain the word itself). `-GlossaryFile` reads a test glossary instead of index.html.
 - Its name list, irregular forms and British spellings are lists at the top of the script; extend them when needed.
+- A word written the same in two categories (*like*: "like (similar)" is Grammar, "like (find sb/sth pleasant)" is Both) counts as both, so check 8 accepts it in either.
 - Windows PowerShell 5.1 misreads non-ASCII characters in a script saved without a BOM, so the script writes "·" and "—" as character codes. Keep it that way.
 
 ### A1 word lists
@@ -264,7 +268,7 @@ Every question has **exactly one** correct answer. Wrong options may be similar 
 - **How frequency is decided:** look for a trusted, published word frequency list on the internet and follow it. Only if no trusted list can be found, Claude decides from its own knowledge (frequency and how concrete the word is). Either way, the owner checks the split in the target-word plan. Say in the plan which source was used.
 - **Expected progression, not cumulative.** Each difficulty tests its own words. Harder difficulties do not re-test the easier difficulties' words. Students are expected to go from Easy to Very Hard, like units in a course. The game does not lock difficulties; the button order (Easy → Very Hard) suggests the path.
 - So **each difficulty has its own quiz** for each question type: 8 questions for Multiple Choice, Fill in the Blanks and True or False, and a variable number for Matching (see below). For A1 Vocabulary: 15 vocabulary themes × 4 question types × 4 difficulties = **240 quizzes** (1,440 Multiple Choice, Fill in the Blanks and True or False questions, plus the Matching questions).
-- Code: `quizKey()` does not include difficulty yet. Add `nav.difficulty` to it when the first real questions are written (key `level|category|topicIndex|type|difficulty`), and update "Content (questions)" above.
+- Code: `quizKey()` includes the difficulty (key `level|category|topicIndex|type|difficulty`), see "Content (questions)".
 
 ### How similar the wrong options are
 

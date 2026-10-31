@@ -4,7 +4,7 @@
 
 The visual design is **decided** and applied in [index.html](index.html) (all CSS lives in its `<style>` block). Copy that the owner has not named explicitly is still lorem ipsum.
 
-Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry, Skip (on the "Words in this game" pop-up).
+Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry.
 
 Student-facing text approved in real short English (not lorem): "Words in this game" and "Start" (pop-up), "Almost!", "Check your spelling: …", "Partly correct.", "… of 4 pairs are correct.".
 
@@ -101,7 +101,7 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Partly right** (misspelled Fill answer, Matching question with 1–3 correct pairs): uses the **level color**, never green or red. Feedback box `.feedback.partial` (accent-soft background, accent heading "Almost!" / "Partly correct."), result card `st-partial` (accent left border).
 - **Matching** (`.match-columns`, `.match-item`): two columns; selected item gets accent outline + tint; paired items share a round number badge.
 - **Modal** (`.modal-overlay`, `.modal`): card with soft shadow over a dimmed, slightly blurred page.
-- **"Words in this game" pop-up** (`.word-list`): a modal before every quiz (and Retry). One soft accent-tinted row per tested word: the word (medium weight), then one line per word type it has at that level: the type (small, muted, italic) and its meaning. **The type used in that game is underlined** in the level color and shown in the normal text color. Buttons **Start** (primary) and **Skip**; the list scrolls inside the modal when it is long (Matching: up to 16 words).
+- **"Words in this game" pop-up** (`.word-list`): a modal before every quiz (and Retry). One soft accent-tinted row per tested word: the word (medium weight), then one line per word type it has at that level: the type (small, muted, italic) and its meaning. **The type used in that game is underlined** in the level color and shown in the normal text color. One button, **Start** (primary); the list scrolls inside the modal when it is long (Matching: up to 16 words).
 - **Results**: hero card with big score in the accent color, summary, actions; then one card per question with a colored left border (green / red / grey).
 
 ## Open design work

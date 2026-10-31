@@ -625,7 +625,88 @@
   Must be valid JSON: checked by .gitignore/tools/check_questions.ps1.
 -->
 <script type="application/json" id="question-bank">
-{}
+{
+  "A1|vocabulary|0|mc|easy": [
+    { "type": "mc", "prompt": "Ken sees Anna at school in the morning. He says, \"___, Anna! How are you?\"", "options": ["Hello", "Bye", "Please", "No"], "target": "hello", "targetType": "exclamation", "explanation": "We say \"hello\" when we meet someone. \"Bye\" is for when we leave." },
+    { "type": "mc", "prompt": "Lisa: \"See you tomorrow, Sam!\" Sam: \"___, Lisa!\"", "options": ["Bye", "Hello", "Please", "Welcome"], "target": "bye", "explanation": "\"See you tomorrow\" tells us Lisa is leaving. We say \"bye\" to friends when we leave." },
+    { "type": "mc", "prompt": "Tom is going to Tokyo for a year. What does his mother say to him at the airport?", "options": ["Goodbye", "Hello", "Please", "Yes"], "target": "goodbye", "targetType": "exclamation", "explanation": "Tom is leaving, so his mother says \"goodbye\". \"Bye\" means the same, but we say it more to friends." },
+    { "type": "mc", "prompt": "Emma gives Ben a pen. Ben says, \"___ for the pen, Emma!\"", "options": ["Thanks", "Hello", "Bye", "Please"], "target": "thanks", "targetType": "exclamation", "explanation": "We say \"thanks\" when someone gives us something. It means \"thank you\"." },
+    { "type": "mc", "prompt": "Maria is at a cafe. She says, \"A cup of tea, ___.\"", "options": ["please", "sorry", "bye", "hello"], "explanation": "We say \"please\" when we ask for something. It is the nice way to ask." },
+    { "type": "mc", "prompt": "Leo is late for class. He says, \"___ I'm late!\"", "options": ["Sorry", "Thanks", "Welcome", "Please"], "target": "sorry", "targetType": "exclamation", "explanation": "We say \"sorry\" when we do something wrong, like being late. \"Sorry I'm late!\" is very common." },
+    { "type": "mc", "prompt": "Mia: \"How are you, Ali?\" Ali: \"I'm ___, thank you.\"", "options": ["fine", "blue", "cheap", "tall"], "explanation": "\"I'm fine\" means \"I'm OK, I'm well\". It is a common answer to \"How are you?\"." },
+    { "type": "mc", "prompt": "Tom: \"Let's play tennis after school.\" Anna: \"___! Good idea.\"", "options": ["OK", "Sorry", "Bye", "Hello"], "targetType": "exclamation", "explanation": "We say \"OK\" when we agree with an idea. Anna wants to play, too." }
+  ],
+  "A1|vocabulary|0|mc|medium": [
+    { "type": "mc", "prompt": "\"Can I have a sandwich? I'm ___,\" Ken says.", "options": ["hungry", "thirsty", "afraid", "angry"], "explanation": "When you are hungry, you want to eat. When you are thirsty, you want to drink." },
+    { "type": "mc", "prompt": "It is very hot today. Maria wants a big glass of cold water. She is ___.", "options": ["thirsty", "hungry", "angry", "afraid"], "explanation": "Maria wants water, so she is thirsty. Hungry people want food." },
+    { "type": "mc", "prompt": "Tom works from morning to night. Now he wants to go to bed. He is ___.", "options": ["tired", "hungry", "thirsty", "afraid"], "explanation": "When you are tired, you want to sleep. Tom wants to go to bed." },
+    { "type": "mc", "prompt": "Lisa's best friend is moving to another country. Lisa is very ___.", "options": ["sad", "happy", "hot", "hungry"], "explanation": "Lisa is not going to see her best friend every day, so she is sad. \"Sad\" means \"not happy\"." },
+    { "type": "mc", "prompt": "Kate's brother breaks her new phone. Kate is very ___.", "options": ["angry", "happy", "tired", "thirsty"], "explanation": "We are angry when someone does something bad to us. Kate's brother broke her new phone." },
+    { "type": "mc", "prompt": "Anna: \"My cat is sick.\" Mia: \"___, no! I'm sorry.\"", "options": ["Oh", "Hi", "Bye", "Welcome"], "target": "oh", "explanation": "We say \"oh\" when we hear something new, good or bad. \"Oh, no!\" shows we are sad about the news." },
+    { "type": "mc", "prompt": "Tom: \"Do you want to play football?\" Ali: \"___! Let's go!\"", "options": ["Yeah", "Sorry", "Bye", "Welcome"], "target": "yeah", "explanation": "\"Yeah\" means \"yes\". We say it to friends." },
+    { "type": "mc", "prompt": "\"___ to our school!\" the teacher says to the new students.", "options": ["Welcome", "Sorry", "Thanks", "Bye"], "target": "welcome", "targetType": "exclamation", "explanation": "We say \"welcome\" to people when they come to a new place. The students are new at the school." }
+  ],
+  "A1|vocabulary|0|mc|hard": [
+    { "type": "mc", "prompt": "Emma runs away from big dogs. She is ___ of them.", "options": ["afraid", "angry", "hungry", "excited"], "explanation": "When you are afraid, you think something bad can happen. We say \"afraid of\" something." },
+    { "type": "mc", "prompt": "There is nothing to do at home. Sam watches the clock all day. He is ___.", "options": ["bored", "afraid", "angry", "thirsty"], "explanation": "When there is nothing to do, we feel bored. Sam wants the day to end." },
+    { "type": "mc", "prompt": "Tomorrow is Ali's birthday party. He can't wait! He is very ___.", "options": ["excited", "bored", "tired", "afraid"], "explanation": "When something good is going to happen, we are excited. \"I can't wait\" shows this." },
+    { "type": "mc", "prompt": "Mia reads lots of books about animals. She is ___ in animals.", "options": ["interested", "afraid", "excited", "bored"], "explanation": "When you are interested in something, you want to know more about it. We say \"interested in\"." },
+    { "type": "mc", "prompt": "Teacher: \"Is the answer 12?\" Ken: \"Yes, I'm ___. I checked it twice.\"", "options": ["sure", "sorry", "bored", "hungry"], "explanation": "\"I'm sure\" means \"I know it is true\". Ken checked the answer two times." },
+    { "type": "mc", "prompt": "\"I want to ___ you for the beautiful flowers,\" says Tom.", "options": ["thank", "like", "miss", "laugh"], "targetType": "verb", "explanation": "We thank people when they give us something or help us. \"Thank you for…\" is very common." },
+    { "type": "mc", "prompt": "Ben writes an email to his aunt. He starts with \"___ Aunt Mary,\".", "options": ["Dear", "Sure", "Sorry", "Afraid"], "target": "dear", "explanation": "We often start a letter or an email with \"Dear\" and the person's name." },
+    { "type": "mc", "prompt": "The movie is very funny. Everyone in the theater ___ a lot.", "options": ["laughs", "misses", "hopes", "believes"], "target": "laugh", "targetType": "verb", "explanation": "When something is funny, we laugh. The movie is funny, so the people laugh." }
+  ],
+  "A1|vocabulary|0|mc|veryhard": [
+    { "type": "mc", "prompt": "The lesson is long and slow. Everyone in the class is sleeping! It's so ___.", "options": ["boring", "bored", "exciting", "interesting"], "explanation": "A lesson that makes people sleep is boring. We use \"boring\" for things and \"bored\" for people." },
+    { "type": "mc", "prompt": "Our team wins in the last minute! It's a very ___ game.", "options": ["exciting", "excited", "bored", "interested"], "explanation": "A game is exciting; the people who watch it are excited. \"-ing\" words describe the thing, and \"-ed\" words describe how people feel." },
+    { "type": "mc", "prompt": "Tom reads a book about space. He learns a lot of new things. The book is very ___.", "options": ["interesting", "interested", "excited", "bored"], "explanation": "A book can be interesting, but it can't be interested. People are interested; things are interesting." },
+    { "type": "mc", "prompt": "Ali says he can fly. Nobody ___ him.", "options": ["believes", "misses", "hopes", "thanks"], "target": "believe", "explanation": "To believe someone is to think that their words are true. People can't fly, so nobody thinks Ali's words are true." },
+    { "type": "mc", "prompt": "Anna is going to Paris tomorrow. Her friend says, \"I ___ you have a great trip!\"", "options": ["hope", "miss", "thank", "feel"], "explanation": "We use \"hope\" when we want something good to happen. Her friend wants Anna's trip to be great." },
+    { "type": "mc", "prompt": "\"What ___?\" Maria asks. There are police cars on our street.", "options": ["happened", "missed", "hoped", "laughed"], "target": "happen", "explanation": "\"What happened?\" asks about something that took place. The police are there, so something took place." },
+    { "type": "mc", "prompt": "Mehmet lives in London now. His family is in Ankara. He ___ them a lot.", "options": ["misses", "hopes", "believes", "thanks"], "target": "miss", "explanation": "We miss people when they are not with us and we want to see them. Mehmet's family lives far away." },
+    { "type": "mc", "prompt": "Love is a beautiful ___.", "options": ["feeling", "laugh", "goodbye", "hello"], "explanation": "Love is something we feel, so it is a feeling. Happy, sad and angry are feelings, too." }
+  ],
+  "A1|vocabulary|0|fill|easy": [
+    { "type": "fill", "before": "Sara sees her friend Omar in the park. She says, \"", "after": "! How are you, Omar?\"", "answer": "Hi", "bank": ["Hi", "Bye", "Please"], "target": "hi", "explanation": "We say \"hi\" when we meet a friend. It is like \"hello\", but we say it more to friends." },
+    { "type": "fill", "before": "Ali answers the phone: \"", "after": "? Who is it?\"", "answer": "Hello", "bank": ["Hello", "Bye", "Thanks"], "target": "hello", "targetType": "exclamation", "explanation": "We often say \"hello\" when we answer the phone. \"Hello? Who is it?\" is very common." },
+    { "type": "fill", "before": "Paul leaves school and says, \"", "after": ", everyone! See you on Monday!\"", "answer": "Bye", "bank": ["Bye", "Hello", "Please"], "target": "bye", "explanation": "Paul is leaving, so he says \"bye\". We say \"hello\" when we arrive." },
+    { "type": "fill", "before": "The train is leaving. Mia's mother says, \"", "after": ", Mia! Call me tonight!\"", "answer": "Goodbye", "bank": ["Goodbye", "Hello", "Welcome"], "target": "goodbye", "targetType": "exclamation", "explanation": "Mia is leaving on the train, so her mother says \"goodbye\"." },
+    { "type": "fill", "before": "Waiter: \"Here is your pizza.\" Lucas: \"", "after": "!\"", "answer": "Thanks", "bank": ["Thanks", "Sorry", "Bye"], "target": "thanks", "targetType": "exclamation", "explanation": "We say \"thanks\" when someone gives us something. The waiter gives Lucas his pizza." },
+    { "type": "fill", "before": "Can I have some water,", "after": "?", "answer": "please", "bank": ["please", "sorry", "hello"], "explanation": "We say \"please\" when we ask for something. It makes the question nice." },
+    { "type": "fill", "before": "\"I'm", "after": "I broke your cup,\" Nina says.", "answer": "sorry", "bank": ["sorry", "fine", "blue"], "targetType": "adjective", "explanation": "We say \"I'm sorry\" when we do something wrong. Nina broke her friend's cup." },
+    { "type": "fill", "before": "My brother is sick, but my sister is", "after": ".", "answer": "fine", "bank": ["fine", "blue", "cheap"], "explanation": "\"Fine\" means \"well, not sick\". The brother is sick, but the sister is not." }
+  ],
+  "A1|vocabulary|0|fill|medium": [
+    { "type": "fill", "before": "\"", "after": ", Mike! Wait for me!\" Sam calls from across the street.", "answer": "Hey", "bank": ["Hey", "Goodbye", "Welcome"], "target": "hey", "explanation": "We say \"hey\" when we want a friend to look at us or listen. It is like \"hi\", but only for friends." },
+    { "type": "fill", "before": "Mom: \"Your phone is on the table.\" Carlos: \"", "after": ", good! Thank you.\"", "answer": "Oh", "bank": ["Oh", "Bye", "Welcome"], "target": "oh", "explanation": "We say \"oh\" when we hear something new. \"Oh, good!\" means we are happy about the news." },
+    { "type": "fill", "before": "Amy: \"Thank you for the cake!\" Yuki: \"You're", "after": "!\"", "answer": "welcome", "bank": ["welcome", "hungry", "sad"], "targetType": "adjective", "explanation": "\"You're welcome\" is the answer to \"Thank you\". It is a nice, friendly answer." },
+    { "type": "fill", "before": "Elif: \"Let's have lunch now. I'm", "after": "!\"", "answer": "hungry", "bank": ["hungry", "thirsty", "sad"], "explanation": "Elif wants to eat, so she is hungry. \"Thirsty\" is for when we want a drink." },
+    { "type": "fill", "before": "After the game, the players drink lots of water. They are", "after": ".", "answer": "thirsty", "bank": ["thirsty", "hungry", "sad"], "explanation": "People drink water when they are thirsty. Players are often thirsty after a game." },
+    { "type": "fill", "before": "Omar walks ten miles today. Now he is very", "after": "and sits down.", "answer": "tired", "bank": ["tired", "angry", "sad"], "explanation": "After a long walk, we are tired. We want to sit down or sleep." },
+    { "type": "fill", "before": "It's raining, so the children can't go to the park. They are", "after": ".", "answer": "sad", "bank": ["sad", "thirsty", "hungry"], "explanation": "The children can't go to the park, so they are not happy. They are sad." },
+    { "type": "fill", "before": "\"Don't take my things without asking!\" Ahmet is", "after": "with his brother.", "answer": "angry", "bank": ["angry", "thirsty", "tired"], "explanation": "Ahmet's brother takes his things, and Ahmet is not happy about it. We are \"angry with\" someone." }
+  ],
+  "A1|vocabulary|0|fill|hard": [
+    { "type": "fill", "before": "Lisa is", "after": "to fly, so she always goes by train.", "answer": "afraid", "bank": ["afraid", "bored", "excited", "interested"], "explanation": "Lisa thinks flying is dangerous, so she is afraid to fly. She takes the train." },
+    { "type": "fill", "before": "It's Sunday afternoon, and Ben has nothing to do. He is", "after": ".", "answer": "bored", "bank": ["bored", "afraid", "excited", "sure"], "explanation": "Ben has nothing to do, so he is bored." },
+    { "type": "fill", "before": "The children are very", "after": "about the school trip tomorrow.", "answer": "excited", "bank": ["excited", "bored", "afraid", "interested"], "explanation": "The trip is something good that is going to happen, so the children are excited. We say \"excited about\"." },
+    { "type": "fill", "before": "\"Are you", "after": "in art?\" \"Yes, I love painting.\"", "answer": "interested", "bank": ["interested", "excited", "bored", "afraid"], "explanation": "The answer \"I love painting\" tells us the person likes art. We say \"interested in\"." },
+    { "type": "fill", "before": "\"Is the museum open today?\" \"I'm not", "after": ". Let's check online.\"", "answer": "sure", "bank": ["sure", "afraid", "bored", "interested"], "explanation": "\"I'm not sure\" means \"I don't know\". So they check online." },
+    { "type": "fill", "before": "Don't forget to", "after": "your grandfather for the birthday money.", "answer": "thank", "bank": ["thank", "laugh", "hope", "miss"], "targetType": "verb", "explanation": "We thank people when they give us something. Your grandfather gives you money, so you thank him." },
+    { "type": "fill", "before": "Maria's email starts: \"", "after": "Tom, thanks for your letter.\"", "answer": "Dear", "bank": ["Dear", "Sure", "Afraid", "Bored"], "target": "dear", "explanation": "Letters and emails often start with \"Dear\" and the person's name." },
+    { "type": "fill", "before": "My brother is very funny. He always makes me", "after": ".", "answer": "laugh", "bank": ["laugh", "miss", "hope", "thank"], "targetType": "verb", "explanation": "Funny people make us laugh." }
+  ],
+  "A1|vocabulary|0|fill|veryhard": [
+    { "type": "fill", "before": "This TV show is the same every week. It's really", "after": ".", "answer": "boring", "bank": ["boring", "bored", "exciting", "interesting"], "explanation": "A show that is the same every week is not interesting. It is boring." },
+    { "type": "fill", "before": "Nina rides a fast horse for the first time. \"This is so", "after": "!\" she says.", "answer": "exciting", "bank": ["exciting", "excited", "bored", "interested"], "explanation": "Nina is excited, and the ride is exciting. \"-ing\" words describe the thing, and \"-ed\" words describe how people feel." },
+    { "type": "fill", "before": "Our new history teacher tells great stories. Her lessons are very", "after": ".", "answer": "interesting", "bank": ["interesting", "interested", "boring", "bored"], "explanation": "Great stories make a lesson interesting. \"Interested\" is for people, not lessons." },
+    { "type": "fill", "before": "\"I can speak ten languages,\" says Paul. \"I don't", "after": "you!\" says his friend.", "answer": "believe", "bank": ["believe", "hope", "miss", "happen"], "explanation": "His friend thinks Paul's words are not true. \"I don't believe you\" means \"I don't think it's true\"." },
+    { "type": "fill", "before": "I", "after": "it doesn't rain tomorrow. We want to go to the beach.", "answer": "hope", "bank": ["hope", "miss", "laugh", "happen"], "explanation": "We hope for good things in the future. They want good weather for the beach." },
+    { "type": "fill", "before": "\"What", "after": "to your arm?\" \"I fell off my bike.\"", "answer": "happened", "bank": ["happened", "hoped", "missed", "believed"], "target": "happen", "explanation": "We ask \"What happened?\" when we want to know about something that took place. He fell off his bike." },
+    { "type": "fill", "before": "I", "after": "the bus this morning, so I was late for school.", "answer": "missed", "bank": ["missed", "hoped", "happened", "believed"], "target": "miss", "explanation": "When you miss the bus, you are too late and it goes without you. Then you are late, too." },
+    { "type": "fill", "before": "I see my family after a long time. It's a wonderful", "after": ".", "answer": "feeling", "bank": ["feeling", "problem", "question", "mistake"], "explanation": "Seeing your family again makes you very happy. It is a wonderful feeling." }
+  ]
+}
 </script>
 
 <!--
@@ -634,7 +715,67 @@
   Keys are lower case. Checked by .gitignore/tools/check_questions.ps1.
 -->
 <script type="application/json" id="glossary">
-{}
+{
+  "A1": {
+    "hello": [
+      { "type": "exclamation", "meaning": "you say it when you meet someone" },
+      { "type": "noun", "meaning": "the word people say when they meet" }
+    ],
+    "hi": { "type": "exclamation", "meaning": "you say it when you meet a friend" },
+    "hey": { "type": "exclamation", "meaning": "you say it to a friend when you meet them or want them to listen" },
+    "bye": { "type": "exclamation", "meaning": "you say it to a friend when you leave" },
+    "goodbye": [
+      { "type": "exclamation", "meaning": "you say it when you leave someone" },
+      { "type": "noun", "meaning": "the word people say when they leave" }
+    ],
+    "thanks": [
+      { "type": "exclamation", "meaning": "you say it when someone gives you something or helps you" },
+      { "type": "noun", "meaning": "words that tell someone you are happy about their help" }
+    ],
+    "please": { "type": "exclamation", "meaning": "you say it when you ask for something in a nice way" },
+    "sorry": [
+      { "type": "adjective", "meaning": "sad about something you did" },
+      { "type": "exclamation", "meaning": "you say it when you do something wrong" }
+    ],
+    "fine": { "type": "adjective", "meaning": "well or OK; not sick and not sad" },
+    "ok": [
+      { "type": "exclamation", "meaning": "you say it when you agree" },
+      { "type": "adjective", "meaning": "good enough, not bad" },
+      { "type": "adverb", "meaning": "in a way that is good enough" }
+    ],
+    "yeah": { "type": "exclamation", "meaning": "yes (you say it to friends)" },
+    "oh": { "type": "exclamation", "meaning": "you say it when you hear something new, good or bad" },
+    "welcome": [
+      { "type": "exclamation", "meaning": "you say it to someone when they arrive" },
+      { "type": "verb", "meaning": "to be nice to someone who comes to your home or a new place" },
+      { "type": "adjective", "meaning": "people are happy to see you or have you with them" }
+    ],
+    "hungry": { "type": "adjective", "meaning": "you want to eat" },
+    "thirsty": { "type": "adjective", "meaning": "you want to drink" },
+    "tired": { "type": "adjective", "meaning": "you want to sleep or sit down" },
+    "sad": { "type": "adjective", "meaning": "not happy" },
+    "angry": { "type": "adjective", "meaning": "not happy with someone because of something bad they did" },
+    "afraid": { "type": "adjective", "meaning": "you think something bad can happen to you" },
+    "bored": { "type": "adjective", "meaning": "not interested, because there is nothing to do" },
+    "excited": { "type": "adjective", "meaning": "very happy because something good is going to happen" },
+    "interested": { "type": "adjective", "meaning": "you want to know more about something" },
+    "sure": { "type": "adjective", "meaning": "you know something is true" },
+    "thank": { "type": "verb", "meaning": "to tell someone you are happy about their help or about something they gave you" },
+    "dear": { "type": "adjective", "meaning": "a word before a name at the start of a letter or email" },
+    "laugh": [
+      { "type": "verb", "meaning": "to make a happy sound when something is funny" },
+      { "type": "noun", "meaning": "the happy sound people make when something is funny" }
+    ],
+    "boring": { "type": "adjective", "meaning": "not interesting at all" },
+    "exciting": { "type": "adjective", "meaning": "it makes you feel very happy and interested" },
+    "interesting": { "type": "adjective", "meaning": "it makes you want to know more" },
+    "believe": { "type": "verb", "meaning": "to think that something is true" },
+    "hope": { "type": "verb", "meaning": "to want something good to happen" },
+    "happen": { "type": "verb", "meaning": "to take place, like an event or a problem" },
+    "miss": { "type": "verb", "meaning": "to feel sad because someone is not with you; also, to be late for a bus, train or plane" },
+    "feeling": { "type": "noun", "meaning": "something you feel, like happy or sad" }
+  }
+}
 </script>
 
 <script>
@@ -1180,7 +1321,7 @@ function judgeFill(input, q) {
 }
 
 function questionText(q) {
-  if (q.type === 'fill') return `${q.before} ___ ${q.after}`;
+  if (q.type === 'fill') return `${fillBefore(q.before)}___${fillAfter(q.after)}`;
   return q.prompt;
 }
 
@@ -1375,12 +1516,13 @@ function startQuiz() {
 
 // The words a quiz tests, in order of appearance, without repeats: [{ word, type }].
 // type = the word type used in this quiz (q.targetType / pair.type); needed when a word has several types.
+// q.target (optional on mc / fill) = the dictionary form when the answer is another form ("laughs" -> "laugh").
 function quizTargetWords(questions) {
   const words = new Map();
   const add = (word, type) => { if (word && !words.has(word)) words.set(word, { word, type: type || null }); };
   questions.forEach((q) => {
-    if (q.type === 'mc') add(q.options[q.answer], q.targetType);
-    else if (q.type === 'fill') add(q.answer, q.targetType);
+    if (q.type === 'mc') add(q.target || q.options[q.answer], q.targetType);
+    else if (q.type === 'fill') add(q.target || q.answer, q.targetType);
     else if (q.type === 'tf') add(q.target, q.targetType);
     else if (q.type === 'match') q.pairs.forEach((p) => add(p.left, p.type));
   });
@@ -1413,10 +1555,7 @@ function openWordPreview(start) {
   openModal({
     title: 'Words in this game',
     body: list,
-    buttons: [
-      { label: 'Start', primary: true, onClick: start },
-      { label: 'Skip', onClick: start },
-    ],
+    buttons: [{ label: 'Start', primary: true, onClick: start }],
   });
 }
 
@@ -1688,6 +1827,11 @@ function renderTF(q, area) {
 }
 
 // Typed fill: the word bank is shown above the sentence; the student types one word into the blank.
+// Spaces around the blank like normal print: none after an opening quote ("___) and none before
+// punctuation or a closing quote (___. / ___!" / ___,).
+function fillBefore(text) { return !text || text.endsWith('"') ? text || '' : `${text} `; }
+function fillAfter(text) { return !text || /^[.,!?;:"']/.test(text) ? text || '' : ` ${text}`; }
+
 function renderFill(q, area) {
   const bank = el('div', { class: 'word-bank' }, q.bank.map((word) => el('span', { class: 'chip', text: word })));
   const input = el('input', {
@@ -1723,7 +1867,7 @@ function renderFill(q, area) {
   area.append(
     el('p', { class: 'instructions', text: 'Lorem ipsum dolor sit amet.' }),
     bank,
-    el('p', { class: 'prompt fill-sentence' }, [`${q.before} `, input, ` ${q.after}`]),
+    el('p', { class: 'prompt fill-sentence' }, [fillBefore(q.before), input, fillAfter(q.after)]),
     check,
   );
   state.quiz.ui = { input, check };
