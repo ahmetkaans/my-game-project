@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Language Game</title>
+<style>
+  /* Minimal functional styling only. See DESIGN.md. */
+  :root {
+    --bg: #ffffff;
+    --surface: #f4f4f5;
+    --fg: #18181b;
+    --muted: #71717a;
+    --border: #d4d4d8;
+    --accent: #2563eb;
+    --accent-fg: #ffffff;
+    --ok: #15803d;
+    --ok-bg: #dcfce7;
+    --bad: #b91c1c;
+    --bad-bg: #fee2e2;
+    --warn: #b45309;
+    --radius: 6px;
+    --gap: 12px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    line-height: 1.5;
+  }
+
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  [hidden] { display: none !important; }
+
+  h1, h2 { margin: 0 0 8px; }
+  .subtitle, .breadcrumb { margin: 0 0 16px; color: var(--muted); }
+  .breadcrumb:empty { display: none; }
+
+  button {
+    font: inherit;
+    color: inherit;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+
+  .back-btn { margin-bottom: 16px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--gap);
+  }
+  .menu-btn { min-height: 56px; }
+  .menu-btn small { display: block; color: var(--muted); }
+
+  /* Switch */
+  .switch-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    margin-top: 24px;
+    cursor: pointer;
+  }
+  .switch { position: relative; flex: none; width: 44px; height: 24px; }
+  .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .switch .slider {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: 12px;
+    transition: background 0.15s;
+    pointer-events: none;
+  }
+  .switch .slider::before {
+    content: "";
+    position: absolute; top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: var(--bg);
+    border-radius: 50%;
+    transition: transform 0.15s;
+  }
+  .switch input:checked + .slider { background: var(--accent); }
+  .switch input:checked + .slider::before { transform: translateX(20px); }
+  .switch input:focus-visible + .slider { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Quiz header */
+  .quiz-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .timer-bar { height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
+  .timer-fill { height: 100%; width: 100%; background: var(--accent); }
+  .timer-bar.is-low .timer-fill { background: var(--bad); }
+  .timer-bar.is-extension .timer-fill { background: var(--warn); }
+
+  .prompt { font-size: 1.15rem; margin: 0 0 16px; }
+  .instructions { color: var(--muted); margin: 0 0 12px; }
+  .options { display: grid; gap: var(--gap); }
+
+  .is-correct { background: var(--ok-bg) !important; border-color: var(--ok) !important; color: var(--ok) !important; }
+  .is-wrong { background: var(--bad-bg) !important; border-color: var(--bad) !important; color: var(--bad) !important; }
+  .is-selected { border-color: var(--accent); outline: 2px solid var(--accent); }
+
+  /* Fill in the blanks */
+  .word-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 52px;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+  .chip {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  .chip.is-dragging { opacity: 0.35; }
+  .drag-ghost {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    cursor: grabbing;
+  }
+  .blank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    min-height: 36px;
+    padding: 2px;
+    vertical-align: middle;
+    border-bottom: 2px solid var(--fg);
+  }
+  .blank.is-over { background: var(--surface); outline: 2px dashed var(--accent); }
+  .blank .chip { margin: 0; }
+
+  /* Matching */
+  .match-columns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); margin-bottom: 16px; }
+  .match-col { display: grid; gap: var(--gap); align-content: start; }
+  .match-item { position: relative; text-align: left; }
+  .match-item[data-pair]::after {
+    content: attr(data-pair);
+    position: absolute; top: 50%; right: 8px;
+    transform: translateY(-50%);
+    min-width: 22px; padding: 0 6px;
+    border-radius: 11px;
+    background: var(--accent); color: var(--accent-fg);
+    font-size: 0.8rem; text-align: center;
+  }
+
+  .feedback { margin: 16px 0; padding: 12px; border-radius: var(--radius); border: 1px solid var(--border); }
+  .feedback.ok { background: var(--ok-bg); border-color: var(--ok); }
+  .feedback.bad { background: var(--bad-bg); border-color: var(--bad); }
+  .feedback p { margin: 4px 0; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: var(--gap); margin-top: 16px; }
+
+  /* Results */
+  .results-score { font-size: 2rem; font-weight: 700; margin: 0; }
+  .results-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: var(--gap); }
+  .results-list li { padding: 12px; border: 1px solid var(--border); border-left-width: 4px; border-radius: var(--radius); }
+  .results-list li.st-correct { border-left-color: var(--ok); }
+  .results-list li.st-incorrect { border-left-color: var(--bad); }
+  .results-list li.st-skipped, .results-list li.st-unanswered { border-left-color: var(--muted); }
+  .results-list p { margin: 2px 0; }
+  .results-list .label { color: var(--muted); }
+
+  /* Footer / credits */
+  footer { padding: 16px; text-align: center; border-top: 1px solid var(--border); }
+  .link-btn { background: none; border: none; color: var(--accent); text-decoration: underline; padding: 4px 8px; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 900;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .modal {
+    width: 100%; max-width: 420px;
+    max-height: 90vh; overflow: auto;
+    padding: 20px;
+    background: var(--bg);
+    border-radius: var(--radius);
+  }
+  .modal ul { padding-left: 20px; }
+</style>
+</head>
+<body>
+
+<main id="app">
+
+  <!-- Screen: level selection (root, no back button) -->
+  <section id="screen-level" class="screen">
+    <h1>Lorem ipsum</h1>
+    <p class="subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <div class="grid" id="level-buttons"></div>
+  </section>
+
+  <!-- Screen: category (Vocabulary / Grammar) -->
+  <section id="screen-category" class="screen" hidden>
+    <button class="back-btn" data-back="level">&larr; Back</button>
+    <h1>Dolor sit amet</h1>
+    <p class="breadcrumb"></p>
+    <div class="grid" id="category-buttons"></div>
+  </section>
+
+  <!-- Screen: topic -->
+  <section id="screen-topic" class="screen" hidden>
+    <button class="back-btn" data-back="category">&larr; Back</button>
+    <h1>Consectetur adipiscing</h1>
+    <p class="breadcrumb"></p>
+    <div class="grid" id="topic-buttons"></div>
+  </section>
+
+  <!-- Screen: question type -->
+  <section id="screen-type" class="screen" hidden>
+    <button class="back-btn" data-back="topic">&larr; Back</button>
+    <h1>Sed do eiusmod</h1>
+    <p class="breadcrumb"></p>
+    <div class="grid" id="type-buttons"></div>
+  </section>
+
+  <!-- Screen: difficulty + same-duration switch -->
+  <section id="screen-difficulty" class="screen" hidden>
+    <button class="back-btn" data-back="type">&larr; Back</button>
+    <h1>Tempor incididunt</h1>
+    <p class="breadcrumb"></p>
+    <div class="grid" id="difficulty-buttons"></div>
+    <label class="switch-row">
+      <span class="switch">
+        <input type="checkbox" id="same-duration-switch">
+        <span class="slider"></span>
+      </span>
+      <span>Same duration per question across all difficulty settings</span>
+    </label>
+  </section>
+
+  <!-- Screen: quiz (game page: no credits) -->
+  <section id="screen-quiz" class="screen" hidden>
+    <button class="back-btn" id="quiz-quit">&larr; Back</button>
+    <p class="breadcrumb"></p>
+    <div class="quiz-meta">
+      <span id="quiz-progress"></span>
+      <span id="quiz-score"></span>
+      <span id="quiz-timer-text"></span>
+    </div>
+    <div class="timer-bar" id="quiz-timer-bar"><div class="timer-fill" id="quiz-timer-fill"></div></div>
+    <div id="quiz-question"></div>
+    <div id="quiz-feedback" class="feedback" hidden></div>
+    <button id="quiz-next" class="primary" hidden>Next</button>
+  </section>
+
+  <!-- Screen: results -->
+  <section id="screen-results" class="screen" hidden>
+    <button class="back-btn" data-back="difficulty">&larr; Back</button>
+    <h1>Ut labore et dolore</h1>
+    <p class="breadcrumb"></p>
+    <p class="results-score" id="results-score"></p>
+    <p id="results-summary"></p>
+    <div class="actions">
+      <button class="primary" id="results-retry">Retry</button>
+      <button id="results-home">Main menu</button>
+    </div>
+    <ol class="results-list" id="results-list"></ol>
+  </section>
+
+</main>
+
+<footer id="credits-footer">
+  <button class="link-btn" id="credits-btn">Credits</button>
+</footer>
+
+<div class="modal-overlay" id="modal-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
+    <div class="actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* =========================================================================
+ * CONFIG — every tunable number lives here. See README.md "Configuration".
+ * ========================================================================= */
+const CONFIG = {
+  LEVELS: ['A1', 'A2', 'B1', 'B2', 'C1'],
+  CATEGORIES: [
+    { id: 'vocabulary', label: 'Vocabulary' },
+    { id: 'grammar', label: 'Grammar' },
+  ],
+  TYPES: [
+    { id: 'mc', label: 'Multiple Choice' },
+    { id: 'fill', label: 'Fill in the Blanks' },
+    { id: 'tf', label: 'True or False' },
+    { id: 'match', label: 'Matching' },
+  ],
+  DIFFICULTIES: [
+    { id: 'easy', label: 'Easy', seconds: 60 },
+    { id: 'medium', label: 'Medium', seconds: 45 },
+    { id: 'hard', label: 'Hard', seconds: 30 },
+    { id: 'veryhard', label: 'Very Hard', seconds: 20 },
+  ],
+  SAME_DURATION_SECONDS: 60,     // used for every difficulty when the switch is ON
+  QUESTIONS_PER_QUIZ: 8,
+  POINTS_CORRECT: 12.5,
+  POINTS_INCORRECT: 6,           // subtracted
+  EXTENSION_SECONDS: 10,
+  EXTENSION_PENALTY: 10,         // subtracted
+  SCORE_MIN: 0,                  // clamp applied only on the results screen
+  SCORE_MAX: 100,
+  UNGRADED_TYPES: ['match'],     // grading for matching is undecided (see README.md)
+  MC_OPTIONS: 4,
+  MATCH_PAIRS: 4,
+  FILL_BANK_MIN: 3,
+  FILL_BANK_MAX: 4,
+  TIMER_TICK_MS: 100,
+  TIMER_LOW_RATIO: 0.25,         // timer bar turns red below this fraction
+  DRAG_THRESHOLD_PX: 5,          // pointer movement below this counts as a tap
+};
+
+// Placeholder topic names (10 per category). Replace with real topics later.
+const TOPICS = [
+  'Lorem Ipsum', 'Dolor Sit', 'Amet Consectetur', 'Adipiscing Elit', 'Sed Eiusmod',
+  'Tempor Incididunt', 'Labore Dolore', 'Magna Aliqua', 'Enim Minim', 'Veniam Nostrud',
+];
+
+// Placeholder credits.
+const CREDITS = ['Lorem Ipsum', 'Dolor Sit Amet', 'Consectetur Adipiscing', 'Sed Do Eiusmod', 'Tempor Incididunt'];
+
+/*
+ * Real content goes here. Key: `${level}|${category}|${topicIndex}|${type}`
+ * Value: array of question objects (shapes documented in README.md).
+ * If a key is missing, lorem ipsum questions are generated instead.
+ */
+const QUESTION_BANK = {};
+
+const LOREM_WORDS = Array.from(new Set((
+  'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et ' +
+  'dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea ' +
+  'commodo consequat duis aute irure in reprehenderit voluptate velit esse cillum fugiat nulla pariatur ' +
+  'excepteur sint occaecat cupidatat non proident sunt culpa qui officia deserunt mollit anim id est laborum'
+).split(' ')));
+
+/* =========================================================================
+ * STATE
+ * ========================================================================= */
+const state = {
+  nav: { level: null, category: null, topic: null, type: null, difficulty: null, sameDuration: false },
+  quiz: null, // created by startQuiz()
+};
+
+/* =========================================================================
+ * HELPERS
+ * ========================================================================= */
+const $ = (sel) => document.querySelector(sel);
+
+function el(tag, attrs = {}, children = []) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    if (key === 'text') node.textContent = value;
+    else if (key === 'class') node.className = value;
+    else if (key === 'disabled') node.disabled = value;
+    else node.setAttribute(key, value);
+  }
+  for (const child of [].concat(children)) {
+    node.append(child);
+  }
+  return node;
+}
+
+function fmt(n) {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
+function clampScore(n) {
+  return Math.min(CONFIG.SCORE_MAX, Math.max(CONFIG.SCORE_MIN, n));
+}
+
+function findById(list, id) {
+  return list.find((item) => item.id === id);
+}
+
+// Seeded RNG so the same quiz (level/category/topic/type) always yields the same questions.
+function hashString(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(seed) {
+  let a = seed;
+  return function () {
+    a |= 0;
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function makeLorem(rng) {
+  const int = (min, max) => min + Math.floor(rng() * (max - min + 1));
+  const shuffle = (arr) => {
+    const copy = arr.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  };
+  const words = (n) => shuffle(LOREM_WORDS).slice(0, n);
+  const capitalize = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+  const sentence = (min, max, end = '.') => {
+    const w = words(int(min, max));
+    w[0] = capitalize(w[0]);
+    return w.join(' ') + end;
+  };
+  return { int, shuffle, words, capitalize, sentence, bool: () => rng() < 0.5 };
+}
+
+/* =========================================================================
+ * QUESTIONS
+ * ========================================================================= */
+function quizKey(nav) {
+  return `${nav.level}|${nav.category}|${nav.topic}|${nav.type}`;
+}
+
+function getQuestions(nav) {
+  const bank = QUESTION_BANK[quizKey(nav)];
+  if (bank && bank.length >= CONFIG.QUESTIONS_PER_QUIZ) {
+    return bank.slice(0, CONFIG.QUESTIONS_PER_QUIZ);
+  }
+  return generateLoremQuestions(nav);
+}
+
+function generateLoremQuestions(nav) {
+  const L = makeLorem(mulberry32(hashString(quizKey(nav))));
+  const questions = [];
+  for (let i = 0; i < CONFIG.QUESTIONS_PER_QUIZ; i++) {
+    const explanation = L.sentence(10, 16);
+    if (nav.type === 'mc') {
+      questions.push({
+        type: 'mc',
+        prompt: L.sentence(6, 10, '?'),
+        options: L.words(CONFIG.MC_OPTIONS),
+        answer: L.int(0, CONFIG.MC_OPTIONS - 1),
+        explanation,
+      });
+    } else if (nav.type === 'tf') {
+      questions.push({ type: 'tf', prompt: L.sentence(6, 10), answer: L.bool(), explanation });
+    } else if (nav.type === 'fill') {
+      const length = L.int(6, 9);                        // words in sentence incl. the blank
+      const bankSize = L.int(CONFIG.FILL_BANK_MIN, CONFIG.FILL_BANK_MAX);
+      const all = L.words(length - 1 + bankSize);
+      const sentenceWords = all.slice(0, length - 1);
+      const bankWords = all.slice(length - 1);           // bankWords[0] is the answer
+      const pos = L.int(1, length - 2);                  // blank never first or last
+      sentenceWords[0] = L.capitalize(sentenceWords[0]);
+      questions.push({
+        type: 'fill',
+        before: sentenceWords.slice(0, pos).join(' '),
+        after: sentenceWords.slice(pos).join(' ') + '.',
+        answer: bankWords[0],
+        bank: L.shuffle(bankWords),
+        explanation,
+      });
+    } else if (nav.type === 'match') {
+      const w = L.words(CONFIG.MATCH_PAIRS * 2);
+      const pairs = [];
+      for (let p = 0; p < CONFIG.MATCH_PAIRS; p++) pairs.push({ left: w[p], right: w[p + CONFIG.MATCH_PAIRS] });
+      questions.push({
+        type: 'match',
+        prompt: L.sentence(5, 8),
+        pairs,
+        rightOrder: L.shuffle(pairs.map((_, idx) => idx)),
+        explanation,
+      });
+    }
+  }
+  return questions;
+}
+
+function questionText(q) {
+  if (q.type === 'fill') return `${q.before} ___ ${q.after}`;
+  return q.prompt;
+}
+
+function correctAnswerText(q) {
+  if (q.type === 'mc') return q.options[q.answer];
+  if (q.type === 'tf') return q.answer ? 'True' : 'False';
+  if (q.type === 'fill') return q.answer;
+  if (q.type === 'match') return q.pairs.map((p) => `${p.left} → ${p.right}`).join('; ');
+  return '';
+}
+
+/* =========================================================================
+ * NAVIGATION / MENUS
+ * ========================================================================= */
+const SCREEN_DEPTH = { level: 0, category: 1, topic: 2, type: 3, difficulty: 4, quiz: 5, results: 5 };
+
+function breadcrumbParts() {
+  const nav = state.nav;
+  const difficulty = findById(CONFIG.DIFFICULTIES, nav.difficulty);
+  return [
+    nav.level,
+    findById(CONFIG.CATEGORIES, nav.category)?.label,
+    nav.topic !== null ? TOPICS[nav.topic] : null,
+    findById(CONFIG.TYPES, nav.type)?.label,
+    difficulty ? `${difficulty.label} (${getQuestionSeconds()}s)` : null,
+  ];
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach((s) => { s.hidden = s.id !== `screen-${name}`; });
+  // Credits are shown on every page except the game (quiz) page.
+  $('#credits-footer').hidden = name === 'quiz';
+  const crumb = $(`#screen-${name} .breadcrumb`);
+  if (crumb) crumb.textContent = breadcrumbParts().slice(0, SCREEN_DEPTH[name]).join(' › ');
+  if (name === 'difficulty') renderDifficultyButtons();
+  window.scrollTo(0, 0);
+}
+
+function renderButtons(container, items, onClick) {
+  container.replaceChildren(...items.map((item) => {
+    const btn = el('button', { class: 'menu-btn' }, [item.label]);
+    if (item.sub) btn.append(el('small', { text: item.sub }));
+    btn.addEventListener('click', () => onClick(item));
+    return btn;
+  }));
+}
+
+function getQuestionSeconds() {
+  if (state.nav.sameDuration) return CONFIG.SAME_DURATION_SECONDS;
+  return findById(CONFIG.DIFFICULTIES, state.nav.difficulty).seconds;
+}
+
+function renderDifficultyButtons() {
+  const items = CONFIG.DIFFICULTIES.map((d) => ({
+    ...d,
+    sub: `${state.nav.sameDuration ? CONFIG.SAME_DURATION_SECONDS : d.seconds}s`,
+  }));
+  renderButtons($('#difficulty-buttons'), items, (d) => {
+    state.nav.difficulty = d.id;
+    startQuiz();
+  });
+}
+
+function initMenus() {
+  renderButtons($('#level-buttons'), CONFIG.LEVELS.map((l) => ({ id: l, label: l })), (item) => {
+    state.nav.level = item.id;
+    showScreen('category');
+  });
+  renderButtons($('#category-buttons'), CONFIG.CATEGORIES, (item) => {
+    state.nav.category = item.id;
+    showScreen('topic');
+  });
+  renderButtons($('#topic-buttons'), TOPICS.map((t, i) => ({ id: i, label: t })), (item) => {
+    state.nav.topic = item.id;
+    showScreen('type');
+  });
+  renderButtons($('#type-buttons'), CONFIG.TYPES, (item) => {
+    state.nav.type = item.id;
+    showScreen('difficulty');
+  });
+
+  const sw = $('#same-duration-switch');
+  sw.checked = state.nav.sameDuration;
+  sw.addEventListener('change', () => {
+    state.nav.sameDuration = sw.checked;
+    renderDifficultyButtons();
+  });
+
+  document.querySelectorAll('[data-back]').forEach((btn) => {
+    btn.addEventListener('click', () => showScreen(btn.dataset.back));
+  });
+
+  $('#credits-btn').addEventListener('click', openCredits);
+  $('#quiz-quit').addEventListener('click', requestQuit);
+  $('#quiz-next').addEventListener('click', goNext);
+  $('#results-retry').addEventListener('click', startQuiz);
+  $('#results-home').addEventListener('click', () => {
+    state.quiz = null;
+    showScreen('level');
+  });
+}
+
+/* =========================================================================
+ * MODAL
+ * ========================================================================= */
+const modalState = { dismissible: false };
+
+function openModal({ title, body, buttons, dismissible = false }) {
+  $('#modal-title').textContent = title;
+  $('#modal-body').replaceChildren(typeof body === 'string' ? el('p', { text: body }) : body);
+  $('#modal-actions').replaceChildren(...buttons.map((b) => {
+    const btn = el('button', { class: b.primary ? 'primary' : '', text: b.label });
+    btn.addEventListener('click', b.onClick);
+    return btn;
+  }));
+  modalState.dismissible = dismissible;
+  $('#modal-overlay').hidden = false;
+  const focusTarget = $('#modal-actions .primary') || $('#modal-actions button');
+  if (focusTarget) focusTarget.focus();
+}
+
+function closeModal() {
+  $('#modal-overlay').hidden = true;
+}
+
+function openCredits() {
+  openModal({
+    title: 'Credits',
+    body: el('ul', {}, CREDITS.map((name) => el('li', { text: name }))),
+    buttons: [{ label: 'Close', primary: true, onClick: closeModal }],
+    dismissible: true,
+  });
+}
+
+function initModal() {
+  $('#modal-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget && modalState.dismissible) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !$('#modal-overlay').hidden && modalState.dismissible) closeModal();
+  });
+}
+
+/* =========================================================================
+ * QUIZ FLOW
+ * ========================================================================= */
+function startQuiz() {
+  stopTimer();
+  closeModal();
+  const questions = getQuestions(state.nav);
+  state.quiz = {
+    questions,
+    index: 0,
+    score: 0,                                   // raw running score, may go negative
+    graded: !CONFIG.UNGRADED_TYPES.includes(state.nav.type),
+    records: questions.map(() => ({
+      status: 'unanswered',                     // correct | incorrect | skipped | unanswered
+      userAnswer: null,
+      points: 0,                                // points from answering
+      penalty: 0,                               // points lost to the time extension
+      extensionUsed: false,
+      timedOut: false,                          // true if this question ended the game
+    })),
+    timer: { totalMs: 0, remainingMs: 0, intervalId: null, lastTs: 0, extension: false },
+    answered: false,                            // current question locked?
+    over: false,
+    ui: {},                                     // per-question renderer state
+  };
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function currentQuestion() {
+  return state.quiz.questions[state.quiz.index];
+}
+
+function currentRecord() {
+  return state.quiz.records[state.quiz.index];
+}
+
+function renderQuestion() {
+  const quiz = state.quiz;
+  const q = currentQuestion();
+  quiz.answered = false;
+  quiz.ui = {};
+  $('#quiz-progress').textContent = `Question ${quiz.index + 1} / ${quiz.questions.length}`;
+  updateScoreDisplay();
+  $('#quiz-feedback').hidden = true;
+  $('#quiz-next').hidden = true;
+  const area = $('#quiz-question');
+  area.replaceChildren();
+  RENDERERS[q.type](q, area);
+  startTimer(getQuestionSeconds(), false);
+}
+
+function updateScoreDisplay() {
+  const quiz = state.quiz;
+  $('#quiz-score').textContent = quiz.graded ? `Score: ${fmt(quiz.score)}` : 'Score: not graded yet';
+}
+
+function submitAnswer(correct, userAnswer) {
+  const quiz = state.quiz;
+  if (!quiz || quiz.answered) return;
+  quiz.answered = true;
+  stopTimer();
+  cancelDrag();
+
+  const q = currentQuestion();
+  const rec = currentRecord();
+  rec.status = correct ? 'correct' : 'incorrect';
+  rec.userAnswer = userAnswer;
+  if (quiz.graded) {
+    rec.points = correct ? CONFIG.POINTS_CORRECT : -CONFIG.POINTS_INCORRECT;
+    quiz.score += rec.points;
+  }
+  updateScoreDisplay();
+
+  $('#quiz-question').querySelectorAll('button').forEach((b) => { b.disabled = true; });
+
+  const fb = $('#quiz-feedback');
+  fb.className = `feedback ${correct ? 'ok' : 'bad'}`;
+  const lines = [];
+  if (correct) {
+    lines.push(el('p', {}, [el('strong', { text: 'Correct!' })]));
+    lines.push(el('p', { text: `Answer: ${correctAnswerText(q)}` }));
+  } else {
+    lines.push(el('p', {}, [el('strong', { text: 'Incorrect.' })]));
+    lines.push(el('p', { text: `Correct answer: ${correctAnswerText(q)}` }));
+    lines.push(el('p', { text: `Explanation: ${q.explanation}` }));
+  }
+  if (!quiz.graded) lines.push(el('p', { text: '(Matching is not graded yet — no points given or taken.)' }));
+  fb.replaceChildren(...lines);
+  fb.hidden = false;
+
+  const next = $('#quiz-next');
+  next.textContent = quiz.index === quiz.questions.length - 1 ? 'See results' : 'Next';
+  next.hidden = false;
+  next.focus();
+}
+
+function goNext() {
+  const quiz = state.quiz;
+  if (quiz.index < quiz.questions.length - 1) {
+    quiz.index++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function skipQuestion() {
+  const quiz = state.quiz;
+  quiz.answered = true;
+  currentRecord().status = 'skipped';
+  goNext();
+}
+
+function requestQuit() {
+  const quiz = state.quiz;
+  const wasRunning = quiz.timer.intervalId !== null;
+  pauseTimer();
+  cancelDrag();
+  openModal({
+    title: 'Quit quiz?',
+    body: 'Progress will be lost. Lorem ipsum dolor sit amet.',
+    buttons: [
+      { label: 'Cancel', primary: true, onClick: () => { closeModal(); if (wasRunning) resumeTimer(); } },
+      { label: 'Quit', onClick: () => { closeModal(); stopTimer(); state.quiz = null; showScreen('difficulty'); } },
+    ],
+  });
+}
+
+/* =========================================================================
+ * TIMER  (time-based, so pausing keeps the exact remaining milliseconds)
+ * ========================================================================= */
+function startTimer(seconds, extension) {
+  stopTimer();
+  const t = state.quiz.timer;
+  t.totalMs = seconds * 1000;
+  t.remainingMs = t.totalMs;
+  t.extension = extension;
+  resumeTimer();
+}
+
+function resumeTimer() {
+  const t = state.quiz.timer;
+  if (t.intervalId !== null || t.remainingMs <= 0) return;
+  t.lastTs = performance.now();
+  t.intervalId = setInterval(tick, CONFIG.TIMER_TICK_MS);
+  renderTimer();
+}
+
+function pauseTimer() {
+  const t = state.quiz && state.quiz.timer;
+  if (!t || t.intervalId === null) return;
+  t.remainingMs = Math.max(0, t.remainingMs - (performance.now() - t.lastTs));
+  stopTimer();
+}
+
+function stopTimer() {
+  const t = state.quiz && state.quiz.timer;
+  if (!t || t.intervalId === null) return;
+  clearInterval(t.intervalId);
+  t.intervalId = null;
+}
+
+function tick() {
+  const quiz = state.quiz;
+  if (!quiz) return;
+  const t = quiz.timer;
+  const now = performance.now();
+  t.remainingMs -= now - t.lastTs;
+  t.lastTs = now;
+  if (t.remainingMs <= 0) {
+    t.remainingMs = 0;
+    stopTimer();
+    renderTimer();
+    onTimeUp();
+    return;
+  }
+  renderTimer();
+}
+
+function renderTimer() {
+  const t = state.quiz.timer;
+  const ratio = t.totalMs ? t.remainingMs / t.totalMs : 0;
+  $('#quiz-timer-text').textContent = `${t.extension ? 'Extra time' : 'Time'}: ${Math.ceil(t.remainingMs / 1000)}s`;
+  $('#quiz-timer-fill').style.width = `${ratio * 100}%`;
+  const bar = $('#quiz-timer-bar');
+  bar.classList.toggle('is-extension', t.extension);
+  bar.classList.toggle('is-low', !t.extension && ratio < CONFIG.TIMER_LOW_RATIO);
+}
+
+function onTimeUp() {
+  const quiz = state.quiz;
+  if (quiz.answered) return;
+  cancelDrag();
+  const rec = currentRecord();
+  if (!rec.extensionUsed) {
+    openModal({
+      title: 'Time out',
+      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      buttons: [
+        {
+          label: quiz.graded
+            ? `+${CONFIG.EXTENSION_SECONDS} seconds (−${CONFIG.EXTENSION_PENALTY} points)`
+            : `+${CONFIG.EXTENSION_SECONDS} seconds`,
+          primary: true,
+          onClick: () => { closeModal(); useExtension(); },
+        },
+        { label: 'Skip question', onClick: () => { closeModal(); skipQuestion(); } },
+      ],
+    });
+  } else {
+    gameOver();
+  }
+}
+
+function useExtension() {
+  const quiz = state.quiz;
+  const rec = currentRecord();
+  rec.extensionUsed = true;
+  if (quiz.graded) {
+    rec.penalty = -CONFIG.EXTENSION_PENALTY;
+    quiz.score += rec.penalty;
+  }
+  updateScoreDisplay();
+  startTimer(CONFIG.EXTENSION_SECONDS, true);
+}
+
+function gameOver() {
+  const quiz = state.quiz;
+  quiz.answered = true;
+  quiz.over = true;
+  currentRecord().timedOut = true;
+  $('#quiz-question').querySelectorAll('button').forEach((b) => { b.disabled = true; });
+  openModal({
+    title: 'Game over',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    buttons: [
+      { label: 'Retry', primary: true, onClick: () => { closeModal(); startQuiz(); } },
+      { label: 'See results', onClick: () => { closeModal(); showResults(); } },
+    ],
+  });
+}
+
+/* =========================================================================
+ * RENDERERS (one per question type)
+ * ========================================================================= */
+function renderChoiceButtons(area, labels, correctIndex, onPick) {
+  const wrap = el('div', { class: 'options' });
+  labels.forEach((label, i) => {
+    const btn = el('button', { class: 'option', text: label });
+    btn.addEventListener('click', () => {
+      if (state.quiz.answered) return;
+      const correct = i === correctIndex;
+      btn.classList.add(correct ? 'is-correct' : 'is-wrong');
+      wrap.children[correctIndex].classList.add('is-correct');
+      onPick(correct, label);
+    });
+    wrap.append(btn);
+  });
+  area.append(wrap);
+}
+
+function renderMC(q, area) {
+  area.append(el('p', { class: 'prompt', text: q.prompt }));
+  renderChoiceButtons(area, q.options, q.answer, submitAnswer);
+}
+
+function renderTF(q, area) {
+  area.append(el('p', { class: 'prompt', text: q.prompt }));
+  renderChoiceButtons(area, ['True', 'False'], q.answer ? 0 : 1, submitAnswer);
+}
+
+function renderFill(q, area) {
+  const bank = el('div', { class: 'word-bank' });
+  q.bank.forEach((word, i) => {
+    const chip = el('div', { class: 'chip', text: word, 'data-word': word, 'data-index': i });
+    chip.addEventListener('pointerdown', onChipPointerDown);
+    bank.append(chip);
+  });
+  const blank = el('span', { class: 'blank' });
+  const check = el('button', { class: 'primary', text: 'Check', disabled: true });
+  check.addEventListener('click', () => {
+    const chip = blank.querySelector('.chip');
+    if (!chip || state.quiz.answered) return;
+    const correct = chip.dataset.word === q.answer;
+    blank.classList.add(correct ? 'is-correct' : 'is-wrong');
+    submitAnswer(correct, chip.dataset.word);
+  });
+  area.append(
+    el('p', { class: 'instructions', text: 'Lorem ipsum dolor sit amet.' }),
+    bank,
+    el('p', { class: 'prompt' }, [`${q.before} `, blank, ` ${q.after}`]),
+    check,
+  );
+  state.quiz.ui = { bank, blank, check };
+}
+
+function renderMatch(q, area) {
+  const ui = { selectedLeft: null, pairs: new Map(), leftBtns: [], rightBtns: [] };
+  const leftCol = el('div', { class: 'match-col' });
+  const rightCol = el('div', { class: 'match-col' });
+
+  const refresh = () => {
+    ui.leftBtns.forEach((btn, i) => {
+      btn.classList.toggle('is-selected', ui.selectedLeft === i);
+      if (ui.pairs.has(i)) btn.dataset.pair = i + 1; else delete btn.dataset.pair;
+    });
+    ui.rightBtns.forEach((btn, ri) => {
+      const left = [...ui.pairs].find(([, r]) => r === ri);
+      if (left) btn.dataset.pair = left[0] + 1; else delete btn.dataset.pair;
+    });
+    ui.check.disabled = ui.pairs.size !== q.pairs.length;
+  };
+
+  q.pairs.forEach((pair, i) => {
+    const btn = el('button', { class: 'match-item', text: pair.left });
+    btn.addEventListener('click', () => {
+      if (state.quiz.answered) return;
+      if (ui.pairs.has(i)) {
+        ui.pairs.delete(i);                       // clicking a paired item undoes the pair
+        ui.selectedLeft = null;
+      } else {
+        ui.selectedLeft = ui.selectedLeft === i ? null : i;
+      }
+      refresh();
+    });
+    ui.leftBtns[i] = btn;
+    leftCol.append(btn);
+  });
+
+  q.rightOrder.forEach((ri) => {
+    const btn = el('button', { class: 'match-item', text: q.pairs[ri].right });
+    btn.addEventListener('click', () => {
+      if (state.quiz.answered) return;
+      const existing = [...ui.pairs].find(([, r]) => r === ri);
+      if (existing) {
+        ui.pairs.delete(existing[0]);
+      } else if (ui.selectedLeft !== null) {
+        ui.pairs.set(ui.selectedLeft, ri);
+        ui.selectedLeft = null;
+      }
+      refresh();
+    });
+    ui.rightBtns[ri] = btn;
+    rightCol.append(btn);
+  });
+
+  ui.check = el('button', { class: 'primary', text: 'Check', disabled: true });
+  ui.check.addEventListener('click', () => {
+    if (state.quiz.answered) return;
+    let allCorrect = true;
+    q.pairs.forEach((_, i) => {
+      const ri = ui.pairs.get(i);
+      const ok = ri === i;
+      if (!ok) allCorrect = false;
+      ui.leftBtns[i].classList.add(ok ? 'is-correct' : 'is-wrong');
+      ui.rightBtns[ri].classList.add(ok ? 'is-correct' : 'is-wrong');
+    });
+    const userAnswer = q.pairs.map((p, i) => `${p.left} → ${q.pairs[ui.pairs.get(i)].right}`).join('; ');
+    submitAnswer(allCorrect, userAnswer);
+  });
+
+  area.append(
+    el('p', { class: 'prompt', text: q.prompt }),
+    el('div', { class: 'match-columns' }, [leftCol, rightCol]),
+    ui.check,
+  );
+  state.quiz.ui = ui;
+  refresh();
+}
+
+const RENDERERS = { mc: renderMC, tf: renderTF, fill: renderFill, match: renderMatch };
+
+/* =========================================================================
+ * DRAG AND DROP (fill in the blanks) — pointer events: mouse + touch + pen
+ * ========================================================================= */
+let drag = null;
+
+function onChipPointerDown(e) {
+  const quiz = state.quiz;
+  if (!quiz || quiz.answered || drag) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  e.preventDefault();
+  drag = { chip: e.currentTarget, pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false, ghost: null };
+  document.addEventListener('pointermove', onDragMove);
+  document.addEventListener('pointerup', onDragEnd);
+  document.addEventListener('pointercancel', cancelDrag);
+}
+
+function onDragMove(e) {
+  if (!drag || e.pointerId !== drag.pointerId) return;
+  if (!drag.moved) {
+    if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < CONFIG.DRAG_THRESHOLD_PX) return;
+    drag.moved = true;
+    drag.ghost = drag.chip.cloneNode(true);
+    drag.ghost.classList.add('drag-ghost');
+    document.body.append(drag.ghost);
+    drag.chip.classList.add('is-dragging');
+  }
+  drag.ghost.style.left = `${e.clientX}px`;
+  drag.ghost.style.top = `${e.clientY}px`;
+  const target = document.elementFromPoint(e.clientX, e.clientY);
+  state.quiz.ui.blank.classList.toggle('is-over', !!(target && target.closest('.blank')));
+}
+
+function onDragEnd(e) {
+  if (!drag || e.pointerId !== drag.pointerId) return;
+  const { chip, moved } = drag;
+  const ui = state.quiz.ui;
+  const inBlank = chip.parentElement === ui.blank;
+  if (!moved) {
+    // Tap fallback: tap a bank word to place it, tap the placed word to return it.
+    if (inBlank) returnToBank(chip); else placeInBlank(chip);
+  } else {
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    if (target && target.closest('.blank')) placeInBlank(chip);
+    else if (inBlank) returnToBank(chip);
+  }
+  cancelDrag();
+}
+
+function cancelDrag() {
+  if (!drag) return;
+  if (drag.ghost) drag.ghost.remove();
+  drag.chip.classList.remove('is-dragging');
+  if (state.quiz && state.quiz.ui.blank) state.quiz.ui.blank.classList.remove('is-over');
+  document.removeEventListener('pointermove', onDragMove);
+  document.removeEventListener('pointerup', onDragEnd);
+  document.removeEventListener('pointercancel', cancelDrag);
+  drag = null;
+}
+
+function placeInBlank(chip) {
+  const ui = state.quiz.ui;
+  const existing = ui.blank.querySelector('.chip');
+  if (existing === chip) return;
+  if (existing) returnToBank(existing);
+  ui.blank.append(chip);
+  ui.check.disabled = false;
+}
+
+function returnToBank(chip) {
+  const ui = state.quiz.ui;
+  const index = Number(chip.dataset.index);
+  const before = [...ui.bank.children].find((c) => Number(c.dataset.index) > index);
+  ui.bank.insertBefore(chip, before || null);   // keep original bank order
+  ui.check.disabled = !ui.blank.querySelector('.chip');
+}
+
+/* =========================================================================
+ * RESULTS
+ * ========================================================================= */
+function statusLabel(rec, graded) {
+  if (rec.status === 'correct') return graded ? `Correct (+${fmt(rec.points)})` : 'Correct (not graded)';
+  if (rec.status === 'incorrect') return graded ? `Incorrect (${fmt(rec.points)})` : 'Incorrect (not graded)';
+  if (rec.status === 'skipped') return 'Skipped (0)';
+  return rec.timedOut ? 'Time ran out — game over' : 'Not answered';
+}
+
+function showResults() {
+  stopTimer();
+  const quiz = state.quiz;
+  const counts = { correct: 0, incorrect: 0, skipped: 0, unanswered: 0 };
+  quiz.records.forEach((r) => { counts[r.status]++; });
+
+  $('#results-score').textContent = quiz.graded
+    ? `${fmt(clampScore(quiz.score))} / ${CONFIG.SCORE_MAX}`
+    : 'Score: not graded yet';
+  $('#results-summary').textContent =
+    `Correct: ${counts.correct} · Incorrect: ${counts.incorrect} · Skipped: ${counts.skipped} · Not answered: ${counts.unanswered}`;
+
+  $('#results-list').replaceChildren(...quiz.questions.map((q, i) => {
+    const rec = quiz.records[i];
+    const row = (label, value) => el('p', {}, [el('span', { class: 'label', text: `${label}: ` }), value]);
+    const children = [
+      el('p', {}, [el('strong', { text: `Q${i + 1}. ${questionText(q)}` })]),
+      row('Your answer', rec.userAnswer ?? '—'),
+      row('Correct answer', correctAnswerText(q)),
+      row('Result', statusLabel(rec, quiz.graded)),
+    ];
+    if (rec.extensionUsed) {
+      children.push(row('Extra time', quiz.graded ? `used (${fmt(rec.penalty)})` : 'used'));
+    }
+    children.push(row('Explanation', q.explanation));
+    return el('li', { class: `st-${rec.status}` }, children);
+  }));
+
+  showScreen('results');
+}
+
+/* =========================================================================
+ * INIT
+ * ========================================================================= */
+initMenus();
+initModal();
+showScreen('level');
+</script>
+</body>
+</html>
