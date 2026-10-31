@@ -4,7 +4,11 @@
 
 The visual design is **decided** and applied in [index.html](index.html) (all CSS lives in its `<style>` block). Copy that the owner has not named explicitly is still lorem ipsum.
 
-Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry.
+Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry, Skip (on the "Words in this game" pop-up).
+
+Student-facing text approved in real short English (not lorem): "Words in this game" and "Start" (pop-up), "Almost!", "Check your spelling: …", "Partly correct.", "… of 4 pairs are correct.".
+
+A1 Vocabulary themes (15, in this order; stored in `TOPICS_BY_SECTION['A1|vocabulary']`): Greetings and Feelings; Numbers and Amounts; People and Family; School and Classroom; Time and Dates; Home and Daily Routine; Food and Drink; Clothes and Colors; Town and Shopping; Free Time and Sports; Body and Health; Nature and Animals; Travel and the World; Jobs and Technology; Learning and Ideas.
 
 A1 Grammar topics (21, in this order; stored in `TOPICS_BY_SECTION['A1|grammar']`): To be (am / is / are); A / an / the; Present simple; Present continuous; Past simple of "to be" (was / were); Past simple; Going to; Imperatives; Can / can't / could / couldn't; Questions (yes/no and wh-); There is / there are; How much / how many (countable and uncountable); Personal pronouns; Possessives (my, mine, 's); This / that / these / those; Adjectives with very / really; Comparatives and superlatives; Adverbs of frequency; Prepositions of place; Prepositions of time (in / on / at); Like / love / hate + -ing and I'd like.
 
@@ -41,7 +45,7 @@ Each level's color is the accent (`--accent`) on **every screen inside that leve
 | `--bg` / `--surface` | `#F6F6F3` / `#FFFFFF` | `#121417` / `#1A1D21` | page base / cards |
 | `--fg` / `--muted` / `--border` | `#1D2125` / `#5F6670` / `#E3E3DE` | `#E6E8EB` / `#9AA1AA` / `#2C3137` | text / secondary text / lines |
 
-- Green and red are used **only** for correct and wrong answers (buttons, feedback box, results cards).
+- Green and red are used **only** for correct and wrong answers (buttons, feedback box, results cards). Partly right answers use the level color.
 - **Timer**: normal and low time use the level accent. Low time (< 25%) is shown with a gentle pulse and the ticking sound, not with red. Extra time uses deep orange **plus a diagonal stripe pattern** and an "Extra time" label, so it is clearly different from C1 gold (also in dark mode).
 
 ## Light and dark mode
@@ -64,7 +68,7 @@ All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distanc
 - **Correct answer**: the correct element(s) do a gentle "pop" (scale to 1.035 and back, 320ms).
 - Buttons press down slightly (`scale(.98)`).
 - Low-time timer bar pulses softly.
-- **Confetti** on the results screen for a high score: graded quizzes with a final score **≥ 80**; Matching (not graded) when **≥ 7 of 8** questions are fully correct. Drawn on a temporary `<canvas>` in the five level colors, removed when done or when leaving the screen.
+- **Confetti** on the results screen for a high score: final score **≥ 80** (Multiple Choice, Fill in the Blanks, True or False) or **≥ 75** (Matching, which has partial points). Drawn on a temporary `<canvas>` in the five level colors, removed when done or when leaving the screen.
 - **Reduce motion**: when the device has "reduce motion" on, all CSS animations/transitions are disabled and confetti is skipped.
 
 ## Sound
@@ -72,6 +76,7 @@ All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distanc
 Generated with the Web Audio API inside `index.html` (no audio files):
 
 - **Correct**: soft two-note sine chime (E5 → B5).
+- **Partly right**: one soft sine note (D5), between the chime and the low tone.
 - **Wrong**: gentle low triangle tone gliding down (A3 → F3).
 - **Tick**: very quiet short sine blip once per second in the last 5 seconds of the normal timer and of the extra time.
 - Sound is **on by default**. The mute button (top-right) remembers the choice in `localStorage` (`lg-muted`).
@@ -92,9 +97,11 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Quiz header**: progress, running score, timer text (`.quiz-meta`) and a rounded timer bar (`.timer-bar`, states `.is-low`, `.is-extension`).
 - **Question card** (`#quiz-question.card`): options are full-width 56px buttons; True/False are side by side.
 - **Feedback box** (`.feedback.ok` / `.feedback.bad`): green or red tint.
-- **Word bank + blank** (`.word-bank`, `.chip`, `.blank`, `.drag-ghost`): dashed accent-tinted bank with pill chips; blank is an accent-underlined drop zone.
+- **Word bank + typed blank** (`.word-bank`, `.chip`, `.blank-input`): dashed accent-tinted bank with pill chips (display only) above the sentence; the blank is a text input inside the sentence with a light accent tint and an accent underline, fixed width (9.5em, never hints at the word's length), focus ring in the accent color. After Check it turns green (correct), red (wrong) or level-color tint (misspelled).
+- **Partly right** (misspelled Fill answer, Matching question with 1–3 correct pairs): uses the **level color**, never green or red. Feedback box `.feedback.partial` (accent-soft background, accent heading "Almost!" / "Partly correct."), result card `st-partial` (accent left border).
 - **Matching** (`.match-columns`, `.match-item`): two columns; selected item gets accent outline + tint; paired items share a round number badge.
 - **Modal** (`.modal-overlay`, `.modal`): card with soft shadow over a dimmed, slightly blurred page.
+- **"Words in this game" pop-up** (`.word-list`): a modal before every quiz (and Retry). One soft accent-tinted row per tested word: the word (medium weight), then one line per word type it has at that level: the type (small, muted, italic) and its meaning. **The type used in that game is underlined** in the level color and shown in the normal text color. Buttons **Start** (primary) and **Skip**; the list scrolls inside the modal when it is long (Matching: up to 16 words).
 - **Results**: hero card with big score in the accent color, summary, actions; then one card per question with a colored left border (green / red / grey).
 
 ## Open design work

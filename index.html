@@ -355,36 +355,26 @@
     border-radius: 999px;
     box-shadow: var(--shadow);
     font-weight: 500;
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-  }
-  .chip.is-dragging { opacity: 0.3; }
-  .drag-ghost {
-    position: fixed;
-    z-index: 1000;
-    pointer-events: none;
-    transform: translate(-50%, -50%) scale(1.06);
-    box-shadow: var(--shadow-lg);
-    cursor: grabbing;
   }
   .fill-sentence { line-height: 2.4; }
-  .blank {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 120px;
-    min-height: 50px;
-    padding: 3px;
+  /* Typed blank: fixed width so it never hints at the word's length */
+  .blank-input {
+    width: 9.5em;
+    max-width: 100%;
+    min-height: 46px;
+    padding: 4px 10px;
     vertical-align: middle;
+    font: inherit;
+    color: var(--fg);
     background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border: none;
     border-bottom: 2px solid var(--accent);
     border-radius: 8px 8px 0 0;
-    transition: background-color 0.15s;
+    outline: none;
   }
-  .blank.is-over { background: var(--accent-soft); outline: 2px dashed var(--accent); outline-offset: 2px; }
-  .blank .chip { box-shadow: none; }
+  .blank-input:focus-visible { background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-line); }
+  .blank-input:disabled { opacity: 1; }
+  .blank-input.is-partial { background: var(--accent-soft) !important; border-color: var(--accent) !important; }
 
   /* Matching */
   .match-columns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); margin-bottom: 16px; }
@@ -418,8 +408,11 @@
   }
   .feedback.ok { background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 40%, var(--surface)); }
   .feedback.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 40%, var(--surface)); }
+  .feedback.partial { background: var(--accent-soft); border-color: var(--accent-line); }
   .feedback.ok strong { color: var(--ok); }
   .feedback.bad strong { color: var(--bad); }
+  .feedback.partial strong { color: var(--accent); }
+  .feedback .points { color: var(--muted); }
   .feedback p { margin: 4px 0; }
   .feedback strong { font-weight: 500; font-size: 1.1rem; }
 
@@ -449,6 +442,7 @@
   }
   .results-list li.st-correct { border-left-color: var(--ok); }
   .results-list li.st-incorrect { border-left-color: var(--bad); }
+  .results-list li.st-partial { border-left-color: var(--accent); }
   .results-list p { margin: 2px 0; }
   .results-list strong { font-weight: 500; }
   .results-list .label { color: var(--muted); }
@@ -494,6 +488,24 @@
   .modal h2 { margin: 0 0 8px; font-size: 1.35rem; font-weight: 500; }
   .modal p { color: var(--muted); }
   .modal ul { padding-left: 20px; }
+  /* "Words in this game" pop-up: word, type, meaning */
+  .modal ul.word-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 8px; }
+  .word-list li {
+    padding: 8px 12px;
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+  }
+  .word-list .word { font-weight: 500; }
+  .modal .word-list .word-sense { margin: 2px 0 0; color: var(--fg); }
+  .word-list .word-type { margin-right: 4px; color: var(--muted); font-size: 0.85rem; font-style: italic; }
+  /* the word type used in this game */
+  .word-list .word-type.is-used {
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
 
   .confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 950; }
 
@@ -606,6 +618,25 @@
   </div>
 </div>
 
+<!--
+  Real questions. Key: "level|category|topicIndex|type|difficulty" (e.g. "A1|vocabulary|0|mc|easy").
+  Value: array of question objects; shapes in README.md "Question types". The correct answer is stored first
+  (options[0], bank[0]); the game shuffles. Missing keys get lorem ipsum questions.
+  Must be valid JSON: checked by .gitignore/tools/check_questions.ps1.
+-->
+<script type="application/json" id="question-bank">
+{}
+</script>
+
+<!--
+  Glossary for the "Words in this game" pop-up: one short meaning per tested word, written once per level and
+  reused in every quiz. Shape: { "A1": { "banana": { "type": "noun", "meaning": "a long yellow fruit" } } }.
+  Keys are lower case. Checked by .gitignore/tools/check_questions.ps1.
+-->
+<script type="application/json" id="glossary">
+{}
+</script>
+
 <script>
 'use strict';
 
@@ -638,17 +669,23 @@ const CONFIG = {
   EXTENSION_PENALTY: 10,         // subtracted
   SCORE_MIN: 0,                  // clamp applied only on the results screen
   SCORE_MAX: 100,
-  UNGRADED_TYPES: ['match'],     // grading for matching is undecided (see README.md)
+  UNGRADED_TYPES: [],            // types that give/take no points (none since matching is graded)
   MC_OPTIONS: 4,
+  MC_MAX_SAME_POSITION_IN_A_ROW: 2, // correct answer never in the same position more often in a row
   MATCH_PAIRS: 4,
+  MATCH_MIN_QUESTIONS: 2,        // matching quizzes have a variable length (see README.md)
+  MATCH_MAX_LOREM_QUESTIONS: 4,  // lorem matching quizzes: 2..this questions
   FILL_BANK_MIN: 3,
   FILL_BANK_MAX: 4,
+  FILL_MISSPELLED_SHARE: 0.5,    // misspelled fill answer: this share of POINTS_CORRECT, no penalty
+  SPELL_SHORT_MAX_LENGTH: 5,     // answers up to this many letters count as "short"
+  SPELL_MAX_EDITS_SHORT: 1,      // allowed spelling differences for short answers
+  SPELL_MAX_EDITS_LONG: 2,       // allowed spelling differences for longer answers
   TIMER_TICK_MS: 100,
   TIMER_LOW_RATIO: 0.25,         // timer bar pulses below this fraction
   TICK_LAST_SECONDS: 5,          // tick sound in the last N seconds (normal and extra time)
-  DRAG_THRESHOLD_PX: 5,          // pointer movement below this counts as a tap
-  CONFETTI_MIN_SCORE: 80,        // graded quizzes: final score >= this
-  CONFETTI_MIN_MATCH_CORRECT: 7, // matching (ungraded): fully correct questions >= this
+  CONFETTI_MIN_SCORE: 80,        // final score >= this (multiple choice, fill, true/false)
+  CONFETTI_MIN_MATCH_SCORE: 75,  // matching: final score >= this
   CONFETTI_COUNT: 90,
   CONFETTI_MS: 2800,
 };
@@ -661,6 +698,23 @@ const DEFAULT_TOPICS = [
 
 // Real topic names per section. Key: `${level}|${category}`. Order = button order.
 const TOPICS_BY_SECTION = {
+  'A1|vocabulary': [
+    'Greetings and Feelings',
+    'Numbers and Amounts',
+    'People and Family',
+    'School and Classroom',
+    'Time and Dates',
+    'Home and Daily Routine',
+    'Food and Drink',
+    'Clothes and Colors',
+    'Town and Shopping',
+    'Free Time and Sports',
+    'Body and Health',
+    'Nature and Animals',
+    'Travel and the World',
+    'Jobs and Technology',
+    'Learning and Ideas',
+  ],
   'A1|grammar': [
     'To be (am / is / are)',
     'A / an / the',
@@ -693,12 +747,19 @@ function getTopics(nav) {
 // Placeholder credits.
 const CREDITS = ['Lorem Ipsum', 'Dolor Sit Amet', 'Consectetur Adipiscing', 'Sed Do Eiusmod', 'Tempor Incididunt'];
 
-/*
- * Real content goes here. Key: `${level}|${category}|${topicIndex}|${type}`
- * Value: array of question objects (shapes documented in README.md).
- * If a key is missing, lorem ipsum questions are generated instead.
- */
-const QUESTION_BANK = {};
+// Real questions and the glossary live in JSON blocks (<script id="question-bank">, <script id="glossary">).
+const QUESTION_BANK = loadJsonBlock('question-bank');
+const GLOSSARY = loadJsonBlock('glossary');
+
+function loadJsonBlock(id) {
+  const node = document.getElementById(id);
+  try {
+    return node ? JSON.parse(node.textContent) : {};
+  } catch (e) {
+    console.warn(`#${id} is not valid JSON; it is ignored.`, e);
+    return {};
+  }
+}
 
 const LOREM_WORDS = Array.from(new Set((
   'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et ' +
@@ -743,12 +804,14 @@ function el(tag, attrs = {}, children = []) {
   return node;
 }
 
+// Scores are kept exact (e.g. 3 × 33.33…); round away float noise, show at most 2 decimals (6.25, 33.33).
 function fmt(n) {
-  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+  const r = Math.round(n * 1e6) / 1e6;
+  return String(Number(r.toFixed(2)));
 }
 
 function clampScore(n) {
-  return Math.min(CONFIG.SCORE_MAX, Math.max(CONFIG.SCORE_MIN, n));
+  return Math.min(CONFIG.SCORE_MAX, Math.max(CONFIG.SCORE_MIN, Math.round(n * 1e6) / 1e6));
 }
 
 function findById(list, id) {
@@ -853,6 +916,9 @@ const SOUNDS = {
   correct: [
     { freq: 659.25, type: 'sine', start: 0, duration: 0.5, gain: 0.12 },
     { freq: 987.77, type: 'sine', start: 0.09, duration: 0.7, gain: 0.09 },
+  ],
+  partial: [
+    { freq: 587.33, type: 'sine', start: 0, duration: 0.45, gain: 0.1 },
   ],
   wrong: [
     { freq: 220, endFreq: 174.6, type: 'triangle', start: 0, duration: 0.45, gain: 0.13 },
@@ -985,12 +1051,16 @@ function stopConfetti() {
  * QUESTIONS
  * ========================================================================= */
 function quizKey(nav) {
-  return `${nav.level}|${nav.category}|${nav.topic}|${nav.type}`;
+  return `${nav.level}|${nav.category}|${nav.topic}|${nav.type}|${nav.difficulty}`;
 }
 
+// Stored shapes: the correct answer is first (mc options[0], fill bank[0]); prepareQuiz() shuffles.
 function getQuestions(nav) {
   const bank = QUESTION_BANK[quizKey(nav)];
-  if (bank && bank.length >= CONFIG.QUESTIONS_PER_QUIZ) {
+  if (nav.type === 'match') {
+    // Matching quizzes have a variable length: use every question of the entry.
+    if (bank && bank.length >= CONFIG.MATCH_MIN_QUESTIONS) return bank;
+  } else if (bank && bank.length >= CONFIG.QUESTIONS_PER_QUIZ) {
     return bank.slice(0, CONFIG.QUESTIONS_PER_QUIZ);
   }
   return generateLoremQuestions(nav);
@@ -998,19 +1068,17 @@ function getQuestions(nav) {
 
 function generateLoremQuestions(nav) {
   const L = makeLorem(mulberry32(hashString(quizKey(nav))));
+  const count = nav.type === 'match'
+    ? L.int(CONFIG.MATCH_MIN_QUESTIONS, CONFIG.MATCH_MAX_LOREM_QUESTIONS)
+    : CONFIG.QUESTIONS_PER_QUIZ;
   const questions = [];
-  for (let i = 0; i < CONFIG.QUESTIONS_PER_QUIZ; i++) {
+  for (let i = 0; i < count; i++) {
     const explanation = L.sentence(10, 16);
     if (nav.type === 'mc') {
-      questions.push({
-        type: 'mc',
-        prompt: L.sentence(6, 10, '?'),
-        options: L.words(CONFIG.MC_OPTIONS),
-        answer: L.int(0, CONFIG.MC_OPTIONS - 1),
-        explanation,
-      });
+      questions.push({ type: 'mc', prompt: L.sentence(6, 10, '?'), options: L.words(CONFIG.MC_OPTIONS), explanation });
     } else if (nav.type === 'tf') {
-      questions.push({ type: 'tf', prompt: L.sentence(6, 10), answer: L.bool(), explanation });
+      const prompt = L.sentence(6, 10);
+      questions.push({ type: 'tf', prompt, answer: i % 2 === 0, target: prompt.split(' ')[1], explanation });
     } else if (nav.type === 'fill') {
       const length = L.int(6, 9);                        // words in sentence incl. the blank
       const bankSize = L.int(CONFIG.FILL_BANK_MIN, CONFIG.FILL_BANK_MAX);
@@ -1024,23 +1092,91 @@ function generateLoremQuestions(nav) {
         before: sentenceWords.slice(0, pos).join(' '),
         after: sentenceWords.slice(pos).join(' ') + '.',
         answer: bankWords[0],
-        bank: L.shuffle(bankWords),
+        bank: bankWords,
         explanation,
       });
     } else if (nav.type === 'match') {
       const w = L.words(CONFIG.MATCH_PAIRS * 2);
       const pairs = [];
       for (let p = 0; p < CONFIG.MATCH_PAIRS; p++) pairs.push({ left: w[p], right: w[p + CONFIG.MATCH_PAIRS] });
-      questions.push({
-        type: 'match',
-        prompt: L.sentence(5, 8),
-        pairs,
-        rightOrder: L.shuffle(pairs.map((_, idx) => idx)),
-        explanation,
-      });
+      questions.push({ type: 'match', prompt: L.sentence(5, 8), pairs, explanation });
     }
   }
-  return questions;
+  // Lorem true/false: 4 true and 4 false in a mixed (seeded) order, like real quizzes.
+  return nav.type === 'tf' ? L.shuffle(questions) : questions;
+}
+
+/*
+ * Mindful shuffling, seeded by the quiz key so Retry shows exactly the same quiz.
+ * Returns copies; the stored questions are never changed.
+ * - mc: each position holds the correct answer equally often (8 questions → each position twice),
+ *       never more than MC_MAX_SAME_POSITION_IN_A_ROW times in a row. Sets q.answer (index).
+ * - fill: bank order shuffled.
+ * - match: right-side order shuffled, never the same order as the left side. Sets q.rightOrder.
+ */
+function prepareQuiz(questions, key) {
+  const L = makeLorem(mulberry32(hashString(`shuffle|${key}`)));
+  const mcCount = questions.filter((q) => q.type === 'mc').length;
+  const positions = balancedPositions(mcCount, CONFIG.MC_OPTIONS, CONFIG.MC_MAX_SAME_POSITION_IN_A_ROW, L);
+  let mcIndex = 0;
+  return questions.map((q) => {
+    if (q.type === 'mc') {
+      const [correct, ...wrong] = q.options;
+      const options = L.shuffle(wrong);
+      const answer = positions[mcIndex++];
+      options.splice(answer, 0, correct);
+      return { ...q, options, answer };
+    }
+    if (q.type === 'fill') return { ...q, bank: L.shuffle(q.bank) };
+    if (q.type === 'match') {
+      const identity = q.pairs.map((_, i) => i);
+      let order = L.shuffle(identity);
+      while (order.every((v, i) => v === i)) order = L.shuffle(identity);
+      return { ...q, rightOrder: order };
+    }
+    return { ...q };
+  });
+}
+
+function balancedPositions(count, slots, maxRun, L) {
+  const list = Array.from({ length: count }, (_, i) => i % slots);
+  const runTooLong = (arr) => arr.some((_, i) => i >= maxRun && arr.slice(i - maxRun, i + 1).every((v) => v === arr[i]));
+  let order = L.shuffle(list);
+  for (let tries = 0; tries < 200 && runTooLong(order); tries++) order = L.shuffle(list);
+  return order;
+}
+
+// Spelling: optimal string alignment distance (insert, delete, replace, or swap of two neighbors = 1).
+function editDistance(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    }
+  }
+  return d[a.length][b.length];
+}
+
+function normalizeAnswer(text) {
+  return text.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[‘’]/g, "'");
+}
+
+// Typed fill answer → 'correct' | 'misspelled' | 'incorrect' (see README.md "Typed Fill in the Blanks").
+function judgeFill(input, q) {
+  const typed = normalizeAnswer(input);
+  const answer = normalizeAnswer(q.answer);
+  const others = q.bank.map(normalizeAnswer).filter((w) => w !== answer);
+  if (typed === answer) return 'correct';
+  if (others.includes(typed)) return 'incorrect';
+  const allowed = answer.length <= CONFIG.SPELL_SHORT_MAX_LENGTH ? CONFIG.SPELL_MAX_EDITS_SHORT : CONFIG.SPELL_MAX_EDITS_LONG;
+  const toAnswer = editDistance(typed, answer);
+  const closerToAnswer = others.every((w) => toAnswer < editDistance(typed, w));
+  return toAnswer <= allowed && closerToAnswer ? 'misspelled' : 'incorrect';
 }
 
 function questionText(q) {
@@ -1209,15 +1345,16 @@ function initModal() {
 function startQuiz() {
   stopTimer();
   closeModal();
-  const questions = getQuestions(state.nav);
+  const questions = prepareQuiz(getQuestions(state.nav), quizKey(state.nav));
   state.quiz = {
     questions,
     index: 0,
     score: 0,                                   // raw running score, may go negative
     graded: !CONFIG.UNGRADED_TYPES.includes(state.nav.type),
     records: questions.map(() => ({
-      status: 'unanswered',                     // correct | incorrect | skipped | unanswered
+      status: 'unanswered',                     // correct | partial | incorrect | skipped | unanswered
       userAnswer: null,
+      note: null,                               // partial: "Check your spelling…" / "2 of 4 pairs"
       points: 0,                                // points from answering
       penalty: 0,                               // points lost to the time extension
       extensionUsed: false,
@@ -1229,7 +1366,58 @@ function startQuiz() {
     ui: {},                                     // per-question renderer state
   };
   showScreen('quiz');
-  renderQuestion();
+  // The "Words in this game" pop-up comes first (also on Retry); the timer starts when it closes.
+  $('#quiz-question').replaceChildren();
+  $('#quiz-feedback').hidden = true;
+  $('#quiz-next').hidden = true;
+  openWordPreview(() => { closeModal(); renderQuestion(); });
+}
+
+// The words a quiz tests, in order of appearance, without repeats: [{ word, type }].
+// type = the word type used in this quiz (q.targetType / pair.type); needed when a word has several types.
+function quizTargetWords(questions) {
+  const words = new Map();
+  const add = (word, type) => { if (word && !words.has(word)) words.set(word, { word, type: type || null }); };
+  questions.forEach((q) => {
+    if (q.type === 'mc') add(q.options[q.answer], q.targetType);
+    else if (q.type === 'fill') add(q.answer, q.targetType);
+    else if (q.type === 'tf') add(q.target, q.targetType);
+    else if (q.type === 'match') q.pairs.forEach((p) => add(p.left, p.type));
+  });
+  return [...words.values()];
+}
+
+// All senses of a word from GLOSSARY[level]: [{ type, meaning }]. An entry is one sense (object) or several
+// (array, one per word type). Lorem quizzes get a lorem placeholder.
+function glossarySenses(level, word) {
+  const entry = (GLOSSARY[level] || {})[word.toLowerCase()];
+  if (entry) return [].concat(entry);
+  const L = makeLorem(mulberry32(hashString(`glossary|${word}`)));
+  return [{ type: L.words(1)[0], meaning: L.sentence(3, 6, '') }];
+}
+
+function openWordPreview(start) {
+  const level = state.nav.level;
+  const list = el('ul', { class: 'word-list' }, quizTargetWords(state.quiz.questions).map(({ word, type }) => {
+    const senses = glossarySenses(level, word);
+    const used = type || senses[0].type;   // one sense: that one is used
+    // Every word type of the word is shown; the one used in this game is underlined.
+    return el('li', {}, [
+      el('span', { class: 'word', text: word }),
+      ...senses.map((s) => el('p', { class: 'word-sense' }, [
+        el('span', { class: `word-type${s.type === used ? ' is-used' : ''}`, text: s.type }),
+        ` ${s.meaning}`,
+      ])),
+    ]);
+  }));
+  openModal({
+    title: 'Words in this game',
+    body: list,
+    buttons: [
+      { label: 'Start', primary: true, onClick: start },
+      { label: 'Skip', onClick: start },
+    ],
+  });
 }
 
 function currentQuestion() {
@@ -1260,41 +1448,45 @@ function updateScoreDisplay() {
   $('#quiz-score').textContent = quiz.graded ? `Score: ${fmt(quiz.score)}` : 'Score: not graded yet';
 }
 
-function submitAnswer(correct, userAnswer) {
+/*
+ * outcome: 'correct' | 'partial' | 'incorrect'. points: what the answer earns (renderers compute it,
+ * see questionPoints()). note: shown for partial answers (spelling warning, pairs count).
+ */
+function submitAnswer(outcome, userAnswer, points, note = null) {
   const quiz = state.quiz;
   if (!quiz || quiz.answered) return;
   quiz.answered = true;
   stopTimer();
-  cancelDrag();
 
   const q = currentQuestion();
   const rec = currentRecord();
-  rec.status = correct ? 'correct' : 'incorrect';
+  rec.status = outcome;
   rec.userAnswer = userAnswer;
+  rec.note = note;
   if (quiz.graded) {
-    rec.points = correct ? CONFIG.POINTS_CORRECT : -CONFIG.POINTS_INCORRECT;
+    rec.points = points;
     quiz.score += rec.points;
   }
   updateScoreDisplay();
-  playSound(correct ? 'correct' : 'wrong');
+  playSound({ correct: 'correct', partial: 'partial', incorrect: 'wrong' }[outcome]);
 
   const area = $('#quiz-question');
-  area.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+  area.querySelectorAll('button, input').forEach((b) => { b.disabled = true; });
   // Renderers mark the right element(s) with .is-correct before calling submitAnswer.
-  if (correct) area.querySelectorAll('.is-correct').forEach((node) => node.classList.add('pop'));
+  if (outcome === 'correct') area.querySelectorAll('.is-correct').forEach((node) => node.classList.add('pop'));
 
   const fb = $('#quiz-feedback');
-  fb.className = `feedback ${correct ? 'ok' : 'bad'}`;
-  const lines = [];
-  if (correct) {
-    lines.push(el('p', {}, [el('strong', { text: 'Correct!' })]));
+  fb.className = `feedback ${{ correct: 'ok', partial: 'partial', incorrect: 'bad' }[outcome]}`;
+  const heading = { correct: 'Correct!', partial: q.type === 'fill' ? 'Almost!' : 'Partly correct.', incorrect: 'Incorrect.' }[outcome];
+  const lines = [el('p', {}, [el('strong', { text: heading })])];
+  if (note) lines.push(el('p', { text: note }));
+  if (outcome === 'correct') {
     lines.push(el('p', { text: `Answer: ${correctAnswerText(q)}` }));
   } else {
-    lines.push(el('p', {}, [el('strong', { text: 'Incorrect.' })]));
     lines.push(el('p', { text: `Correct answer: ${correctAnswerText(q)}` }));
     lines.push(el('p', { text: `Explanation: ${q.explanation}` }));
   }
-  if (!quiz.graded) lines.push(el('p', { text: '(Matching is not graded yet — no points given or taken.)' }));
+  if (quiz.graded) lines.push(el('p', { class: 'points', text: `Points: ${points > 0 ? '+' : ''}${fmt(points)}` }));
   fb.replaceChildren(...lines);
   fb.hidden = false;
 
@@ -1325,7 +1517,6 @@ function requestQuit() {
   const quiz = state.quiz;
   const wasRunning = quiz.timer.intervalId !== null;
   pauseTimer();
-  cancelDrag();
   openModal({
     title: 'Quit quiz?',
     body: 'Progress will be lost. Lorem ipsum dolor sit amet.',
@@ -1409,7 +1600,6 @@ function renderTimer() {
 function onTimeUp() {
   const quiz = state.quiz;
   if (quiz.answered) return;
-  cancelDrag();
   const rec = currentRecord();
   if (!rec.extensionUsed) {
     openModal({
@@ -1448,7 +1638,7 @@ function gameOver() {
   quiz.answered = true;
   quiz.over = true;
   currentRecord().timedOut = true;
-  $('#quiz-question').querySelectorAll('button').forEach((b) => { b.disabled = true; });
+  $('#quiz-question').querySelectorAll('button, input').forEach((b) => { b.disabled = true; });
   openModal({
     title: 'Game over',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -1478,39 +1668,66 @@ function renderChoiceButtons(area, labels, correctIndex, onPick, extraClass = ''
   area.append(wrap);
 }
 
+// Points for multiple choice / true or false / fill: +POINTS_CORRECT or −POINTS_INCORRECT.
+function choicePoints(correct) {
+  return correct ? CONFIG.POINTS_CORRECT : -CONFIG.POINTS_INCORRECT;
+}
+
+function submitChoice(correct, label) {
+  submitAnswer(correct ? 'correct' : 'incorrect', label, choicePoints(correct));
+}
+
 function renderMC(q, area) {
   area.append(el('p', { class: 'prompt', text: q.prompt }));
-  renderChoiceButtons(area, q.options, q.answer, submitAnswer);
+  renderChoiceButtons(area, q.options, q.answer, submitChoice);
 }
 
 function renderTF(q, area) {
   area.append(el('p', { class: 'prompt', text: q.prompt }));
-  renderChoiceButtons(area, ['True', 'False'], q.answer ? 0 : 1, submitAnswer, 'two');
+  renderChoiceButtons(area, ['True', 'False'], q.answer ? 0 : 1, submitChoice, 'two');
 }
 
+// Typed fill: the word bank is shown above the sentence; the student types one word into the blank.
 function renderFill(q, area) {
-  const bank = el('div', { class: 'word-bank' });
-  q.bank.forEach((word, i) => {
-    const chip = el('div', { class: 'chip', text: word, 'data-word': word, 'data-index': i });
-    chip.addEventListener('pointerdown', onChipPointerDown);
-    bank.append(chip);
+  const bank = el('div', { class: 'word-bank' }, q.bank.map((word) => el('span', { class: 'chip', text: word })));
+  const input = el('input', {
+    class: 'blank-input',
+    type: 'text',
+    autocomplete: 'off',
+    autocorrect: 'off',
+    autocapitalize: 'off',
+    spellcheck: 'false',
+    enterkeyhint: 'done',
+    'aria-label': 'Your answer',
   });
-  const blank = el('span', { class: 'blank' });
   const check = el('button', { class: 'primary check-btn', text: 'Check', disabled: true });
-  check.addEventListener('click', () => {
-    const chip = blank.querySelector('.chip');
-    if (!chip || state.quiz.answered) return;
-    const correct = chip.dataset.word === q.answer;
-    blank.classList.add(correct ? 'is-correct' : 'is-wrong');
-    submitAnswer(correct, chip.dataset.word);
-  });
+  const submit = () => {
+    const typed = input.value.trim();
+    if (!typed || state.quiz.answered) return;
+    const result = judgeFill(typed, q);
+    if (result === 'correct') {
+      input.classList.add('is-correct');
+      submitAnswer('correct', typed, CONFIG.POINTS_CORRECT);
+    } else if (result === 'misspelled') {
+      input.classList.add('is-partial');
+      submitAnswer('partial', typed, CONFIG.POINTS_CORRECT * CONFIG.FILL_MISSPELLED_SHARE,
+        `Check your spelling: "${q.answer}", not "${typed}".`);
+    } else {
+      input.classList.add('is-wrong');
+      submitAnswer('incorrect', typed, -CONFIG.POINTS_INCORRECT);
+    }
+  };
+  input.addEventListener('input', () => { check.disabled = !input.value.trim(); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
+  check.addEventListener('click', submit);
   area.append(
     el('p', { class: 'instructions', text: 'Lorem ipsum dolor sit amet.' }),
     bank,
-    el('p', { class: 'prompt fill-sentence' }, [`${q.before} `, blank, ` ${q.after}`]),
+    el('p', { class: 'prompt fill-sentence' }, [`${q.before} `, input, ` ${q.after}`]),
     check,
   );
-  state.quiz.ui = { bank, blank, check };
+  state.quiz.ui = { input, check };
+  input.focus({ preventScroll: true });
 }
 
 function renderMatch(q, area) {
@@ -1566,16 +1783,20 @@ function renderMatch(q, area) {
   ui.check = el('button', { class: 'primary check-btn', text: 'Check', disabled: true });
   ui.check.addEventListener('click', () => {
     if (state.quiz.answered) return;
-    let allCorrect = true;
+    let correctPairs = 0;
     q.pairs.forEach((_, i) => {
       const ri = ui.pairs.get(i);
       const ok = ri === i;
-      if (!ok) allCorrect = false;
+      if (ok) correctPairs++;
       ui.leftBtns[i].classList.add(ok ? 'is-correct' : 'is-wrong');
       ui.rightBtns[ri].classList.add(ok ? 'is-correct' : 'is-wrong');
     });
     const userAnswer = q.pairs.map((p, i) => `${p.left} → ${q.pairs[ui.pairs.get(i)].right}`).join('; ');
-    submitAnswer(allCorrect, userAnswer);
+    // Partial points: the quiz is worth SCORE_MAX in total; each correct pair earns its share. No penalty.
+    const points = (CONFIG.SCORE_MAX / state.quiz.questions.length) * (correctPairs / q.pairs.length);
+    const outcome = correctPairs === q.pairs.length ? 'correct' : correctPairs > 0 ? 'partial' : 'incorrect';
+    const note = outcome === 'partial' ? `${correctPairs} of ${q.pairs.length} pairs are correct.` : null;
+    submitAnswer(outcome, userAnswer, points, note);
   });
 
   area.append(
@@ -1590,87 +1811,13 @@ function renderMatch(q, area) {
 const RENDERERS = { mc: renderMC, tf: renderTF, fill: renderFill, match: renderMatch };
 
 /* =========================================================================
- * DRAG AND DROP (fill in the blanks) — pointer events: mouse + touch + pen
- * ========================================================================= */
-let drag = null;
-
-function onChipPointerDown(e) {
-  const quiz = state.quiz;
-  if (!quiz || quiz.answered || drag) return;
-  if (e.pointerType === 'mouse' && e.button !== 0) return;
-  e.preventDefault();
-  drag = { chip: e.currentTarget, pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false, ghost: null };
-  document.addEventListener('pointermove', onDragMove);
-  document.addEventListener('pointerup', onDragEnd);
-  document.addEventListener('pointercancel', cancelDrag);
-}
-
-function onDragMove(e) {
-  if (!drag || e.pointerId !== drag.pointerId) return;
-  if (!drag.moved) {
-    if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < CONFIG.DRAG_THRESHOLD_PX) return;
-    drag.moved = true;
-    drag.ghost = drag.chip.cloneNode(true);
-    drag.ghost.classList.add('drag-ghost');
-    document.body.append(drag.ghost);
-    drag.chip.classList.add('is-dragging');
-  }
-  drag.ghost.style.left = `${e.clientX}px`;
-  drag.ghost.style.top = `${e.clientY}px`;
-  const target = document.elementFromPoint(e.clientX, e.clientY);
-  state.quiz.ui.blank.classList.toggle('is-over', !!(target && target.closest('.blank')));
-}
-
-function onDragEnd(e) {
-  if (!drag || e.pointerId !== drag.pointerId) return;
-  const { chip, moved } = drag;
-  const ui = state.quiz.ui;
-  const inBlank = chip.parentElement === ui.blank;
-  if (!moved) {
-    // Tap fallback: tap a bank word to place it, tap the placed word to return it.
-    if (inBlank) returnToBank(chip); else placeInBlank(chip);
-  } else {
-    const target = document.elementFromPoint(e.clientX, e.clientY);
-    if (target && target.closest('.blank')) placeInBlank(chip);
-    else if (inBlank) returnToBank(chip);
-  }
-  cancelDrag();
-}
-
-function cancelDrag() {
-  if (!drag) return;
-  if (drag.ghost) drag.ghost.remove();
-  drag.chip.classList.remove('is-dragging');
-  if (state.quiz && state.quiz.ui.blank) state.quiz.ui.blank.classList.remove('is-over');
-  document.removeEventListener('pointermove', onDragMove);
-  document.removeEventListener('pointerup', onDragEnd);
-  document.removeEventListener('pointercancel', cancelDrag);
-  drag = null;
-}
-
-function placeInBlank(chip) {
-  const ui = state.quiz.ui;
-  const existing = ui.blank.querySelector('.chip');
-  if (existing === chip) return;
-  if (existing) returnToBank(existing);
-  ui.blank.append(chip);
-  ui.check.disabled = false;
-}
-
-function returnToBank(chip) {
-  const ui = state.quiz.ui;
-  const index = Number(chip.dataset.index);
-  const before = [...ui.bank.children].find((c) => Number(c.dataset.index) > index);
-  ui.bank.insertBefore(chip, before || null);   // keep original bank order
-  ui.check.disabled = !ui.blank.querySelector('.chip');
-}
-
-/* =========================================================================
  * RESULTS
  * ========================================================================= */
-function statusLabel(rec, graded) {
-  if (rec.status === 'correct') return graded ? `Correct (+${fmt(rec.points)})` : 'Correct (not graded)';
-  if (rec.status === 'incorrect') return graded ? `Incorrect (${fmt(rec.points)})` : 'Incorrect (not graded)';
+function statusLabel(rec, graded, type) {
+  const pts = (n) => (graded ? ` (${n > 0 ? '+' : ''}${fmt(n)})` : ' (not graded)');
+  if (rec.status === 'correct') return `Correct${pts(rec.points)}`;
+  if (rec.status === 'partial') return `${type === 'fill' ? 'Misspelled' : 'Partly correct'}${pts(rec.points)}`;
+  if (rec.status === 'incorrect') return `Incorrect${pts(rec.points)}`;
   if (rec.status === 'skipped') return 'Skipped (0)';
   return rec.timedOut ? 'Time ran out — game over' : 'Not answered';
 }
@@ -1678,15 +1825,17 @@ function statusLabel(rec, graded) {
 function showResults() {
   stopTimer();
   const quiz = state.quiz;
-  const counts = { correct: 0, incorrect: 0, skipped: 0, unanswered: 0 };
+  const counts = { correct: 0, partial: 0, incorrect: 0, skipped: 0, unanswered: 0 };
   quiz.records.forEach((r) => { counts[r.status]++; });
   const finalScore = clampScore(quiz.score);
+  const type = state.nav.type;
 
   $('#results-score').replaceChildren(...(quiz.graded
     ? [el('span', { class: 'score-num', text: fmt(finalScore) }), el('span', { class: 'score-max', text: ` / ${CONFIG.SCORE_MAX}` })]
     : [el('span', { class: 'score-na', text: 'Score: not graded yet' })]));
   $('#results-summary').replaceChildren(
     el('li', { text: `Correct: ${counts.correct}` }),
+    ...(counts.partial ? [el('li', { text: `${type === 'fill' ? 'Misspelled' : 'Partly correct'}: ${counts.partial}` })] : []),
     el('li', { text: `Incorrect: ${counts.incorrect}` }),
     el('li', { text: `Skipped: ${counts.skipped}` }),
     el('li', { text: `Not answered: ${counts.unanswered}` }),
@@ -1699,8 +1848,9 @@ function showResults() {
       el('p', {}, [el('strong', { text: `Q${i + 1}. ${questionText(q)}` })]),
       row('Your answer', rec.userAnswer ?? '—'),
       row('Correct answer', correctAnswerText(q)),
-      row('Result', statusLabel(rec, quiz.graded)),
+      row('Result', statusLabel(rec, quiz.graded, q.type)),
     ];
+    if (rec.note) children.push(row('Note', rec.note));
     if (rec.extensionUsed) {
       children.push(row('Extra time', quiz.graded ? `used (${fmt(rec.penalty)})` : 'used'));
     }
@@ -1709,10 +1859,8 @@ function showResults() {
   }));
 
   showScreen('results');
-  const celebrate = quiz.graded
-    ? finalScore >= CONFIG.CONFETTI_MIN_SCORE
-    : counts.correct >= CONFIG.CONFETTI_MIN_MATCH_CORRECT;
-  if (celebrate) launchConfetti();
+  const minScore = type === 'match' ? CONFIG.CONFETTI_MIN_MATCH_SCORE : CONFIG.CONFETTI_MIN_SCORE;
+  if (quiz.graded && finalScore >= minScore) launchConfetti();
 }
 
 /* =========================================================================
