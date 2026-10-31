@@ -3,7 +3,7 @@ I have a dream so close.
 
 A language-learning quiz game in a single file: [index.html](index.html). No build step — open the file in a browser. The only external resource is the Inter font from Google Fonts (optional: the system font is used when it can't load).
 
-Content is a placeholder for now: all texts that were not explicitly named are lorem ipsum. The visual design ("clean study app", level colors, dark mode, motion, sound) is documented in [DESIGN.md](DESIGN.md). Agents must read [AGENTS.md](AGENTS.md) first.
+The game is called **My Game Project**. Texts the owner has not named are still lorem ipsum (mostly questions and the topic names of other levels); the approved screen and pop-up texts are listed in DESIGN.md. The visual design ("clean study app", level colors, dark mode, motion, sound) is documented in [DESIGN.md](DESIGN.md). Agents must read [AGENTS.md](AGENTS.md) first.
 
 ## Screen flow
 
@@ -24,7 +24,7 @@ Level (A1 A2 B1 B2 C1)
 - The quiz screen's Back button opens a "Quit quiz?" confirm (timer paused). Quit → difficulty screen, progress lost. Cancel → timer resumes.
 - Results screen: Back (→ difficulty), Retry (same settings), Main menu (→ level).
 - Breadcrumb (`.breadcrumb` in each screen) is built from `state.nav` up to the screen's depth (`SCREEN_DEPTH`).
-- **Credits**: footer link on every screen except the quiz screen (results included). Opens a modal listing `CREDITS` (lorem ipsum).
+- **Credits**: footer link on every screen except the quiz screen (results included). Opens a modal listing `CREDITS` (Ahmet Kaan Sarılarlı, Enes Miraç Ateş).
 - **Top bar** (`#topbar`): theme and mute buttons, also hidden on the quiz screen.
 - **Level accent**: `showScreen()` sets `document.body.dataset.level` to the chosen level on every screen except the level screen (where it is removed → neutral accent). CSS maps it to `--accent`.
 
@@ -63,7 +63,7 @@ Placeholder list: `CREDITS`.
 - `getTopics(nav)` returns the right list. `renderTopicButtons()` rebuilds the topic grid each time a category is chosen; `breadcrumbParts()` also uses `getTopics()`.
 - `nav.topic` is the topic's **index** in that list, so quiz keys (`quizKey()`, `QUESTION_BANK`) use the index. Don't reorder a section's topics after real questions are added for it.
 - In the code every menu item at this step is a "topic". In the docs, Vocabulary items are called **vocabulary themes** and Grammar items **grammar topics**.
-- Decided so far: **A1 Vocabulary** (15 vocabulary themes, in textbook order) and **A1 Grammar** (21 grammar topics); their words are in `ORG_A1_WORDS.md`. All their quizzes still use lorem ipsum questions.
+- Decided so far: **A1 Vocabulary** (15 vocabulary themes, in textbook order) and **A1 Grammar** (21 grammar topics); their words are in `ORG_A1_WORDS.md`. Their quizzes use lorem ipsum questions, except Greetings and Feelings (see "Content (questions)").
 
 ## State
 
@@ -167,7 +167,7 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 
 ## Content (questions)
 
-**Written so far:** A1 Vocabulary, Greetings and Feelings (pilot theme, plan approved 2026-10-31): Multiple Choice and Fill in the Blanks, all 4 difficulties, with glossary entries for the 34 words they test. Everything else is still lorem.
+**Written so far:** A1 Vocabulary, Greetings and Feelings (pilot theme, plan approved 2026-10-31): all 16 quizzes (4 question types × 4 difficulties), with glossary entries for all 34 words of the theme. Everything else is still lorem.
 
 - **Question bank:** a JSON block in `index.html`, `<script type="application/json" id="question-bank">`, before the main script. `loadQuestionBank()` parses it once at startup (invalid JSON → console warning and lorem questions). It is JSON (not a JS object) so the check script can read it.
 - **Glossary:** a second JSON block, `<script type="application/json" id="glossary">`, parsed by the same `loadJsonBlock()`. Shape: `{ "A1": { "banana": { "type": "noun", "meaning": "a long yellow fruit" }, "drink": [ { "type": "noun", "meaning": "…" }, { "type": "verb", "meaning": "…" } ] } }`, keys in lower case. **One entry per tested word per level**, written once and reused in every quiz, so a word always has the same meanings. An entry is one sense (object) or, when the word has several word types at that level, a list with **one sense per word type**.

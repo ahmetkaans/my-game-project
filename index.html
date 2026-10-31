@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Language Game</title>
+<title>My Game Project</title>
 <script>
   // Apply the saved theme before first paint (see DESIGN.md "Light and dark mode").
   try {
@@ -377,19 +377,22 @@
   .blank-input.is-partial { background: var(--accent-soft) !important; border-color: var(--accent) !important; }
 
   /* Matching */
-  .match-columns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); margin-bottom: 16px; }
+  /* Phones: the word column is only as wide as its longest word (words never break), the meanings get
+     the rest, and the pair badge sits on the top-right corner, so no text space is kept free for it.
+     Wider screens: equal columns, badge inside the box on the right. */
+  .match-columns { display: grid; grid-template-columns: auto 1fr; gap: var(--gap); margin-bottom: 16px; }
   .match-col { display: grid; gap: 10px; align-content: start; }
-  .match-item { position: relative; min-height: 52px; padding-right: 42px; text-align: left; overflow-wrap: anywhere; }
+  .match-item { position: relative; min-height: 52px; padding: 10px 12px; text-align: left; overflow-wrap: anywhere; }
+  .match-col:first-child .match-item { overflow-wrap: normal; }
   .match-item[data-pair] { border-color: var(--accent-line); }
   .match-item.is-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
   .match-item[data-pair]::after {
     content: attr(data-pair);
     position: absolute;
-    top: 50%;
-    right: 10px;
-    width: 24px;
-    height: 24px;
-    transform: translateY(-50%);
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -397,6 +400,11 @@
     background: var(--accent);
     color: var(--on-accent);
     font-size: 0.8rem;
+  }
+  @media (min-width: 600px) {
+    .match-columns { grid-template-columns: 1fr 1fr; }
+    .match-item { padding: 12px 42px 12px 18px; }
+    .match-item[data-pair]::after { top: 50%; right: 10px; width: 24px; height: 24px; transform: translateY(-50%); }
   }
 
   .feedback {
@@ -529,15 +537,15 @@
 
   <!-- Screen: level selection (root, no back button) -->
   <section id="screen-level" class="screen">
-    <h1>Lorem ipsum</h1>
-    <p class="subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <h1>My Game Project</h1>
+    <p class="subtitle">Choose your level.</p>
     <div class="grid" id="level-buttons"></div>
   </section>
 
   <!-- Screen: category (Vocabulary / Grammar) -->
   <section id="screen-category" class="screen" hidden>
     <button class="back-btn" data-back="level">&larr; Back</button>
-    <h1>Dolor sit amet</h1>
+    <h1>What do you want to practice?</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="category-buttons"></div>
   </section>
@@ -545,7 +553,7 @@
   <!-- Screen: topic -->
   <section id="screen-topic" class="screen" hidden>
     <button class="back-btn" data-back="category">&larr; Back</button>
-    <h1>Consectetur adipiscing</h1>
+    <h1>Choose a topic</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="topic-buttons"></div>
   </section>
@@ -553,7 +561,7 @@
   <!-- Screen: question type -->
   <section id="screen-type" class="screen" hidden>
     <button class="back-btn" data-back="topic">&larr; Back</button>
-    <h1>Sed do eiusmod</h1>
+    <h1>Choose a question type</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="type-buttons"></div>
   </section>
@@ -561,7 +569,7 @@
   <!-- Screen: difficulty + same-duration switch -->
   <section id="screen-difficulty" class="screen" hidden>
     <button class="back-btn" data-back="type">&larr; Back</button>
-    <h1>Tempor incididunt</h1>
+    <h1>Choose a difficulty</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="difficulty-buttons"></div>
     <label class="switch-row">
@@ -591,7 +599,7 @@
   <!-- Screen: results -->
   <section id="screen-results" class="screen" hidden>
     <button class="back-btn" data-back="difficulty">&larr; Back</button>
-    <h1>Ut labore et dolore</h1>
+    <h1>Your results</h1>
     <p class="breadcrumb"></p>
     <div class="card results-hero">
       <p class="results-score" id="results-score"></p>
@@ -705,6 +713,102 @@
     { "type": "fill", "before": "\"What", "after": "to your arm?\" \"I fell off my bike.\"", "answer": "happened", "bank": ["happened", "hoped", "missed", "believed"], "target": "happen", "explanation": "We ask \"What happened?\" when we want to know about something that took place. He fell off his bike." },
     { "type": "fill", "before": "I", "after": "the bus this morning, so I was late for school.", "answer": "missed", "bank": ["missed", "hoped", "happened", "believed"], "target": "miss", "explanation": "When you miss the bus, you are too late and it goes without you. Then you are late, too." },
     { "type": "fill", "before": "I see my family after a long time. It's a wonderful", "after": ".", "answer": "feeling", "bank": ["feeling", "problem", "question", "mistake"], "explanation": "Seeing your family again makes you very happy. It is a wonderful feeling." }
+  ],
+  "A1|vocabulary|0|tf|easy": [
+    { "type": "tf", "prompt": "When Anna meets her teacher in the morning, she can say \"hello\".", "answer": true, "target": "hello", "targetType": "exclamation", "explanation": "Yes. We say \"hello\" when we meet someone." },
+    { "type": "tf", "prompt": "You say \"goodbye\" when you arrive at a party.", "answer": false, "target": "goodbye", "targetType": "exclamation", "explanation": "No. We say \"goodbye\" when we leave. When we arrive, we say \"hello\" or \"hi\"." },
+    { "type": "tf", "prompt": "\"Hi\" is a short, friendly way to say \"hello\".", "answer": true, "target": "hi", "explanation": "Yes. We often say \"hi\" to friends and family." },
+    { "type": "tf", "prompt": "We say \"thanks\" when we do something wrong.", "answer": false, "target": "thanks", "targetType": "exclamation", "explanation": "No. We say \"thanks\" when someone helps us or gives us something. When we do something wrong, we say \"sorry\"." },
+    { "type": "tf", "prompt": "\"Please\" is the answer to \"Thank you\".", "answer": false, "target": "please", "explanation": "No. The answer to \"Thank you\" is \"You're welcome\". We say \"please\" when we ask for something." },
+    { "type": "tf", "prompt": "Leo takes his sister's pen without asking. He should say \"sorry\".", "answer": true, "target": "sorry", "targetType": "exclamation", "explanation": "Yes. Leo did something wrong, so he should say \"sorry\"." },
+    { "type": "tf", "prompt": "\"I'm fine\" is a good answer to \"How are you?\".", "answer": true, "target": "fine", "explanation": "Yes. \"I'm fine, thank you\" is a very common answer." },
+    { "type": "tf", "prompt": "\"OK\" means \"no\".", "answer": false, "target": "OK", "targetType": "exclamation", "explanation": "No. \"OK\" means \"yes\" or \"all right\". We say it when we agree." }
+  ],
+  "A1|vocabulary|0|tf|medium": [
+    { "type": "tf", "prompt": "A thirsty person wants something to eat.", "answer": false, "target": "thirsty", "explanation": "No. A thirsty person wants something to drink, like water or juice. A hungry person wants to eat." },
+    { "type": "tf", "prompt": "If you have no breakfast, you are often hungry before lunch.", "answer": true, "target": "hungry", "explanation": "Yes. When we don't eat in the morning, we want food early. We are hungry." },
+    { "type": "tf", "prompt": "After a long day at work, people are often tired.", "answer": true, "target": "tired", "explanation": "Yes. Work makes us tired, and we want to sit down or sleep." },
+    { "type": "tf", "prompt": "Kate is sad because she gets a great birthday present.", "answer": false, "target": "sad", "explanation": "No. A great present makes us happy, not sad." },
+    { "type": "tf", "prompt": "People say \"Welcome!\" when friends come to their new house.", "answer": true, "target": "welcome", "targetType": "exclamation", "explanation": "Yes. We say \"welcome\" when someone comes to our home or a new place." },
+    { "type": "tf", "prompt": "When your team wins a game, you feel angry.", "answer": false, "target": "angry", "explanation": "No. When our team wins, we are happy. We are angry when someone does something bad." },
+    { "type": "tf", "prompt": "\"Hey\" is a way to say \"goodbye\".", "answer": false, "target": "hey", "explanation": "No. \"Hey\" is like \"hi\". We say it when we meet a friend or want them to listen." },
+    { "type": "tf", "prompt": "\"Yeah\" means \"yes\", and we say it to friends.", "answer": true, "target": "yeah", "explanation": "Yes. \"Yeah\" is a friendly way to say \"yes\"." }
+  ],
+  "A1|vocabulary|0|tf|hard": [
+    { "type": "tf", "prompt": "People who are afraid of dogs stay away from them.", "answer": true, "target": "afraid", "explanation": "Yes. When we are afraid of something, we don't want to be near it." },
+    { "type": "tf", "prompt": "An exciting movie makes people bored.", "answer": false, "target": "bored", "explanation": "No. An exciting movie makes people excited. We feel bored when we have nothing to do, or when something is not interesting." },
+    { "type": "tf", "prompt": "\"I'm excited\" means \"I'm very tired\".", "answer": false, "target": "excited", "explanation": "No. \"Excited\" means very happy because something good is going to happen." },
+    { "type": "tf", "prompt": "A person interested in music wants to know more about it.", "answer": true, "target": "interested", "explanation": "Yes. When we are interested in something, we want to learn more about it." },
+    { "type": "tf", "prompt": "\"I'm sure\" means \"I don't know\".", "answer": false, "target": "sure", "explanation": "No. \"I'm sure\" means \"I know it is true\". \"I'm not sure\" means \"I don't know\"." },
+    { "type": "tf", "prompt": "You can thank a friend for a nice birthday card.", "answer": true, "target": "thank", "targetType": "verb", "explanation": "Yes. We thank people when they give us something or help us." },
+    { "type": "tf", "prompt": "People often write \"Dear\" at the end of a letter.", "answer": false, "target": "dear", "explanation": "No. We write \"Dear\" at the start of a letter or email, before the person's name." },
+    { "type": "tf", "prompt": "A laugh is a happy sound.", "answer": true, "target": "laugh", "targetType": "noun", "explanation": "Yes. We make this happy sound when something is funny." }
+  ],
+  "A1|vocabulary|0|tf|veryhard": [
+    { "type": "tf", "prompt": "\"I'm boring\" and \"I'm bored\" mean the same thing.", "answer": false, "target": "boring", "explanation": "No. \"I'm bored\" tells how I feel. \"I'm boring\" means other people think I am not interesting!" },
+    { "type": "tf", "prompt": "An exciting game makes the people who watch it excited.", "answer": true, "target": "exciting", "explanation": "Yes. \"Exciting\" is for the game, and \"excited\" is for how people feel." },
+    { "type": "tf", "prompt": "People want to stop reading an interesting book.", "answer": false, "target": "interesting", "explanation": "No. An interesting book makes you want to read more." },
+    { "type": "tf", "prompt": "If you believe someone, you think their words are true.", "answer": true, "target": "believe", "explanation": "Yes. \"I believe you\" means \"I think your words are true\"." },
+    { "type": "tf", "prompt": "You can hope for good weather for your vacation.", "answer": true, "target": "hope", "explanation": "Yes. We hope for good things that we want to happen." },
+    { "type": "tf", "prompt": "\"What happened?\" is a question about the future.", "answer": false, "target": "happen", "explanation": "No. \"What happened?\" asks about something that took place before now, not later." },
+    { "type": "tf", "prompt": "People often miss their friends when they move to another city.", "answer": true, "target": "miss", "explanation": "Yes. We miss people when they are far away and we can't see them." },
+    { "type": "tf", "prompt": "A bad feeling about a test means you think it's easy.", "answer": false, "target": "feeling", "explanation": "No. A bad feeling means you think something bad is going to happen." }
+  ],
+  "A1|vocabulary|0|match|easy": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "hello", "right": "you often say it when you answer the phone", "type": "exclamation" },
+      { "left": "sorry", "right": "you say it when you make a mistake", "type": "exclamation" },
+      { "left": "fine", "right": "well; not sick" },
+      { "left": "please", "right": "a nice word to use when you ask for something" }
+    ], "explanation": "We say \"hello\" on the phone and \"sorry\" for a mistake. \"Fine\" means well, and \"please\" makes a question nice." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "hi", "right": "a short, friendly \"hello\"" },
+      { "left": "bye", "right": "a short way to say \"goodbye\"" },
+      { "left": "thanks", "right": "you say it when someone helps you", "type": "exclamation" },
+      { "left": "OK", "right": "you say it to agree, like \"yes\"", "type": "exclamation" }
+    ], "explanation": "\"Hi\" is for meeting and \"bye\" is for leaving. We say \"thanks\" for help, and \"OK\" when we agree." }
+  ],
+  "A1|vocabulary|0|match|medium": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "hey", "right": "you say it to a friend to make them look at you" },
+      { "left": "hungry", "right": "you need food" },
+      { "left": "sad", "right": "how you feel when something bad happens" },
+      { "left": "welcome", "right": "you say it when someone comes to your home", "type": "exclamation" }
+    ], "explanation": "\"Hey\" gets a friend to look at you. Hungry people need food, and we say \"welcome\" to people who come to our home." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "yeah", "right": "\"yes\" when you talk to friends" },
+      { "left": "oh", "right": "you say it before \"no!\" when you hear bad news" },
+      { "left": "tired", "right": "how you feel after a long day of work" },
+      { "left": "angry", "right": "how you feel when someone is bad to you" }
+    ], "explanation": "\"Yeah\" is a friendly \"yes\", and \"Oh, no!\" is what we say when we hear bad news. After a long day we are tired, and we are angry when someone is bad to us." }
+  ],
+  "A1|vocabulary|0|match|hard": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "afraid", "right": "how you feel near a big, dangerous animal" },
+      { "left": "excited", "right": "how you feel the night before your birthday party" },
+      { "left": "sure", "right": "you know you are right" },
+      { "left": "dear", "right": "you write it before a name at the start of a letter" }
+    ], "explanation": "We are afraid of dangerous things and excited about good things. \"Sure\" means we know we are right, and \"Dear\" starts a letter." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "bored", "right": "you have nothing to do, and the day is long" },
+      { "left": "interested", "right": "you like a subject and want to learn about it" },
+      { "left": "thank", "right": "to tell someone you are happy about their help", "type": "verb" },
+      { "left": "laugh", "right": "what you do when something is funny", "type": "verb" }
+    ], "explanation": "With nothing to do, we are bored. We want to learn more when we are interested, we thank people for help, and we laugh at funny things." }
+  ],
+  "A1|vocabulary|0|match|veryhard": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "boring", "right": "it makes people feel bored" },
+      { "left": "exciting", "right": "it makes people feel excited" },
+      { "left": "believe", "right": "to think that someone's words are true" },
+      { "left": "miss", "right": "to feel sad because a person is far away" }
+    ], "explanation": "\"-ing\" words describe the thing: a boring lesson makes people bored. We believe true words, and we miss people who are far away." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "interesting", "right": "a book like this makes you want to read more" },
+      { "left": "hope", "right": "to want a good result, for example in a test" },
+      { "left": "happen", "right": "to take place, like a party or a problem" },
+      { "left": "feeling", "right": "happy, sad and angry are examples of this" }
+    ], "explanation": "An interesting book makes us want to read more, and we hope for good results. Events happen, and happy, sad and angry are feelings." }
   ]
 }
 </script>
@@ -886,7 +990,7 @@ function getTopics(nav) {
 }
 
 // Placeholder credits.
-const CREDITS = ['Lorem Ipsum', 'Dolor Sit Amet', 'Consectetur Adipiscing', 'Sed Do Eiusmod', 'Tempor Incididunt'];
+const CREDITS = ['Ahmet Kaan Sarılarlı', 'Enes Miraç Ateş'];
 
 // Real questions and the glossary live in JSON blocks (<script id="question-bank">, <script id="glossary">).
 const QUESTION_BANK = loadJsonBlock('question-bank');
@@ -1658,7 +1762,7 @@ function requestQuit() {
   pauseTimer();
   openModal({
     title: 'Quit quiz?',
-    body: 'Progress will be lost. Lorem ipsum dolor sit amet.',
+    body: 'Your answers in this quiz will be lost.',
     buttons: [
       { label: 'Cancel', primary: true, onClick: () => { closeModal(); if (wasRunning) resumeTimer(); } },
       { label: 'Quit', onClick: () => { closeModal(); stopTimer(); state.quiz = null; showScreen('difficulty'); } },
@@ -1743,7 +1847,9 @@ function onTimeUp() {
   if (!rec.extensionUsed) {
     openModal({
       title: 'Time out',
-      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      body: quiz.graded
+        ? `Time is up! Take ${CONFIG.EXTENSION_SECONDS} more seconds (−${CONFIG.EXTENSION_PENALTY} points) or skip this question.`
+        : `Time is up! Take ${CONFIG.EXTENSION_SECONDS} more seconds or skip this question.`,
       buttons: [
         {
           label: quiz.graded
@@ -1780,7 +1886,7 @@ function gameOver() {
   $('#quiz-question').querySelectorAll('button, input').forEach((b) => { b.disabled = true; });
   openModal({
     title: 'Game over',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    body: 'Time is up again, so the quiz ends here. Try again or see your results.',
     buttons: [
       { label: 'Retry', primary: true, onClick: () => { closeModal(); startQuiz(); } },
       { label: 'See results', onClick: () => { closeModal(); showResults(); } },
@@ -1865,7 +1971,7 @@ function renderFill(q, area) {
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
   check.addEventListener('click', submit);
   area.append(
-    el('p', { class: 'instructions', text: 'Lorem ipsum dolor sit amet.' }),
+    el('p', { class: 'instructions', text: 'Type the missing word.' }),
     bank,
     el('p', { class: 'prompt fill-sentence' }, [fillBefore(q.before), input, fillAfter(q.after)]),
     check,
