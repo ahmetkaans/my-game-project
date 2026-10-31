@@ -10,7 +10,7 @@ Content is a placeholder for now: all texts that were not explicitly named are l
 ```
 Level (A1 A2 B1 B2 C1)
  └─ Category (Vocabulary, Grammar)
-     └─ Topic (10 lorem ipsum topics)
+     └─ Topic (per section: 21 named topics for A1 Grammar, 10 lorem ipsum topics elsewhere)
          └─ Question type (Multiple Choice, Fill in the Blanks, True or False, Matching)
              └─ Difficulty (Easy, Medium, Hard, Very Hard) + "same duration" switch
                  └─ Quiz (8 questions)
@@ -47,7 +47,15 @@ All tunable numbers are in the `CONFIG` object at the top of the script:
 | `CONFETTI_MIN_MATCH_CORRECT` | 7 | matching: confetti when fully correct questions ≥ this |
 | `CONFETTI_COUNT` / `CONFETTI_MS` | 90 / 2800 | confetti pieces and duration |
 
-Placeholder lists: `TOPICS` (10 names), `CREDITS`.
+Placeholder list: `CREDITS`.
+
+### Topics
+
+- `TOPICS_BY_SECTION` holds real topic names per section, keyed `level|category` (e.g. `'A1|grammar'`). Array order = button order. Any number of topics is allowed.
+- `DEFAULT_TOPICS` (10 lorem ipsum names) is used for every section without an entry.
+- `getTopics(nav)` returns the right list. `renderTopicButtons()` rebuilds the topic grid each time a category is chosen; `breadcrumbParts()` also uses `getTopics()`.
+- `nav.topic` is the topic's **index** in that list, so quiz keys (`quizKey()`, `QUESTION_BANK`) use the index. Don't reorder a section's topics after real questions are added for it.
+- Decided so far: **A1 Grammar** (21 topics). All A1 Grammar quizzes still use lorem ipsum questions.
 
 ## State
 
@@ -135,7 +143,7 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 
 ## Confirmed decisions
 
-- 5 levels, 2 categories, 10 topics, 4 question types, 4 difficulties, 8 questions per quiz.
+- 5 levels, 2 categories, topics per section (A1 Grammar: 21; others: 10 placeholders), 4 question types, 4 difficulties, 8 questions per quiz.
 - Timers: 60/45/30/20 s; switch ON → 60 s for all.
 - Next button after feedback; no auto-advance; skip only from the time-out modal.
 - Fill in the blanks: 1 blank, 3–4 word bank, drag and drop, Check button.
@@ -148,6 +156,6 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 Planned work (not implemented yet):
 
 1. Design will be handled. — **Done** (see [DESIGN.md](DESIGN.md); remaining items are under "Open design work").
-2. One by one, the menu items will be decided (replacing the lorem ipsum labels, e.g. `TOPICS`).
+2. One by one, the menu items will be decided (replacing the lorem ipsum labels via `TOPICS_BY_SECTION`). — A1 Grammar decided.
 3. Part by part, the menus will be filled with actual content (via `QUESTION_BANK`, see "Content (questions)").
-4. The Vocabulary section will be divided into **Theme Based** and **AWL** (Academic Word List). Currently Vocabulary leads straight to the 10 topics, so this will need a new step or screen between Category and Topic.
+4. The Vocabulary section will be divided into **Theme Based** and **AWL** (Academic Word List). Currently Vocabulary leads straight to the topic list, so this will need a new step or screen between Category and Topic.

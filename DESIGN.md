@@ -6,6 +6,8 @@ The visual design is **decided** and applied in [index.html](index.html) (all CS
 
 Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry.
 
+A1 Grammar topics (21, in this order; stored in `TOPICS_BY_SECTION['A1|grammar']`): To be (am / is / are); A / an / the; Present simple; Present continuous; Past simple of "to be" (was / were); Past simple; Going to; Imperatives; Can / can't / could / couldn't; Questions (yes/no and wh-); There is / there are; How much / how many (countable and uncountable); Personal pronouns; Possessives (my, mine, 's); This / that / these / those; Adjectives with very / really; Comparatives and superlatives; Adverbs of frequency; Prepositions of place; Prepositions of time (in / on / at); Like / love / hate + -ing and I'd like.
+
 ## Style: "clean study app"
 
 - Calm, focused and minimal, but not boring. For adults, teens and kids.

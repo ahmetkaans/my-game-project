@@ -653,11 +653,42 @@ const CONFIG = {
   CONFETTI_MS: 2800,
 };
 
-// Placeholder topic names (10 per category). Replace with real topics later.
-const TOPICS = [
+// Placeholder topic names, used for every level/category without its own list.
+const DEFAULT_TOPICS = [
   'Lorem Ipsum', 'Dolor Sit', 'Amet Consectetur', 'Adipiscing Elit', 'Sed Eiusmod',
   'Tempor Incididunt', 'Labore Dolore', 'Magna Aliqua', 'Enim Minim', 'Veniam Nostrud',
 ];
+
+// Real topic names per section. Key: `${level}|${category}`. Order = button order.
+const TOPICS_BY_SECTION = {
+  'A1|grammar': [
+    'To be (am / is / are)',
+    'A / an / the',
+    'Present simple',
+    'Present continuous',
+    'Past simple of "to be" (was / were)',
+    'Past simple',
+    'Going to',
+    'Imperatives',
+    "Can / can't / could / couldn't",
+    'Questions (yes/no and wh-)',
+    'There is / there are',
+    'How much / how many (countable and uncountable)',
+    'Personal pronouns',
+    "Possessives (my, mine, 's)",
+    'This / that / these / those',
+    'Adjectives with very / really',
+    'Comparatives and superlatives',
+    'Adverbs of frequency',
+    'Prepositions of place',
+    'Prepositions of time (in / on / at)',
+    "Like / love / hate + -ing and I'd like",
+  ],
+};
+
+function getTopics(nav) {
+  return TOPICS_BY_SECTION[`${nav.level}|${nav.category}`] || DEFAULT_TOPICS;
+}
 
 // Placeholder credits.
 const CREDITS = ['Lorem Ipsum', 'Dolor Sit Amet', 'Consectetur Adipiscing', 'Sed Do Eiusmod', 'Tempor Incididunt'];
@@ -1036,7 +1067,7 @@ function breadcrumbParts() {
   return [
     nav.level,
     findById(CONFIG.CATEGORIES, nav.category)?.label,
-    nav.topic !== null ? TOPICS[nav.topic] : null,
+    nav.topic !== null ? getTopics(nav)[nav.topic] : null,
     findById(CONFIG.TYPES, nav.type)?.label,
     difficulty ? `${difficulty.label} (${getQuestionSeconds()}s)` : null,
   ];
@@ -1082,6 +1113,14 @@ function renderDifficultyButtons() {
   });
 }
 
+// Topics depend on level + category, so they are rendered each time a category is chosen.
+function renderTopicButtons() {
+  renderButtons($('#topic-buttons'), getTopics(state.nav).map((t, i) => ({ id: i, label: t })), (item) => {
+    state.nav.topic = item.id;
+    showScreen('type');
+  });
+}
+
 function initMenus() {
   renderButtons($('#level-buttons'), CONFIG.LEVELS.map((l) => ({ id: l, label: l })), (item) => {
     state.nav.level = item.id;
@@ -1094,11 +1133,8 @@ function initMenus() {
   });
   renderButtons($('#category-buttons'), CONFIG.CATEGORIES, (item) => {
     state.nav.category = item.id;
+    renderTopicButtons();
     showScreen('topic');
-  });
-  renderButtons($('#topic-buttons'), TOPICS.map((t, i) => ({ id: i, label: t })), (item) => {
-    state.nav.topic = item.id;
-    showScreen('type');
   });
   renderButtons($('#type-buttons'), CONFIG.TYPES, (item) => {
     state.nav.type = item.id;
