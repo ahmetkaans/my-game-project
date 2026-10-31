@@ -16,3 +16,4 @@ Before doing anything with the HTML file, you need to read README.md and DESIGN.
    - works with "reduce motion" turned on;
    - test remembered settings (theme, mute) in a normal browser, because previews served as `data:` URLs block `localStorage`.
 7. **Git.** Commit only when asked, with a meaningful message. Do not push unless asked.
+8. **Private `.gitignore/` folder.** The files in the `.gitignore/` folder must never be uploaded to GitHub: never `git add`, commit or push them. The folder is excluded locally through `.git/info/exclude` (a folder named `.gitignore` cannot work as an ignore file). You may read these files for reference.
