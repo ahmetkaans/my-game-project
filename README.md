@@ -125,3 +125,12 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 - Matching: click left then right, 4 pairs, Check after all pairs, not graded yet.
 - Quiz Back = quit with confirmation.
 - Credits on all screens except the quiz screen.
+
+## Roadmap
+
+Planned work (not implemented yet):
+
+1. Design will be handled (see [DESIGN.md](DESIGN.md) "Open design work").
+2. One by one, the menu items will be decided (replacing the lorem ipsum labels, e.g. `TOPICS`).
+3. Part by part, the menus will be filled with actual content (via `QUESTION_BANK`, see "Content (questions)").
+4. The Vocabulary section will be divided into **Theme Based** and **AWL** (Academic Word List). Currently Vocabulary leads straight to the 10 topics, so this will need a new step or screen between Category and Topic.
