@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Finished "Numbers and Amounts": True or False and Matching
+### Added a Turkish language switch for the menus (first half)
+Settings now has a Language switch, English by default, with a sliding English / Türkçe pill. In Turkish, the menus, buttons, level names, the menu tree, Settings and the pop-ups (like Quit and Time out) are shown in Turkish, and the choice is remembered. Questions and their answer options always stay in English, and the quiz screen and results will follow in the next step.
+
+### Finished "Numbers and Amounts": True or False and Matching (`12b7eb1`)
 The second theme is now complete: all 16 quizzes have real questions (104 in total). The True or False and Matching questions mix real-life situations, number order, word endings (like "-teen" and "-ty") and a few sums for the biggest numbers. Matching meanings use new situations, such as letters of the alphabet, half a day and the days in April.
 
 ### Wrote the Multiple Choice and Fill in the Blanks questions for "Numbers and Amounts" (`5783251`)

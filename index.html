@@ -587,6 +587,52 @@
   .segmented button[aria-pressed="true"],
   .segmented button[aria-pressed="true"]:hover:not(:disabled) { background: var(--accent); color: var(--on-accent); font-weight: 500; }
   .settings-note { margin: 12px 0 0; text-align: center; font-size: 0.85rem; color: var(--muted); }
+  .setting-head.can-wrap { flex-wrap: wrap; }
+
+  /* Language toggle (Settings): a sliding pill, both names always shown (DESIGN.md "Language toggle").
+     Plain elements, not buttons: a tap on a half picks that side, arrow keys pick a side, Space / Enter switch. */
+  .lang-toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: none;
+    box-sizing: border-box;
+    width: 176px;
+    height: 44px;
+    padding: 3px;
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--surface));
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lang-toggle:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 2px; }
+  .lang-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: 36px;
+    border-radius: 18px;
+    background: var(--accent);
+    box-shadow: 0 1px 4px color-mix(in srgb, #000 28%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 30%, transparent);
+    transition: transform 0.3s cubic-bezier(0.22, 0.9, 0.3, 1);
+  }
+  .lang-toggle[aria-checked="true"] .lang-thumb { transform: translateX(100%); }
+  .lang-toggle:active .lang-thumb { transform: scale(0.98); }
+  .lang-toggle[aria-checked="true"]:active .lang-thumb { transform: translateX(100%) scale(0.98); }
+  .lang-lbl {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+    transition: color 0.22s ease-out;
+  }
+  .lang-lbl.is-on { color: var(--on-accent); }
 
   /* Menu tree: a drawer on the right on wide screens, a bottom sheet on phones */
   #tree-btn, #home-btn { color: var(--accent); }
@@ -712,9 +758,9 @@
 <body>
 
 <header class="topbar" id="topbar">
-  <button class="icon-btn" id="home-btn" type="button" title="Main menu" aria-label="Main menu"></button>
-  <button class="icon-btn" id="tree-btn" type="button" title="Menu tree" aria-label="Menu tree"></button>
-  <button class="icon-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings"></button>
+  <button class="icon-btn" id="home-btn" type="button" title="Main menu" aria-label="Main menu" data-i18n-label="mainMenu"></button>
+  <button class="icon-btn" id="tree-btn" type="button" title="Menu tree" aria-label="Menu tree" data-i18n-label="menuTree"></button>
+  <button class="icon-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings" data-i18n-label="settings"></button>
 </header>
 
 <main id="app">
@@ -722,38 +768,38 @@
   <!-- Screen: level selection (root, no back button) -->
   <section id="screen-level" class="screen">
     <h1>My Game Project</h1>
-    <p class="subtitle">Choose your level.</p>
+    <p class="subtitle" data-i18n="chooseLevel">Choose your level.</p>
     <div id="level-buttons"></div>
   </section>
 
   <!-- Screen: category (Vocabulary / Grammar) -->
   <section id="screen-category" class="screen" hidden>
-    <button class="back-btn" data-back="level">&larr; Back</button>
-    <h1>What do you want to practice?</h1>
+    <button class="back-btn" data-back="level" data-i18n="backArrow">&larr; Back</button>
+    <h1 data-i18n="practiceTitle">What do you want to practice?</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="category-buttons"></div>
   </section>
 
   <!-- Screen: topic -->
   <section id="screen-topic" class="screen" hidden>
-    <button class="back-btn" data-back="category">&larr; Back</button>
-    <h1>Choose a topic</h1>
+    <button class="back-btn" data-back="category" data-i18n="backArrow">&larr; Back</button>
+    <h1 data-i18n="topicTitle">Choose a topic</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="topic-buttons"></div>
   </section>
 
   <!-- Screen: question type -->
   <section id="screen-type" class="screen" hidden>
-    <button class="back-btn" data-back="topic">&larr; Back</button>
-    <h1>Choose a question type</h1>
+    <button class="back-btn" data-back="topic" data-i18n="backArrow">&larr; Back</button>
+    <h1 data-i18n="typeTitle">Choose a question type</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="type-buttons"></div>
   </section>
 
   <!-- Screen: difficulty + same-duration switch -->
   <section id="screen-difficulty" class="screen" hidden>
-    <button class="back-btn" data-back="type">&larr; Back</button>
-    <h1>Choose a difficulty</h1>
+    <button class="back-btn" data-back="type" data-i18n="backArrow">&larr; Back</button>
+    <h1 data-i18n="difficultyTitle">Choose a difficulty</h1>
     <p class="breadcrumb"></p>
     <div class="grid" id="difficulty-buttons"></div>
     <label class="switch-row">
@@ -761,13 +807,13 @@
         <input type="checkbox" id="same-duration-switch">
         <span class="slider"></span>
       </span>
-      <span>Same duration per question across all difficulty settings</span>
+      <span data-i18n="sameDuration">Same duration per question across all difficulty settings</span>
     </label>
   </section>
 
   <!-- Screen: quiz (game page: no credits, no top bar) -->
   <section id="screen-quiz" class="screen" hidden>
-    <button class="back-btn" id="quiz-quit">&larr; Back</button>
+    <button class="back-btn" id="quiz-quit" data-i18n="backArrow">&larr; Back</button>
     <p class="breadcrumb"></p>
     <div class="quiz-meta">
       <span id="quiz-progress"></span>
@@ -775,14 +821,14 @@
       <span id="quiz-timer-text"></span>
     </div>
     <div class="timer-bar" id="quiz-timer-bar"><div class="timer-fill" id="quiz-timer-fill"></div></div>
-    <div id="quiz-question" class="card"></div>
+    <div id="quiz-question" class="card" lang="en"></div>
     <div id="quiz-feedback" class="feedback" hidden></div>
     <button id="quiz-next" class="primary" hidden>Next</button>
   </section>
 
   <!-- Screen: results -->
   <section id="screen-results" class="screen" hidden>
-    <button class="back-btn" data-back="difficulty">&larr; Back</button>
+    <button class="back-btn" data-back="difficulty" data-i18n="backArrow">&larr; Back</button>
     <h1>Your results</h1>
     <p class="breadcrumb"></p>
     <div class="card results-hero">
@@ -800,14 +846,14 @@
 </main>
 
 <footer id="credits-footer">
-  <button class="link-btn" id="credits-btn">Credits</button>
+  <button class="link-btn" id="credits-btn" data-i18n="credits">Credits</button>
 </footer>
 
 <div class="tree-overlay" id="tree-overlay" hidden>
   <aside class="tree-panel" role="dialog" aria-modal="true" aria-labelledby="tree-title">
     <div class="tree-head">
-      <h2 id="tree-title">Where you are</h2>
-      <button type="button" class="tree-close" id="tree-close">Close</button>
+      <h2 id="tree-title" data-i18n="treeTitle">Where you are</h2>
+      <button type="button" class="tree-close" id="tree-close" data-i18n="close">Close</button>
     </div>
     <ol class="tree" id="tree-list"></ol>
   </aside>
@@ -816,7 +862,7 @@
 <div class="modal-overlay" id="modal-overlay" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-head">
-      <button type="button" class="icon-btn" id="modal-back" title="Back" aria-label="Back" hidden></button>
+      <button type="button" class="icon-btn" id="modal-back" title="Back" aria-label="Back" data-i18n-label="back" hidden></button>
       <h2 id="modal-title"></h2>
     </div>
     <div id="modal-body"></div>
@@ -1321,28 +1367,28 @@
  * ========================================================================= */
 const CONFIG = {
   LEVELS: ['A1', 'A2', 'B1', 'B2', 'C1'],
-  // Level screen: the buttons are shown in these groups, each level with its name below the code.
+  // Level screen: the buttons are shown in these groups. The group headings and the level names
+  // ("levelGroup.A", "levelName.A1") and the names of categories, types and difficulties are texts: see I18N.
   LEVEL_GROUPS: [
-    { label: 'A – Basic user', levels: ['A1', 'A2'] },
-    { label: 'B – Independent user', levels: ['B1', 'B2'] },
-    { label: 'C – Proficient user', levels: ['C1'] },
+    { id: 'A', levels: ['A1', 'A2'] },
+    { id: 'B', levels: ['B1', 'B2'] },
+    { id: 'C', levels: ['C1'] },
   ],
-  LEVEL_NAMES: { A1: 'Beginner', A2: 'Elementary', B1: 'Intermediate', B2: 'Upper Intermediate', C1: 'Advanced' },
   CATEGORIES: [
-    { id: 'vocabulary', label: 'Vocabulary' },
-    { id: 'grammar', label: 'Grammar' },
+    { id: 'vocabulary' },
+    { id: 'grammar' },
   ],
   TYPES: [
-    { id: 'mc', label: 'Multiple Choice' },
-    { id: 'fill', label: 'Fill in the Blanks' },
-    { id: 'tf', label: 'True or False' },
-    { id: 'match', label: 'Matching' },
+    { id: 'mc' },
+    { id: 'fill' },
+    { id: 'tf' },
+    { id: 'match' },
   ],
   DIFFICULTIES: [
-    { id: 'easy', label: 'Easy', seconds: 60 },
-    { id: 'medium', label: 'Medium', seconds: 45 },
-    { id: 'hard', label: 'Hard', seconds: 30 },
-    { id: 'veryhard', label: 'Very Hard', seconds: 20 },
+    { id: 'easy', seconds: 60 },
+    { id: 'medium', seconds: 45 },
+    { id: 'hard', seconds: 30 },
+    { id: 'veryhard', seconds: 20 },
   ],
   SAME_DURATION_SECONDS: 60,     // used for every difficulty when the switch is ON
   QUESTIONS_PER_QUIZ: 8,
@@ -1374,6 +1420,114 @@ const CONFIG = {
   CONFETTI_MS: 2800,
   TREE_CLOSE_MS: 280,            // menu tree: how long the close animation runs before the panel is hidden (matches the CSS)
 };
+
+/* =========================================================================
+ * TEXTS (English / Turkish). t(key, params) gives a text in the chosen language; {name} is replaced from params.
+ * Not translated, on purpose: topic names, questions, answer options and bank words, the game name, level codes,
+ * the True / False answer buttons and people's names. See README.md "Language (English / Turkish)".
+ * ========================================================================= */
+const LANGS = ['en', 'tr'];
+const LANG_NAMES = { en: 'English', tr: 'Türkçe' }; // always shown in their own language
+
+const I18N = {
+  en: {
+    back: 'Back', backArrow: '← Back', close: 'Close',
+    mainMenu: 'Main menu', menuTree: 'Menu tree', settings: 'Settings', credits: 'Credits',
+
+    chooseLevel: 'Choose your level.',
+    'levelGroup.A': 'A – Basic user', 'levelGroup.B': 'B – Independent user', 'levelGroup.C': 'C – Proficient user',
+    'levelName.A1': 'Beginner', 'levelName.A2': 'Elementary', 'levelName.B1': 'Intermediate',
+    'levelName.B2': 'Upper Intermediate', 'levelName.C1': 'Advanced',
+    practiceTitle: 'What do you want to practice?', topicTitle: 'Choose a topic',
+    typeTitle: 'Choose a question type', difficultyTitle: 'Choose a difficulty',
+    'category.vocabulary': 'Vocabulary', 'category.grammar': 'Grammar',
+    'type.mc': 'Multiple Choice', 'type.fill': 'Fill in the Blanks', 'type.tf': 'True or False', 'type.match': 'Matching',
+    'difficulty.easy': 'Easy', 'difficulty.medium': 'Medium', 'difficulty.hard': 'Hard', 'difficulty.veryhard': 'Very Hard',
+    nextTag: 'Next', secondsShort: '{n}s',
+    sameDuration: 'Same duration per question across all difficulty settings',
+
+    homeTitle: 'Go to the main menu?', homeBody: 'You will go back to the level selection screen.', no: 'No', yes: 'Yes',
+    endTitle: 'End of {here}',
+    endBody: 'You have reached the end of {here}. Where do you want to go next?',
+    quitTitle: 'Quit quiz?', quitBody: 'Your answers in this quiz will be lost.', cancel: 'Cancel', quit: 'Quit',
+    timeOutTitle: 'Time out',
+    timeOutBodyPts: 'Time is up! Take {n} more seconds (−{p} points) or skip this question.',
+    timeOutBody: 'Time is up! Take {n} more seconds or skip this question.',
+    plusSecondsPts: '+{n} seconds (−{p} points)', plusSeconds: '+{n} seconds', skipQuestion: 'Skip question',
+    gameOverTitle: 'Game over', gameOverBody: 'Time is up again, so the quiz ends here. Try again or see your results.',
+    retry: 'Retry', seeResults: 'See results',
+    wordsTitle: 'Words in this game', start: 'Start',
+
+    languageName: 'Language',
+    languageHelp: 'Choose the language of menus and buttons. Questions and answer options always stay in English.',
+    themeName: 'Theme', themeHelp: 'Choose light or dark colors. Auto follows your device.',
+    'theme.auto': 'Auto', 'theme.light': 'Light', 'theme.dark': 'Dark',
+    soundName: 'Sound', soundHelp: 'Play sounds for correct and wrong answers and for the timer.',
+    durationHelp: 'Every question gets {n} seconds, whatever the difficulty.',
+    smartBoardName: 'SmartBoard mode',
+    smartBoardHelp: 'Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word to put it in the blank instead.',
+    smartBoardLock: 'You can change this between quizzes.',
+    workInProgress: 'Work in Progress',
+
+    treeTitle: 'Where you are',
+    'step.level': 'Level', 'step.category': 'Category', 'step.topic': 'Topic', 'step.type': 'Question type', 'step.difficulty': 'Difficulty',
+    notChosen: 'Not chosen yet', youAreHere: 'You are here',
+  },
+  tr: {
+    back: 'Geri', backArrow: '← Geri', close: 'Kapat',
+    mainMenu: 'Ana menü', menuTree: 'Menü ağacı', settings: 'Ayarlar', credits: 'Emeği Geçenler',
+
+    chooseLevel: 'Seviyeni seç.',
+    'levelGroup.A': 'A – Temel kullanıcı', 'levelGroup.B': 'B – Bağımsız kullanıcı', 'levelGroup.C': 'C – Yetkin kullanıcı',
+    'levelName.A1': 'Başlangıç', 'levelName.A2': 'Temel', 'levelName.B1': 'Orta',
+    'levelName.B2': 'Orta Üstü', 'levelName.C1': 'İleri',
+    practiceTitle: 'Neyi çalışmak istiyorsun?', topicTitle: 'Bir konu seç',
+    typeTitle: 'Bir soru türü seç', difficultyTitle: 'Bir zorluk seviyesi seç',
+    'category.vocabulary': 'Kelime Bilgisi', 'category.grammar': 'Dil Bilgisi',
+    'type.mc': 'Çoktan Seçmeli', 'type.fill': 'Boşluk Doldurma', 'type.tf': 'Doğru veya Yanlış', 'type.match': 'Eşleştirme',
+    'difficulty.easy': 'Kolay', 'difficulty.medium': 'Orta', 'difficulty.hard': 'Zor', 'difficulty.veryhard': 'Çok Zor',
+    nextTag: 'Sıradaki', secondsShort: '{n} sn',
+    sameDuration: 'Tüm zorluk seviyelerinde soru başına aynı süre',
+
+    homeTitle: 'Ana menüye gitmek istiyor musun?', homeBody: 'Seviye seçim ekranına geri döneceksin.', no: 'Hayır', yes: 'Evet',
+    endTitle: '{here} tamamlandı',
+    endBody: '{here} bölümünün sonuna geldin. Şimdi nereye gitmek istersin?',
+    quitTitle: 'Alıştırmadan çıkmak istiyor musun?', quitBody: 'Bu alıştırmadaki cevapların kaybolacak.', cancel: 'Vazgeç', quit: 'Çık',
+    timeOutTitle: 'Süre doldu',
+    timeOutBodyPts: 'Süre doldu! {n} saniye daha al (−{p} puan) ya da bu soruyu atla.',
+    timeOutBody: 'Süre doldu! {n} saniye daha al ya da bu soruyu atla.',
+    plusSecondsPts: '+{n} saniye (−{p} puan)', plusSeconds: '+{n} saniye', skipQuestion: 'Soruyu atla',
+    gameOverTitle: 'Oyun bitti', gameOverBody: 'Süre yine doldu, bu yüzden alıştırma burada bitiyor. Tekrar dene ya da sonuçlarını gör.',
+    retry: 'Tekrar dene', seeResults: 'Sonuçları gör',
+    wordsTitle: 'Bu oyundaki kelimeler', start: 'Başla',
+
+    languageName: 'Dil',
+    languageHelp: 'Menülerin ve düğmelerin dilini seç. Sorular ve cevap seçenekleri her zaman İngilizce kalır.',
+    themeName: 'Tema', themeHelp: 'Açık ya da koyu renkleri seç. Otomatik, cihazının ayarını izler.',
+    'theme.auto': 'Otomatik', 'theme.light': 'Açık', 'theme.dark': 'Koyu',
+    soundName: 'Ses', soundHelp: 'Doğru ve yanlış cevaplarda ve süre sayacında ses çalınır.',
+    durationHelp: 'Her soru, zorluk ne olursa olsun {n} saniye alır.',
+    smartBoardName: 'Akıllı tahta modu',
+    smartBoardHelp: 'Akıllı tahtada yazı yazmak zordur. Bu açıkken Boşluk Doldurma gibi yazmayı gerektiren etkinliklerde, yazmak yerine bir kelimeye dokunup boşluğa yerleştirirsin.',
+    smartBoardLock: 'Bunu alıştırmalar arasında değiştirebilirsin.',
+    workInProgress: 'Yapım aşamasında',
+
+    treeTitle: 'Bulunduğun yer',
+    'step.level': 'Seviye', 'step.category': 'Kategori', 'step.topic': 'Konu', 'step.type': 'Soru türü', 'step.difficulty': 'Zorluk',
+    notChosen: 'Henüz seçilmedi', youAreHere: 'Buradasın',
+  },
+};
+
+// The text for `key` in the chosen language (English if a Turkish text is missing). {name} is replaced from params.
+function t(key, params) {
+  let text = I18N[state.lang] && I18N[state.lang][key];
+  if (text === undefined) text = I18N.en[key];
+  if (text === undefined) {
+    console.warn(`Missing text: ${key}`);
+    return key;
+  }
+  return params ? text.replace(/\{(\w+)\}/g, (match, name) => (name in params ? params[name] : match)) : text;
+}
 
 // Placeholder topic names, used for every level/category without its own list.
 const DEFAULT_TOPICS = [
@@ -1471,6 +1625,7 @@ const state = {
   nav: { level: null, category: null, topic: null, type: null, difficulty: null, sameDuration: false },
   quiz: null, // created by startQuiz()
   smartBoard: false, // SmartBoard mode (Settings): Fill in the Blanks uses taps instead of typing; remembered ('lg-smartboard')
+  lang: 'en', // language of menus, buttons and pop-ups (Settings): 'en' or 'tr'; remembered ('lg-lang'); set by initLanguage()
   screen: 'level', // the screen being shown (set by showScreen)
   nextHint: null, // { difficulty }: the quiz "Next exercise" suggests; marked on the Difficulty screen, cleared on any other screen
 };
@@ -1568,10 +1723,41 @@ function makeLorem(rng) {
 }
 
 /* =========================================================================
+ * LANGUAGE  (English / Turkish, chosen in Settings, remembered in localStorage "lg-lang")
+ * ========================================================================= */
+function initLanguage() {
+  const saved = loadPref('lg-lang', 'en');
+  state.lang = LANGS.includes(saved) ? saved : 'en';
+}
+
+// Static texts carry data-i18n="key" (their text) or data-i18n-label="key" (tooltip and screen reader name).
+// <html lang> follows the language; English content (questions, topic names, the word list) carries lang="en" itself.
+function applyStaticTexts() {
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-label]').forEach((node) => {
+    const label = t(node.dataset.i18nLabel);
+    node.title = label;
+    node.setAttribute('aria-label', label);
+  });
+}
+
+function setLanguage(lang, save = true) {
+  if (!LANGS.includes(lang) || lang === state.lang) return;
+  state.lang = lang;
+  if (save) savePref('lg-lang', lang);
+  applyStaticTexts();
+  renderMenus();
+  renderDifficultyButtons();
+  refreshBreadcrumb();
+  // Settings is the only pop-up that can be open now: its texts change in place, so the toggle keeps its slide and its focus.
+  if (modalState.kind === 'settings' && !$('#modal-overlay').hidden) translateSettings();
+}
+
+/* =========================================================================
  * THEME  (Auto / Light / Dark, chosen in Settings, remembered in localStorage "lg-theme")
  * ========================================================================= */
 const THEMES = ['auto', 'light', 'dark'];
-const THEME_LABELS = { auto: 'Auto', light: 'Light', dark: 'Dark' };
 let currentTheme = 'auto';
 
 function setTheme(theme, save = true) {
@@ -1873,14 +2059,19 @@ const SCREEN_DEPTH = { level: 0, category: 1, topic: 2, type: 3, difficulty: 4, 
 
 function breadcrumbParts() {
   const nav = state.nav;
-  const difficulty = findById(CONFIG.DIFFICULTIES, nav.difficulty);
   return [
     nav.level,
-    findById(CONFIG.CATEGORIES, nav.category)?.label,
+    nav.category ? t(`category.${nav.category}`) : null,
     nav.topic !== null ? getTopics(nav)[nav.topic] : null,
-    findById(CONFIG.TYPES, nav.type)?.label,
-    difficulty ? `${difficulty.label} (${getQuestionSeconds()}s)` : null,
+    nav.type ? t(`type.${nav.type}`) : null,
+    nav.difficulty ? `${t(`difficulty.${nav.difficulty}`)} (${t('secondsShort', { n: getQuestionSeconds() })})` : null,
   ];
+}
+
+// The path line (Level › Category › …) of the screen being shown.
+function refreshBreadcrumb() {
+  const crumb = $(`#screen-${state.screen} .breadcrumb`);
+  if (crumb) crumb.textContent = breadcrumbParts().slice(0, SCREEN_DEPTH[state.screen]).join(' › ');
 }
 
 function showScreen(name) {
@@ -1895,8 +2086,7 @@ function showScreen(name) {
   $('#credits-footer').hidden = name === 'quiz';
   $('#topbar').hidden = name === 'quiz';
   $('#home-btn').hidden = name === 'level'; // already on the main menu
-  const crumb = $(`#screen-${name} .breadcrumb`);
-  if (crumb) crumb.textContent = breadcrumbParts().slice(0, SCREEN_DEPTH[name]).join(' › ');
+  refreshBreadcrumb();
   if (name === 'difficulty') renderDifficultyButtons();
   window.scrollTo(0, 0);
 }
@@ -1904,6 +2094,7 @@ function showScreen(name) {
 function renderButtons(container, items, onClick) {
   container.replaceChildren(...items.map((item) => {
     const btn = el('button', { class: 'menu-btn' }, [item.label]);
+    if (item.lang) btn.lang = item.lang; // text that is not translated (topic names) says so
     if (item.sub) btn.append(el('small', { text: item.sub }));
     if (item.tag) {
       btn.classList.add('is-next');
@@ -1931,8 +2122,9 @@ function setSameDuration(value, save = true) {
 function renderDifficultyButtons() {
   const items = CONFIG.DIFFICULTIES.map((d) => ({
     ...d,
-    sub: `${state.nav.sameDuration ? CONFIG.SAME_DURATION_SECONDS : d.seconds}s`,
-    tag: state.nextHint && state.nextHint.difficulty === d.id ? 'Next' : null,
+    label: t(`difficulty.${d.id}`),
+    sub: t('secondsShort', { n: state.nav.sameDuration ? CONFIG.SAME_DURATION_SECONDS : d.seconds }),
+    tag: state.nextHint && state.nextHint.difficulty === d.id ? t('nextTag') : null,
   }));
   renderButtons($('#difficulty-buttons'), items, (d) => {
     state.nav.difficulty = d.id;
@@ -1965,18 +2157,18 @@ function getNextExercise(nav) {
 }
 
 function levelCategoryLabel(nav) {
-  return `${nav.level} ${findById(CONFIG.CATEGORIES, nav.category).label}`;
+  return `${nav.level} ${t(`category.${nav.category}`)}`;
 }
 
 // Asks before leaving the current screen for the level screen (the top bar's Main menu button).
 function openHomeConfirm() {
   openModal({
-    title: 'Go to the main menu?',
-    body: 'You will go back to the level selection screen.',
+    title: t('homeTitle'),
+    body: t('homeBody'),
     dismissible: true,
     buttons: [
-      { label: 'No', onClick: closeModal },
-      { label: 'Yes', primary: true, onClick: () => { closeModal(); goHome(); } },
+      { label: t('no'), onClick: closeModal },
+      { label: t('yes'), primary: true, onClick: () => { closeModal(); goHome(); } },
     ],
   });
 }
@@ -2001,11 +2193,11 @@ function openNextExercise() {
   if (next.nav) { goToNextExercise(next.nav); return; }
   const here = levelCategoryLabel(state.nav);
   openModal({
-    title: `End of ${here}`,
-    body: `You have reached the end of ${here}. Where do you want to go next?`,
+    title: t('endTitle', { here }),
+    body: t('endBody', { here }),
     buttons: [
       ...next.options.map((o, i) => ({ label: levelCategoryLabel(o.nav), primary: i === 0, onClick: () => goToNextExercise(o.nav) })),
-      { label: 'Main menu', onClick: () => { closeModal(); goHome(); } },
+      { label: t('mainMenu'), onClick: () => { closeModal(); goHome(); } },
     ],
     dismissible: true,
   });
@@ -2013,16 +2205,17 @@ function openNextExercise() {
 
 // Topics depend on level + category, so they are rendered each time a category is chosen.
 function renderTopicButtons() {
-  renderButtons($('#topic-buttons'), getTopics(state.nav).map((t, i) => ({ id: i, label: t })), (item) => {
+  renderButtons($('#topic-buttons'), getTopics(state.nav).map((name, i) => ({ id: i, label: name, lang: 'en' })), (item) => {
     state.nav.topic = item.id;
     showScreen('type');
   });
 }
 
-function initMenus() {
+// The level, category and question type buttons; built again when the language changes.
+function renderMenus() {
   $('#level-buttons').replaceChildren(...CONFIG.LEVEL_GROUPS.map((group) => {
     const grid = el('div', { class: 'grid' });
-    renderButtons(grid, group.levels.map((l) => ({ id: l, label: l, sub: CONFIG.LEVEL_NAMES[l] })), (item) => {
+    renderButtons(grid, group.levels.map((l) => ({ id: l, label: l, sub: t(`levelName.${l}`) })), (item) => {
       state.nav.level = item.id;
       showScreen('category');
     });
@@ -2031,17 +2224,21 @@ function initMenus() {
       btn.classList.add('level-btn');
       btn.style.setProperty('--chip', `var(--lvl-${group.levels[i]})`);
     });
-    return el('div', { class: 'level-group' }, [el('h2', { class: 'level-group-title', text: group.label }), grid]);
+    return el('div', { class: 'level-group' }, [el('h2', { class: 'level-group-title', text: t(`levelGroup.${group.id}`) }), grid]);
   }));
-  renderButtons($('#category-buttons'), CONFIG.CATEGORIES, (item) => {
+  renderButtons($('#category-buttons'), CONFIG.CATEGORIES.map((c) => ({ ...c, label: t(`category.${c.id}`) })), (item) => {
     state.nav.category = item.id;
     renderTopicButtons();
     showScreen('topic');
   });
-  renderButtons($('#type-buttons'), CONFIG.TYPES, (item) => {
+  renderButtons($('#type-buttons'), CONFIG.TYPES.map((x) => ({ ...x, label: t(`type.${x.id}`) })), (item) => {
     state.nav.type = item.id;
     showScreen('difficulty');
   });
+}
+
+function initMenus() {
+  renderMenus();
 
   const sw = $('#same-duration-switch');
   setSameDuration(loadPref('lg-same-duration', '0') === '1', false);
@@ -2067,7 +2264,7 @@ function initMenus() {
 /* =========================================================================
  * MODAL
  * ========================================================================= */
-const modalState = { dismissible: false, opener: null };
+const modalState = { dismissible: false, opener: null, kind: null }; // kind: 'settings' while Settings is open (it is built again when the language changes)
 
 // While a pop-up or the menu tree is open, the page behind it can't be reached with the keyboard
 // (Tab, Shift+Tab) or a screen reader: it is made `inert`. Called whenever either one opens or closes.
@@ -2077,7 +2274,8 @@ function updateInert() {
 }
 
 // onBack (optional): shows a left arrow button before the title that runs it (used by the "Words in this game" pop-up).
-function openModal({ title, body, buttons, dismissible = false, onBack = null }) {
+function openModal({ title, body, buttons, dismissible = false, onBack = null, kind = null }) {
+  modalState.kind = kind;
   $('#modal-title').textContent = title;
   $('#modal-back').hidden = !onBack;
   $('#modal-back').onclick = onBack;
@@ -2099,6 +2297,7 @@ function openModal({ title, body, buttons, dismissible = false, onBack = null })
 function closeModal() {
   if ($('#modal-overlay').hidden) return;
   $('#modal-overlay').hidden = true;
+  modalState.kind = null;
   updateInert();
   const opener = modalState.opener;
   modalState.opener = null;
@@ -2107,9 +2306,9 @@ function closeModal() {
 
 function openCredits() {
   openModal({
-    title: 'Credits',
+    title: t('credits'),
     body: el('ul', {}, CREDITS.map((name) => el('li', { text: name }))),
-    buttons: [{ label: 'Close', primary: true, onClick: closeModal }],
+    buttons: [{ label: t('close'), primary: true, onClick: closeModal }],
     dismissible: true,
   });
 }
@@ -2121,6 +2320,10 @@ let settingsUi = null; // controls of the open Settings pop-up, kept in step by 
 
 function refreshSettings() {
   if (!settingsUi) return;
+  const isTurkish = state.lang === 'tr';
+  settingsUi.languageToggle.setAttribute('aria-checked', String(isTurkish));
+  settingsUi.languageToggle.setAttribute('aria-label', `${t('languageName')}: ${LANG_NAMES[state.lang]}`);
+  settingsUi.languageToggle.querySelectorAll('.lang-lbl').forEach((lbl, i) => lbl.classList.toggle('is-on', LANGS[i] === state.lang));
   settingsUi.themeButtons.forEach((btn, i) => btn.setAttribute('aria-pressed', String(THEMES[i] === currentTheme)));
   settingsUi.soundSwitch.checked = !sound.muted;
   settingsUi.durationSwitch.checked = state.nav.sameDuration;
@@ -2137,51 +2340,95 @@ function setSmartBoard(value, save = true) {
   refreshSettings();
 }
 
-function settingSwitch(id, name, help, onChange) {
+// A text of the Settings pop-up: `texts` remembers [node, key, params] so translateSettings() can set it again.
+function settingText(texts, tag, attrs, key, params) {
+  const node = el(tag, attrs, [t(key, params)]);
+  texts.push([node, key, params]);
+  return node;
+}
+
+function settingSwitch(texts, id, nameKey, helpKey, helpParams, onChange) {
   const input = el('input', { type: 'checkbox', 'aria-describedby': `${id}-help` });
   input.addEventListener('change', () => onChange(input.checked));
   const row = el('div', { class: 'setting' }, [
     el('label', { class: 'setting-head' }, [
-      el('span', { class: 'setting-name', text: name }),
+      settingText(texts, 'span', { class: 'setting-name' }, nameKey),
       el('span', { class: 'switch' }, [input, el('span', { class: 'slider' })]),
     ]),
-    el('p', { class: 'setting-help', id: `${id}-help`, text: help }),
+    settingText(texts, 'p', { class: 'setting-help', id: `${id}-help` }, helpKey, helpParams),
   ]);
   return { row, input };
 }
 
+// The Language toggle: a sliding pill with both names always shown. A tap on a half chooses that side;
+// Left / Right choose a side, Space / Enter switch to the other one.
+function languageToggle() {
+  const toggle = el('div', {
+    class: 'lang-toggle', id: 'setting-language', role: 'switch', tabindex: '0', 'aria-checked': 'false',
+    'aria-describedby': 'setting-language-help',
+  }, [
+    el('span', { class: 'lang-thumb' }),
+    ...LANGS.map((lang) => el('span', { class: 'lang-lbl', lang, text: LANG_NAMES[lang] })),
+  ]);
+  toggle.addEventListener('click', (e) => {
+    const box = toggle.getBoundingClientRect();
+    setLanguage(e.clientX - box.left > box.width / 2 ? 'tr' : 'en');
+  });
+  toggle.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') setLanguage(state.lang === 'en' ? 'tr' : 'en');
+    else if (e.key === 'ArrowLeft') setLanguage('en');
+    else if (e.key === 'ArrowRight') setLanguage('tr');
+    else return;
+    e.preventDefault();
+  });
+  return toggle;
+}
+
+// Sets every text of the open Settings pop-up again (the language changed) without rebuilding it,
+// so the Language toggle keeps its place and its slide plays.
+function translateSettings() {
+  settingsUi.texts.forEach(([node, key, params]) => { node.textContent = t(key, params); });
+  $('#modal-title').textContent = t('settings');
+  $('#modal-actions button').textContent = t('close');
+  refreshSettings();
+}
+
 function openSettings() {
+  const texts = [];
+  const languageControl = languageToggle();
+  const languageRow = el('div', { class: 'setting' }, [
+    el('div', { class: 'setting-head can-wrap' }, [settingText(texts, 'span', { class: 'setting-name' }, 'languageName'), languageControl]),
+    settingText(texts, 'p', { class: 'setting-help', id: 'setting-language-help' }, 'languageHelp'),
+  ]);
   const themeButtons = THEMES.map((theme) => {
-    const btn = el('button', { type: 'button', 'aria-pressed': 'false' }, [el('span', { text: THEME_LABELS[theme] })]);
+    const btn = el('button', { type: 'button', 'aria-pressed': 'false' }, [settingText(texts, 'span', {}, `theme.${theme}`)]);
     btn.insertAdjacentHTML('afterbegin', ICONS[theme]);
     btn.addEventListener('click', () => setTheme(theme));
     return btn;
   });
   const themeRow = el('div', { class: 'setting' }, [
-    el('div', { class: 'setting-head' }, [el('span', { class: 'setting-name', id: 'setting-theme-name', text: 'Theme' })]),
+    el('div', { class: 'setting-head' }, [settingText(texts, 'span', { class: 'setting-name', id: 'setting-theme-name' }, 'themeName')]),
     el('div', { class: 'segmented', role: 'group', 'aria-labelledby': 'setting-theme-name', 'aria-describedby': 'setting-theme-help' }, themeButtons),
-    el('p', { class: 'setting-help', id: 'setting-theme-help', text: 'Choose light or dark colors. Auto follows your device.' }),
+    settingText(texts, 'p', { class: 'setting-help', id: 'setting-theme-help' }, 'themeHelp'),
   ]);
-  const soundRow = settingSwitch('setting-sound', 'Sound',
-    'Play sounds for correct and wrong answers and for the timer.', (on) => setMuted(!on));
-  const durationRow = settingSwitch('setting-duration', 'Same duration per question across all difficulty settings',
-    `Every question gets ${CONFIG.SAME_DURATION_SECONDS} seconds, whatever the difficulty.`, (on) => setSameDuration(on));
-  const smartBoardRow = settingSwitch('setting-smartboard', 'SmartBoard mode',
-    'Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word to put it in the blank instead.',
-    (on) => setSmartBoard(on));
-  const smartBoardLock = el('p', { class: 'setting-help', text: 'You can change this between quizzes.' });
+  const soundRow = settingSwitch(texts, 'setting-sound', 'soundName', 'soundHelp', null, (on) => setMuted(!on));
+  const durationRow = settingSwitch(texts, 'setting-duration', 'sameDuration', 'durationHelp',
+    { n: CONFIG.SAME_DURATION_SECONDS }, (on) => setSameDuration(on));
+  const smartBoardRow = settingSwitch(texts, 'setting-smartboard', 'smartBoardName', 'smartBoardHelp', null, (on) => setSmartBoard(on));
+  const smartBoardLock = settingText(texts, 'p', { class: 'setting-help' }, 'smartBoardLock');
   smartBoardRow.row.append(smartBoardLock);
-  settingsUi = { themeButtons, soundSwitch: soundRow.input, durationSwitch: durationRow.input,
-    smartBoardSwitch: smartBoardRow.input, smartBoardLock };
+  settingsUi = { texts, languageToggle: languageControl, themeButtons, soundSwitch: soundRow.input,
+    durationSwitch: durationRow.input, smartBoardSwitch: smartBoardRow.input, smartBoardLock };
   refreshSettings();
   openModal({
-    title: 'Settings',
+    title: t('settings'),
     body: el('div', {}, [
-      el('div', { class: 'settings' }, [themeRow, soundRow.row, durationRow.row, smartBoardRow.row]),
-      el('p', { class: 'settings-note', text: 'Work in Progress' }),
+      el('div', { class: 'settings' }, [languageRow, themeRow, soundRow.row, durationRow.row, smartBoardRow.row]),
+      settingText(texts, 'p', { class: 'settings-note' }, 'workInProgress'),
     ]),
-    buttons: [{ label: 'Close', primary: true, onClick: closeModal }],
+    buttons: [{ label: t('close'), primary: true, onClick: closeModal }],
     dismissible: true,
+    kind: 'settings',
   });
 }
 
@@ -2189,11 +2436,11 @@ function openSettings() {
  * MENU TREE  (the student's path through the menu; a chosen step opens that menu screen)
  * ========================================================================= */
 const TREE_STEPS = [
-  { screen: 'level', caption: 'Level' },
-  { screen: 'category', caption: 'Category' },
-  { screen: 'topic', caption: 'Topic' },
-  { screen: 'type', caption: 'Question type' },
-  { screen: 'difficulty', caption: 'Difficulty' },
+  { screen: 'level' },
+  { screen: 'category' },
+  { screen: 'topic' },
+  { screen: 'type' },
+  { screen: 'difficulty' },
 ];
 let treeCloseTimer = null;
 
@@ -2203,9 +2450,9 @@ function renderTree() {
   const current = Math.min(depth, TREE_STEPS.length - 1);                // the step being chosen (the last one on results)
   $('#tree-list').replaceChildren(...TREE_STEPS.map((step, i) => {
     const chosen = i < depth;
-    const value = el('span', { class: 'val', text: chosen ? values[i] : 'Not chosen yet' });
-    if (i === current) value.append(el('span', { class: 'tree-here', text: 'You are here' }));
-    const btn = el('button', { type: 'button', class: 'tree-step' }, [el('span', { class: 'cap', text: step.caption }), value]);
+    const value = el('span', { class: 'val', text: chosen ? values[i] : t('notChosen') });
+    if (i === current) value.append(el('span', { class: 'tree-here', text: t('youAreHere') }));
+    const btn = el('button', { type: 'button', class: 'tree-step' }, [el('span', { class: 'cap', text: t(`step.${step.screen}`) }), value]);
     if (i === current) btn.setAttribute('aria-current', 'step');
     if (chosen) {
       btn.addEventListener('click', () => {
@@ -2325,7 +2572,7 @@ function glossarySenses(level, word) {
 
 function openWordPreview(start) {
   const level = state.nav.level;
-  const list = el('ul', { class: 'word-list' }, quizTargetWords(state.quiz.questions).map(({ word, type }) => {
+  const list = el('ul', { class: 'word-list', lang: 'en' }, quizTargetWords(state.quiz.questions).map(({ word, type }) => {
     const senses = glossarySenses(level, word);
     const used = type || senses[0].type;   // one sense: that one is used
     // Every word type of the word is shown; the one used in this game is underlined.
@@ -2338,9 +2585,9 @@ function openWordPreview(start) {
     ]);
   }));
   openModal({
-    title: 'Words in this game',
+    title: t('wordsTitle'),
     body: list,
-    buttons: [{ label: 'Start', primary: true, onClick: start }],
+    buttons: [{ label: t('start'), primary: true, onClick: start }],
     // The arrow leaves before the quiz begins: same place as Quit, the Difficulty screen (nothing was answered yet)
     onBack: () => { closeModal(); state.quiz = null; showScreen('difficulty'); },
   });
@@ -2444,11 +2691,11 @@ function requestQuit() {
   const wasRunning = quiz.timer.intervalId !== null;
   pauseTimer();
   openModal({
-    title: 'Quit quiz?',
-    body: 'Your answers in this quiz will be lost.',
+    title: t('quitTitle'),
+    body: t('quitBody'),
     buttons: [
-      { label: 'Cancel', primary: true, onClick: () => { closeModal(); if (wasRunning) resumeTimer(); } },
-      { label: 'Quit', onClick: () => { closeModal(); stopTimer(); state.quiz = null; showScreen('difficulty'); } },
+      { label: t('cancel'), primary: true, onClick: () => { closeModal(); if (wasRunning) resumeTimer(); } },
+      { label: t('quit'), onClick: () => { closeModal(); stopTimer(); state.quiz = null; showScreen('difficulty'); } },
     ],
   });
 }
@@ -2529,19 +2776,15 @@ function onTimeUp() {
   const rec = currentRecord();
   if (!rec.extensionUsed) {
     openModal({
-      title: 'Time out',
-      body: quiz.graded
-        ? `Time is up! Take ${CONFIG.EXTENSION_SECONDS} more seconds (−${CONFIG.EXTENSION_PENALTY} points) or skip this question.`
-        : `Time is up! Take ${CONFIG.EXTENSION_SECONDS} more seconds or skip this question.`,
+      title: t('timeOutTitle'),
+      body: t(quiz.graded ? 'timeOutBodyPts' : 'timeOutBody', { n: CONFIG.EXTENSION_SECONDS, p: CONFIG.EXTENSION_PENALTY }),
       buttons: [
         {
-          label: quiz.graded
-            ? `+${CONFIG.EXTENSION_SECONDS} seconds (−${CONFIG.EXTENSION_PENALTY} points)`
-            : `+${CONFIG.EXTENSION_SECONDS} seconds`,
+          label: t(quiz.graded ? 'plusSecondsPts' : 'plusSeconds', { n: CONFIG.EXTENSION_SECONDS, p: CONFIG.EXTENSION_PENALTY }),
           primary: true,
           onClick: () => { closeModal(); useExtension(); },
         },
-        { label: 'Skip question', onClick: () => { closeModal(); skipQuestion(); } },
+        { label: t('skipQuestion'), onClick: () => { closeModal(); skipQuestion(); } },
       ],
     });
   } else {
@@ -2568,11 +2811,11 @@ function gameOver() {
   currentRecord().timedOut = true;
   $('#quiz-question').querySelectorAll('button, input').forEach((b) => { b.disabled = true; });
   openModal({
-    title: 'Game over',
-    body: 'Time is up again, so the quiz ends here. Try again or see your results.',
+    title: t('gameOverTitle'),
+    body: t('gameOverBody'),
     buttons: [
-      { label: 'Retry', primary: true, onClick: () => { closeModal(); startQuiz(); } },
-      { label: 'See results', onClick: () => { closeModal(); showResults(); } },
+      { label: t('retry'), primary: true, onClick: () => { closeModal(); startQuiz(); } },
+      { label: t('seeResults'), onClick: () => { closeModal(); showResults(); } },
     ],
   });
 }
@@ -2847,11 +3090,13 @@ function showResults() {
 /* =========================================================================
  * INIT
  * ========================================================================= */
+initLanguage();
 initTheme();
 initSound();
 initMenus();
 initModal();
 initTree();
+applyStaticTexts();
 showScreen('level');
 </script>
 </body>
