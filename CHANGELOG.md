@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Added the changelog rule to the working rules
+### Added a SmartBoard mode switch (preview only)
+The Settings menu now has a "SmartBoard mode" switch with an explanation: it is meant to let students tap a word instead of typing it on a smart board. For now it is only there to show how it will look, and its explanation ends with "Its code hasn't been written yet", because the feature itself is not built.
+
+### Added the changelog rule to the working rules (`d70fbd8`)
 The working rules for the helper assistant now say that every commit must add an entry to the changelog. This way the list stays complete even when someone only edits the documents and never opens the README./
 
 ### Added this changelog (`d144895`)

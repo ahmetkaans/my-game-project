@@ -1845,12 +1845,16 @@ function openSettings() {
     'Play sounds for correct and wrong answers and for the timer.', (on) => setMuted(!on));
   const durationRow = settingSwitch('setting-duration', 'Same duration per question across all difficulty settings',
     `Every question gets ${CONFIG.SAME_DURATION_SECONDS} seconds, whatever the difficulty.`, (on) => setSameDuration(on));
+  // SmartBoard mode: visual preview only. The switch moves, but nothing is wired to it, saved or remembered yet.
+  const smartBoardRow = settingSwitch('setting-smartboard', 'SmartBoard mode',
+    'Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word to put it in the blank instead. Its code hasn\'t been written yet.',
+    () => {});
   settingsUi = { themeButtons, soundSwitch: soundRow.input, durationSwitch: durationRow.input };
   refreshSettings();
   openModal({
     title: 'Settings',
     body: el('div', {}, [
-      el('div', { class: 'settings' }, [themeRow, soundRow.row, durationRow.row]),
+      el('div', { class: 'settings' }, [themeRow, soundRow.row, durationRow.row, smartBoardRow.row]),
       el('p', { class: 'settings-note', text: 'Work in Progress' }),
     ]),
     buttons: [{ label: 'Close', primary: true, onClick: closeModal }],

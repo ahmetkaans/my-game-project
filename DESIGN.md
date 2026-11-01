@@ -15,6 +15,7 @@ Settings pop-up texts (approved with the plan, 2026-11-01; "Work in Progress" is
 - Theme (Auto / Light / Dark): "Choose light or dark colors. Auto follows your device."
 - Sound: "Play sounds for correct and wrong answers and for the timer."
 - Same duration per question across all difficulty settings (the fixed name, as on the Difficulty screen): "Every question gets 60 seconds, whatever the difficulty." (the number comes from `CONFIG.SAME_DURATION_SECONDS`)
+- SmartBoard mode (a visual preview only, nothing is wired to it yet): "Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word to put it in the blank instead. Its code hasn't been written yet." The last sentence is temporary and is removed when the mode is built.
 - Note at the bottom: "Work in Progress".
 
 Next exercise texts (approved with the plan, 2026-11-01):
