@@ -54,7 +54,7 @@ All tunable numbers are in the `CONFIG` object at the top of the script:
 | `CONFETTI_MIN_MATCH_SCORE` | 75 | Matching: confetti when final score ≥ this |
 | `CONFETTI_COUNT` / `CONFETTI_MS` | 90 / 2800 | confetti pieces and duration |
 
-Placeholder list: `CREDITS`.
+`CREDITS` holds the names shown in the Credits pop-up (Ahmet Kaan Sarılarlı, Enes Miraç Ateş).
 
 ### Topics
 
@@ -138,14 +138,17 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 | Type | Stored data shape | Interaction |
 |---|---|---|
 | `mc` | `{ type, prompt, options: [correct, wrong1, wrong2, wrong3], explanation }` (+ `targetType` when the answer has several word types, on every type; + `target` on Multiple Choice and Fill when the answer is not written in its dictionary form, e.g. `"laughs"` → `"target": "laugh"`, `"Hello"` → `"hello"`, so the pop-up, the glossary and the check script use the dictionary word) | click an option = submit |
-| `tf` | `{ type, prompt, answer: true\|false, target, explanation }` (`target` = the word the statement is about; used by the check script) | click True/False = submit |
-| `fill` | `{ type, before, after, answer, bank: [answer, wrong1, wrong2(, wrong3)], explanation }` | type one bank word into the blank, then **Check** (or Enter) |
-| `match` | `{ type, prompt, pairs: [{left, right}] ×4, explanation }` (correct pairing is `left i ↔ right i`) | click a left item, then a right item to pair; click a paired item to undo; **Check** when all pairs are made |
+| `tf` | `{ type, prompt, answer: true\|false, target, explanation }` (`target` = the word the statement is about, in its dictionary form; + `targetType` when the word has several word types) | click True/False = submit |
+| `fill` | `{ type, before, after, answer, bank: [answer, wrong1, wrong2(, wrong3)], explanation }` (+ `target` when the answer is not in its dictionary form, e.g. `"happened"` → `"happen"`, `"Hi"` → `"hi"`; + `targetType` when the word has several word types) | type one bank word into the blank, then **Check** (or Enter) |
+| `match` | `{ type, prompt, pairs: [{left, right(, type)}] ×4, explanation }` (correct pairing is `left i ↔ right i`; a pair has `type` when its word has several word types) | click a left item, then a right item to pair; click a paired item to undo; **Check** when all pairs are made |
+
+Real example (Fill, Very Hard): `{ "type": "fill", "before": "\"What", "after": "to your arm?\" \"I fell off my bike.\"", "answer": "happened", "bank": ["happened", "hoped", "missed", "believed"], "target": "happen", "explanation": "…" }`. All real questions are in the `#question-bank` block of `index.html`; copy their style.
 
 **Mindful shuffling** (`prepareQuiz(questions, key)` in `startQuiz()`, seeded by the quiz key so Retry shows exactly the same quiz; the stored questions are never changed):
 - `mc`: `balancedPositions()` puts the correct answer in each of the 4 positions equally often (8 questions → each position exactly twice), never more than `MC_MAX_SAME_POSITION_IN_A_ROW` (2) times in a row; wrong options are shuffled into the other positions. Sets `q.answer` (index) for the renderer.
 - `fill`: bank order shuffled.
 - `match`: right-side order (`q.rightOrder`) shuffled, never the same order as the left side.
+- `tf`: **not shuffled.** The stored order is the order students see, so write the 8 statements in a mixed true/false order: never more than 2 of the same answer in a row, and no simple pattern such as TFTFTFTF.
 
 ### Typed Fill in the Blanks
 
@@ -163,7 +166,7 @@ Renderers are in `RENDERERS = { mc, tf, fill, match }`, each `render*(q, area)`.
 
 - Matching quizzes have a **variable length** (all questions of the bank entry, at least `MATCH_MIN_QUESTIONS`).
 - `rightOrder` is the shuffled display order of right items; correct pairing is `left i ↔ right i`.
-- Paired items show the same number badge (`data-pair`, rendered via CSS `::after`).
+- Paired items show the same number badge (`data-pair`, rendered via CSS `::after`). On phones the badge sits on the box's top-right corner and the word column is only as wide as its longest word, so long meanings stay readable (DESIGN.md, "Matching").
 
 ## Content (questions)
 
@@ -186,8 +189,9 @@ powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_questions.ps1
 
 - It reads the question bank from `index.html` (or `-BankFile sample.json` for testing), the organized word files (`ORG_<LEVEL>_WORDS.md`, lower levels included) and the target-word plans (`PLAN_<LEVEL>_<CATEGORY>.md`, or `-PlanDir`). It never changes files and never writes questions.
 - It prints, per quiz, **ERRORS** (must fix) and **warnings** (review as a teacher), and exits with 1 if there are errors.
-- The 22 checks: **A. Structure** (1 valid key, 2 question count / plan's Matching count, 3 fields (a `target` must be a form of the answer), 4 shapes, 5 True or False 4/4, 6 explanation 1–3 sentences); **B. Word rules** (7 every word in the lists or a normal form or a name, unknown forms listed for a hand check, 8 tested words only from the quiz's category or Both, 9 exception words only in their own grammar topic, 10 no British spellings); **C. Plan match** (11 targets = the approved plan, 12 no target twice in a quiz and every planned word tested); **D. Never ambiguous** (13 Multiple Choice options share a word type with the answer, 14 no wrong Fill bank word within the spelling tolerance of the answer, 15 the answer not already in the sentence, 16 a Matching meaning doesn't contain a left word, 17 no duplicate or near-duplicate questions); **E. Variety** (18 not more than 2 questions starting with the same two words, 19 no repeated sentence pattern, 20 a name or city in at most 2 questions per quiz (*Anna's* counts as *Anna*), 21 each A1 sentence at most about 12 words (a prompt may have several sentences), 22 no sentence reused in another quiz of the theme); **F. Glossary** (23 every tested word has a glossary entry with one sense per word type of its level, no other types; a word with several senses has `targetType` / pair `type` naming one of them; meanings use words of the level, American spelling, and don't contain the word itself). `-GlossaryFile` reads a test glossary instead of index.html.
-- Its name list, irregular forms and British spellings are lists at the top of the script; extend them when needed.
+- The 23 checks: **A. Structure** (1 valid key, 2 question count / plan's Matching count, 3 fields (a `target` must be a form of the answer), 4 shapes, 5 True or False 4/4, 6 explanation 1–3 sentences); **B. Word rules** (7 every word in the lists or a normal form or a name, unknown forms listed for a hand check, 8 tested words only from the quiz's category or Both, 9 exception words only in their own grammar topic, 10 no British spellings); **C. Plan match** (11 targets = the approved plan, 12 no target twice in a quiz and every planned word tested); **D. Never ambiguous** (13 Multiple Choice options share a word type with the answer, 14 no wrong Fill bank word within the spelling tolerance of the answer, 15 the answer not already in the sentence, 16 a Matching meaning doesn't contain a left word, 17 no duplicate or near-duplicate questions); **E. Variety** (18 not more than 2 questions starting with the same two words, 19 no repeated sentence pattern, 20 a name or city in at most 2 questions per quiz (*Anna's* counts as *Anna*), 21 each A1 sentence at most about 12 words (a prompt may have several sentences), 22 no sentence reused in another quiz of the theme); **F. Glossary** (23 every tested word has a glossary entry with one sense per word type of its level, no other types; a word with several senses has `targetType` / pair `type` naming one of them; meanings use words of the level, American spelling, and don't contain the word itself). `-GlossaryFile` reads a test glossary instead of index.html.
+- **Expected result now:** 0 errors and 6 warnings, all check 14 in Fill (Hard Q1, Very Hard Q1–3, Q6–7). They are kept on purpose: pairs like *boring / bored* are 3–4 letters apart and are the point of Very Hard. Any other warning or error after a change must be read and fixed or explained to the owner.
+- Its name list, irregular forms and British spellings are lists at the top of the script; extend them when needed (e.g. add a missing irregular past form such as *broke = break*). The script is a checker, not an authority: when it flags something that is correct English, fix the script and tell the owner, as happened with *like* and with names such as *Lisa's*. **Never weaken a check just to make a question pass**; if a check finds a real mistake, fix the question.
 - A word written the same in two categories (*like*: "like (similar)" is Grammar, "like (find sb/sth pleasant)" is Both) counts as both, so check 8 accepts it in either.
 - Windows PowerShell 5.1 misreads non-ASCII characters in a script saved without a BOM, so the script writes "·" and "—" as character codes. Keep it that way.
 
@@ -336,8 +340,9 @@ Frequency source: <name and link of the trusted list, or "Claude's judgment">
 **How to make a plan (follow in order):**
 
 1. **Take the theme's words** from the **Words** line of that vocabulary theme in the level's organized word file (e.g. `ORG_A1_WORDS.md`).
-2. **Rank them by frequency.** Look for a trusted, published word frequency list on the internet; if none is found, use Claude's judgment (frequency, and how concrete the word is). Write the source in the plan.
+2. **Rank them by frequency.** Look for a trusted, published word frequency list on the internet; if none is found, use Claude's judgment (frequency, and how concrete the word is). Write the source in the plan. The pilot used the OpenSubtitles 2018 list (FrequencyWords, https://github.com/hermitdave/FrequencyWords, `en_50k`); use it again unless the owner chooses another.
 3. **Split them into Easy, Medium, Hard and Very Hard**: the most frequent in Easy, the least frequent in Very Hard, groups of about the same size, **at least 8 words each**. If the theme has fewer than 32 words, stop and ask the owner.
+   - **Frequency + teaching** (owner's choice in the pilot): start from the frequency ranks, then move a word when a teacher would teach it earlier or later, because it is concrete and taught early (*hungry, sad*) or abstract (*believe*), and keep related words together (*hello / hi / bye / goodbye* in one difficulty; *-ed* adjectives in Hard and *-ing* adjectives in Very Hard). Strict frequency put *believe* in Easy and *sad, hungry* in Very Hard, which no coursebook does. In the plan, show the strict-frequency split next to yours and say which words you moved and why, so the owner can approve it.
 4. **Set the Matching length** for each difficulty from the table in "Matching quizzes have a variable length".
 5. **Assign the target words** for each difficulty: 8 for Multiple Choice, 8 for Fill in the Blanks, 8 for True or False, and 4 per Matching question. Follow "Planned, smooth overlap": every word at least once, no word twice in one quiz, tests spread as evenly as possible. Choose for each question type the words that suit it (e.g. concrete nouns for "word ↔ short meaning" in Matching).
 6. **Check with a script** (not by eye) and report the results:
@@ -360,16 +365,142 @@ Frequency source: <name and link of the trusted list, or "Claude's judgment">
   - **Every word type the word has at that level gets its own short meaning** (e.g. *drink*: noun and verb), so the pop-up tells all of them. Never higher-level types or meanings.
   - **The type used in the game is underlined** in the pop-up; when a word has several types, the question must name the one it uses (`targetType`, or `type` on a Matching pair).
   - Use only words of that level (and lower levels), American English, never the word itself. Keep it short, like a learner's dictionary for that level (*banana: noun, a long yellow fruit*). It may differ from the Matching meaning of the same word, so Matching doesn't simply repeat the pop-up.
+  - **A word can be in several vocabulary themes** (A1: *fine, hungry, thirsty, tired* are also in Body and Health; *miss* is also in Travel and the World). The glossary has **one entry per word per level**, so before writing a meaning, look in the `#glossary` block: if the word is already there, reuse it. If the new theme uses another sense of the same word type, change the one meaning so it covers both senses (as *miss* already covers missing people and missing the bus), and tell the owner.
+- **Wrong options and banks** (decided in the pilot):
+  - Multiple Choice: 4 options. Fill in the Blanks: **3 bank words at Easy and Medium, 4 at Hard and Very Hard**.
+  - **Synonyms are never options or bank words together** (*hello / hi / hey*, *bye / goodbye*, *yes / yeah / OK*).
+  - **Capital letters:** when the blank starts a sentence or a quote, all options / bank words are capitalized (*Hello · Bye · Please · No*); otherwise all are lower case. Add `"target"` with the lower-case dictionary form.
+  - In Fill, no wrong bank word within 1–2 letters of the answer (*hey / bye*, *angry / hungry*), except planned Very Hard pairs (*boring / bored*).
+- **True or False:** 4 true and 4 false in a mixed order (see "Mindful shuffling": True or False is not shuffled); no negatives in false statements; statements about what a word means or what is right to say, never about facts the student can't know.
 - **Explanations** are in English and short: **one to three sentences**, only as long as needed to make the answer clear. Use words of that level where possible.
 - **Names**: a small, international set of first names (e.g. Anna, Tom, Ali, Maria, Ken) and well-known cities (e.g. London, Paris, Tokyo, New York), so names never distract from the tested word.
 - **Correct answer positions are balanced** (Multiple Choice): in each quiz, the correct answer is in each of the 4 positions **exactly twice**, and never in the same position more than **twice in a row**. The game does this when it shuffles the options; Retry shows the same order again.
 - **Script check of every quiz** when questions are added (not by eye): the target words match the approved target-word plan; no answer word appears twice in the same quiz; no two questions are copies of each other; True or False has 4 true and 4 false; every word is allowed by the word-list rules.
-- **One vocabulary theme at a time.** Start with a pilot theme (plan, then its 16 quizzes), let the owner try it in the game, adjust this method if needed, then continue theme by theme.
+- **One vocabulary theme at a time.** Start with a pilot theme (plan, then its 16 quizzes), let the owner try it in the game, adjust this method if needed, then continue theme by theme. The pilot (Greetings and Feelings, topic index 0) is done; continue with the next theme in the game's order (Numbers and Amounts, index 1).
+
+### Next theme, step by step
+
+1. **Read** AGENTS.md, this README (especially "Question content method" and the "Review checklist") and DESIGN.md. Read the theme's **Words** and **Goes well with** lines and the word types of its words in `.gitignore/ORG_A1_WORDS.md`.
+2. **Target-word plan** ("How to make a plan"): draft it, show it to the owner, change it on request, then save it in `.gitignore/PLAN_A1_VOCABULARY.md` with "Status: approved by the owner (date)". Copy the format of the Greetings and Feelings section there.
+3. **One question type at a time** (Multiple Choice, then Fill in the Blanks, True or False, Matching), each with all 4 difficulties, following "Workflow: draft → review → write": draft in the chat → remind the owner to ask for a review → review with the checklist → write only on the owner's go-ahead.
+4. **Glossary:** add a meaning for every new tested word (all its word types at the level); reuse existing entries (see "Glossary meanings").
+5. **Quiz key:** `A1|vocabulary|<topic index>|<mc|fill|tf|match>|<easy|medium|hard|veryhard>`; the topic index is the theme's position in `TOPICS_BY_SECTION['A1|vocabulary']`, starting at 0.
+6. **After writing:** run the check script, then play the new quizzes in the browser (the pop-up shows real meanings with the right type underlined; Fill accepts the answer and a typo; True or False shows 4 / 4; Matching scores add up to 100). Update "Written so far" under "Content (questions)".
+7. **Commit** only when the owner asks (AGENTS.md rule 7).
+
+### Workflow: draft → review → write (AGENTS.md rule 9)
+
+Questions, explanations, glossary meanings and target-word plans are **never written into the files right after they are drafted**.
+
+1. **Draft.** Write the quiz(zes) and show them to the owner in the chat, with explanations and any new glossary meanings. Do not change any file.
+2. **Remind the owner** to ask for a review before anything is written, for example: *"Before I add these, please ask me to review them against the review checklist."*
+3. **Review** (a separate step, when the owner asks): go through the "Review checklist" below, question by question, then the quiz as a whole. Report every change and why (a table of "problem → new version" works well), and list what was kept and why.
+4. **Write** only when the owner says so. Then run the check script, fix what it finds (report each fix), and play the quizzes in the browser.
+
+### Review checklist
+
+Use this the way an experienced English teacher checks coursebook material, and the way an editor checks an AI writer. **Go through every item for every question; don't trust a first impression.** A question that seems fine at a glance is exactly where mistakes hide. It is built from the problems found while reviewing the pilot theme (Greetings and Feelings), and it adds the mistakes language models typically make.
+
+**How to review**
+- Review in a **separate step** from writing. Read every question **as a student of that level would**: someone who knows only the level's words, reads literally, and looks for another possible answer.
+- Check **each question alone** first, then **the quiz as a whole**, then **the theme as a whole** (all question types and difficulties).
+- **Look words up; never check from memory.** Every doubtful word goes against `ORG_<LEVEL>_WORDS.md` (word *and* word type). Models often "feel sure" a word is A1 when it isn't.
+- **Fix by rewriting the context**, not by adding more words. A question that needs a long explanation to be fair is a bad question.
+
+**1. Exactly one correct answer (the most important rule)**
+- [ ] Put **every wrong option** (or bank word) into the sentence and read it aloud. Could a good student argue it is also right, in any reading? If yes, change the option or the context.
+- [ ] **Synonyms and near-synonyms** are never options or bank words together: *hello / hi / hey*, *bye / goodbye*, *yes / yeah / OK*, *big / large*, *sad / unhappy*. Watch register pairs too: an informal word can still be "correct".
+- [ ] **Feelings and opinions are slippery.** "Kate waits an hour; she is ___" fits *angry, bored, tired, sad*. Give a cause that points to one feeling only (a friend breaks her phone → *angry*), and make sure the other options don't fit that cause.
+- [ ] **"Everyday knowledge" traps.** Lots of things to do can be boring (homework!). A good friend moving away could make someone angry, not only sad. Imagine a real student who disagrees.
+- [ ] **True or False:** a false statement is **clearly** false, never "a bit false" or "false for some people". A true statement is true **for everyone**, not just usually. Add *often*, *can* or *usually* when needed ("People **often** miss their friends…").
+- [ ] **No statements about facts a student can't know** ("Anna says hello to her teacher", "Ali is hungry at ten"). Write about what is right to say or what a word means ("Anna **can** say 'hello'…", "If you have no breakfast, you are **often** hungry…").
+- [ ] **Matching:** every meaning fits **only one** of the 4 words in that question. Check each meaning against all 4 words, not just its own (*oh* "when you hear news" also fit *yeah*).
+- [ ] **No grammar giveaway by accident.** *a / an* before the blank, a preposition after it (*afraid of*, *interested in*), or a verb form (*-s, -ed*) must not leave only one grammatical option, unless the collocation is what you want to teach (then the other options must still be real words of the same type).
+
+**2. Level and word list**
+- [ ] **Every word** is in the level's list (or a lower level's): the sentence, every option, the explanation, the Matching meanings and the glossary meanings. **Explanations and meanings are where above-level words slip in** (pilot: *rest, truth, happiness, polite, loud, surprised, shout*).
+- [ ] **Every word is used in an allowed word type.** The word can be in the list but not in that type: *fun* (noun only; "fun things" is A2), *ride* (verb only; "a ride" is A2), *all right* (*all* as an adverb is A2), *close* (verb only), *kind* (noun "type" only), *book* (noun only), *like* (verb / preposition, not noun), *past* (only "half past"). Check the "Watch out" list and the full word-type list.
+- [ ] **Grammar in the sentence is at the level.** At A1: no present perfect (*have* is not an auxiliary), no past continuous (*was looking*), no *after / before* + clause, no conditionals beyond very simple *if + present*. Normal forms (*-s, -ed, -ing*, past simple, comparatives, contractions) are fine.
+- [ ] **Tested part** (answer, wrong options, bank, Matching words) only from the quiz's own category or Both.
+
+**3. Natural, correct English**
+- [ ] Would a native speaker **really say** this sentence in this situation? ("Thanks for the pen, Emma!" yes; "I want to like you for the flowers" is a fine *wrong* option, but the correct sentence must be natural.)
+- [ ] **American English**: spelling (*color, favorite, center, theater, practice* as a verb), words (*vacation, movie, apartment, Mom, soccer* for the round-ball game), prepositions (**on** *the street*, **on** *the weekend*, *on a team*), and no *have got*.
+- [ ] **Collocations** are right: *afraid **of***, *interested **in***, *excited **about***, *angry **with***, *miss **the bus***, *say **hello to***.
+- [ ] **Punctuation and quotes** are clean: one pair of quotes per speech, comma or full stop inside the quote, a question mark on questions, capital letters at the start of sentences.
+- [ ] **Capital letters on options:** when the blank starts a sentence (or a quote), **all** options / bank words are capitalized; otherwise all are lower case. A single capitalized option gives the answer away.
+
+**4. Content, context and the learner**
+- [ ] **Suitable for kids, teens and adults.** Avoid death (also of pets), serious illness or injury of people, violence, alcohol (*beer, wine* are A1 words, but keep them out of sentences unless the owner decides otherwise), religion, politics, dating, money worries.
+- [ ] **No stereotypes**: mix who cooks, works, plays football, is afraid, is good at science.
+- [ ] **Facts about the world are true and stable** (capitals, animals, sizes). Models sometimes invent facts; when not sure, choose a context that needs no world fact.
+- [ ] **Names and places** come from the approved set (the check script's name list); a name in at most 2 questions per quiz.
+- [ ] **The context fits the level**: short, concrete, everyday situations at A1; longer or more abstract ones only at higher levels.
+
+**5. Question type rules**
+- **Multiple Choice**
+  - [ ] 4 options, all the **same word type and form** as the answer (*went / came / ate*, not *went / come / eating*).
+  - [ ] Easy: options very different (even from other themes). Very Hard: from the same theme and close in meaning, but still only one fits.
+  - [ ] Options are not silly at Hard / Very Hard. A joke option makes the question easier than its difficulty.
+  - [ ] When the answer is not in its dictionary form (*laughs*, *Hello*), the question has `"target"` with the dictionary form, and `targetType` when the word has several types.
+- **Fill in the Blanks (typed)**
+  - [ ] The answer is **exactly a bank word** in the same form as the sentence needs (*happened* in the bank, not *happen*).
+  - [ ] Bank: Easy / Medium 3 words, Hard / Very Hard 4 words; all the same word type and form; none fits the blank.
+  - [ ] **No wrong bank word within 1–2 letters of the answer** (*hey / bye*, *angry / hungry*): a typo could land between them. Planned pairs at Very Hard (*boring / bored*) are fine.
+  - [ ] Very short answers (2–3 letters: *hi, oh*) accept any 1-letter mistake as "misspelled" (see "Open questions"); prefer longer answers when you can choose.
+  - [ ] `before` / `after` give normal spacing: `before` ends with `"` when the blank starts a quote; `after` starts with punctuation when the blank ends a sentence.
+  - [ ] Typing the answer takes time: at Very Hard (20 s), keep sentences short enough to read and type.
+- **True or False**
+  - [ ] Exactly **4 true and 4 false** per quiz, in a mixed order with **no more than 2 of the same answer in a row**, and no simple pattern (TFTFTFTF).
+  - [ ] **No negatives in false statements** ("You **don't** feel…" + False = a double negative that A1 students get lost in). A simple *don't* in a true statement is fine when needed.
+  - [ ] The statement is about the **target word's meaning or use**, and the target word is in the statement (`"target"`, and `targetType` when needed).
+- **Matching**
+  - [ ] 4 pairs per question; the number of questions is the plan's; **close words go in different questions** (*hello* and *hi*; *bored* and *interested*).
+  - [ ] The meaning never contains any of the question's 4 words (or an obvious form of them), except on purpose at Very Hard (*boring ↔ "it makes people feel bored"*).
+  - [ ] **The Matching meaning is not the same as the pop-up meaning.** Otherwise Matching only tests memory of the pop-up. Use a situation, an example or a related word (*hi ↔ a short, friendly "hello"*).
+
+**6. Difficulty**
+- [ ] The question really is at its difficulty: Easy = simple, direct situation and clearly different options; Very Hard = closer options, finer meaning differences, set phrases (*-ed / -ing*, *a bad feeling about*, *miss the bus*).
+- [ ] Wrong options get **more similar** from Easy to Very Hard (README "How similar the wrong options are").
+
+**7. Explanations**
+- [ ] 1–3 short sentences, at the level, in American English.
+- [ ] They **teach**: say why the answer is right and, when useful, why a tempting wrong option is wrong ("We say 'bye' when we leave; 'hello' is for when we arrive").
+- [ ] For a false statement: give the right fact, not just "No."
+- [ ] They match the question: same word, same meaning, same type; no contradiction with the answer.
+
+**8. Glossary (pop-up) meanings**
+- [ ] One meaning for **every word type the word has at that level**, never more types, never higher-level meanings; the same entry is used in every quiz of the level.
+- [ ] Short, at the level, never containing the word itself, and **correct for that type** (*welcome* as an adjective describes the guest: "people are happy to see you", not the host).
+- [ ] A word used in two senses of one type (*miss* people / *miss* the bus) has both in its one meaning.
+
+**9. The quiz and the theme as a whole**
+- [ ] The quiz's targets are **exactly the approved plan's**, no word twice in one quiz.
+- [ ] **Variety**: not the same frame again and again ("X says, '___'", "We say ___ when…", "If you…"); at most 2 questions start with the same two words; no sentence reused from another quiz of the theme (also not with only the tested word changed).
+- [ ] Sentences are short: at A1 about 12 words per sentence at most.
+- [ ] Each time a word appears in another question type, the **context is new**.
+
+**10. Typical language-model mistakes (check these on purpose)**
+- [ ] **Two right answers** hidden in a "plausible distractor" (the most common and most serious one).
+- [ ] **Above-level or wrong-type words** in explanations, meanings and the untested part of sentences.
+- [ ] **British English** slipping in (*in the street, at the weekend, holiday, film, Mum, colour, have got*).
+- [ ] **Saying "checked" without checking.** Every claim ("all words are A1", "4 true / 4 false") must come from a lookup or the check script, not memory.
+- [ ] **Counting mistakes**: 8 questions, 4 options, 3–4 bank words, 4 true / 4 false, the plan's Matching count, the "Times tested" line.
+- [ ] **Repeated frames, names and topics** across a quiz (the same pattern 5 times feels machine-made).
+- [ ] **Unnatural "textbook-ese"** or over-formal sentences that no one says.
+- [ ] **The explanation answers a different question** or contradicts the stored answer.
+- [ ] **Missing or wrong fields**: `target`, `targetType`, Matching pair `type`, `answer` true/false, the correct answer stored first.
+- [ ] **JSON mistakes** when writing to the file: unescaped quotes inside strings (`\"`), a missing comma.
+- [ ] **Silent changes**: every change to an approved draft is reported to the owner.
+
+**After the review**
+- Report: the changes (problem → new version, and why), anything kept on purpose and why, and anything you are unsure about (ask the owner instead of guessing).
+- Then wait for the owner's go-ahead (see "Workflow" above). After writing: run the check script and read **every warning** as a teacher; play the quizzes in the browser.
 
 ### Open questions (ask the owner; do not decide)
 
 1. **Grammar topics**: their content method is decided when grammar content starts.
-2. **Spelling tolerance for very short answers** (decide before grammar content starts): typed Fill allows 1 wrong letter for answers of up to 5 letters, so 2–3 letter answers are very forgiving (typing "n" for "in" counts as misspelled). The owner may want a stricter rule for them.
+2. **Spelling tolerance for very short answers** (decide before grammar content starts): typed Fill allows 1 wrong letter for answers of up to 5 letters, so 2–3 letter answers are very forgiving (typing "n" for "in" counts as misspelled). The owner may want a stricter rule for them. Seen in the pilot: typing **"he"** (a real, different word) for *hey* got "Almost!" and half points; it affects *hi, oh, hey* in Greetings and Feelings already.
 
 ### Code changes for real questions: done
 
@@ -396,6 +527,7 @@ All built and tested with lorem questions (see the sections above for how each w
 - Credits on all screens except the quiz screen.
 - Quizzes of a level may use the words of all lower levels (e.g. A2 quizzes may use A1 words).
 - Questions follow the "Question content method" (never ambiguous; target words split by difficulty, at least 8 per difficulty; expected progression; wrong options of the same word type, more similar at higher levels and difficulties; variable-length Matching; planned, smooth overlap; approved target-word plan first).
+- From the pilot (2026-10-31 / 11-01): difficulty split by "Frequency + teaching"; Fill banks of 3 (Easy, Medium) and 4 (Hard, Very Hard); synonyms never together; capitalized options when the blank starts a sentence; `target` for answers not in dictionary form; every question is drafted, reviewed with the "Review checklist" and written only on the owner's go-ahead (AGENTS.md rule 9).
 
 ## Roadmap
 
@@ -405,3 +537,15 @@ Planned work (not implemented yet):
 2. One by one, the menu items will be decided (replacing the lorem ipsum labels via `TOPICS_BY_SECTION`). — A1 Vocabulary and A1 Grammar decided.
 3. Part by part, the menus will be filled with actual content (via `QUESTION_BANK`, see "Content (questions)").
 4. **AWL** (Academic Word List) will be a whole separate section of the game, apart from the levels (A1–C1). The levels' Vocabulary is not split; it keeps leading straight to its vocabulary themes. (Replaces the earlier plan to split Vocabulary into Theme Based and AWL.)
+5. **History** (owner's request, 2026-11-01): the game keeps a history of the quizzes the student has played.
+6. **Overall performance** (owner's request, 2026-11-01): the game calculates the student's overall performance from the played quizzes.
+   - **Two separate reset buttons**: one clears the history, the other clears the overall performance calculation. Each works on its own.
+7. **"Next exercise" button** (owner's request, 2026-11-01) on every results screen, so the student can go straight on to the next exercise.
+
+Open questions for items 5–7 (ask the owner before building; AGENTS.md rules 1 and 4):
+- **History:** what one entry shows (date and time, level › category › topic › type › difficulty, score, correct / partly correct / wrong / skipped counts, used extra time?); whether the student can open an entry to see its answers; how many entries are kept; where it is opened (a button on the level screen, the top bar, the results screen).
+- **Overall performance:** what is calculated (average score; per level, category, question type, difficulty or topic; best score; number of quizzes played; progress through the topics); whether only the latest try of each quiz counts or every try; whether the same-duration (60 s) switch or extra time changes anything; how it is shown (numbers, bars, a chart).
+- **Reset buttons:** where they are; a confirmation pop-up before clearing ("Are you sure?"), since a reset can't be undone; whether resetting history also affects the performance calculation, or it is kept apart (the owner wants them separate).
+- **Next exercise:** what "next" means: the next difficulty of the same quiz (Easy → Medium → Hard → Very Hard, following the expected progression), the next question type of the same topic, or the next topic; what happens after the last one (Very Hard, the last type, the last topic); whether it skips quizzes that are still lorem.
+- **Storage:** everything is saved in the browser (`localStorage`), like the theme and mute settings. So it belongs to one device and one browser, and clearing the browser's data deletes it. Ask whether that is enough, or whether students will need it on several devices (that would need accounts and a server, which goes against the single-file rule).
+- **Design:** new screens or pop-ups and their texts need the owner's approved names (DESIGN.md).
