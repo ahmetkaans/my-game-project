@@ -38,7 +38,7 @@ Level (A1 A2 B1 B2 C1)
 - The quiz screen's Back button opens a "Quit quiz?" confirm (timer paused). Quit → difficulty screen, progress lost. Cancel → timer resumes.
 - Results screen: Back (→ difficulty), Retry (same settings), Main menu (→ level).
 - Breadcrumb (`.breadcrumb` in each screen) is built from `state.nav` up to the screen's depth (`SCREEN_DEPTH`).
-- **Credits**: footer link on every screen except the quiz screen (results included). Opens a modal listing `CREDITS` (Ahmet Kaan Sarılarlı, Enes Miraç Ateş).
+- **Credits**: footer link on every screen except the quiz screen (results included). Opens a modal listing `CREDITS` (Claude, Ahmet Kaan Sarılarlı, Enes Miraç Ateş).
 - **Top bar** (`#topbar`): the **Settings** (gear) button, hidden on the quiz screen. It opens the Settings pop-up (`openSettings()`, a dismissible `openModal`): Theme (Auto / Light / Dark), Sound and the same-duration switch, each with a short explanation, and a "Work in Progress" note. Credits stays in the footer.
 - **Level accent**: `showScreen()` sets `document.body.dataset.level` to the chosen level on every screen except the level screen (where it is removed → neutral accent). CSS maps it to `--accent`.
 
@@ -68,7 +68,7 @@ All tunable numbers are in the `CONFIG` object at the top of the script:
 | `CONFETTI_MIN_MATCH_SCORE` | 75 | Matching: confetti when final score ≥ this |
 | `CONFETTI_COUNT` / `CONFETTI_MS` | 90 / 2800 | confetti pieces and duration |
 
-`CREDITS` holds the names shown in the Credits pop-up (Ahmet Kaan Sarılarlı, Enes Miraç Ateş).
+`CREDITS` holds the names shown in the Credits pop-up (Claude, Ahmet Kaan Sarılarlı, Enes Miraç Ateş).
 
 ### Topics
 
@@ -582,7 +582,7 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
 5. **Reset button for history:** clears everything in the history except the performance calculation.
 6. **Reset button for calculation:** clears everything in the calculation except the history.
 7. **"Next exercise" button** on every results screen, so the student can go straight on to the next exercise.
-8. **Credits:** add Claude to the Credits page, next to the other names.
+8. **Credits:** Claude is on the Credits page, as the first name (built 2026-11-01).
 9. **Settings button.** Everything that is a setting moves into one Settings menu. **Built (2026-11-01):** a pop-up opened by the gear button in the top corner (hidden on the quiz screen) with Theme (Auto / Light / Dark), Sound, the same-duration switch (also still on the Difficulty screen, synced and remembered) and a "Work in Progress" note, each with a short explanation. **Still to do:**
    - **SmartBoard mode.** Writing is hard on a smart board, so this setting replaces every activity that needs writing (today only typed Fill in the Blanks) with the easier **tap-tap method** that Matching already uses (`renderMatch`: tap one item, then tap where it goes; tapping a placed item undoes it): the student taps a word in the bank and it goes into the blank straight away; tapping the placed word takes it back out; then Check. Scoring has only correct or incorrect, because tapping has no "misspelled" case (decided by the owner, 2026-11-01). A short explanation of what it does is shown with the setting. (The earlier version of Fill in the Blanks was drag-and-drop, not tap-tap, and is gone from the code; the tap-tap code is reused from Matching.)
 10. **Lesson-file maker (a separate project).** A second HTML file, made by turning this game's `index.html` into a smaller copy with the same design and logic, for **one theme, one grammar or one vocabulary exercise**, to use in a lesson. The single-file rule (AGENTS.md rule 2) stays as it is for `index.html`; the new file is a whole separate thing. With it come a small **README2.md** and **DESIGN2.md**, written as guides for people or LLMs to read before changing individual lesson files.
@@ -594,7 +594,7 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
 - **Performance (4):** what is calculated (average score; per level, category, question type, difficulty or topic; best score; number of quizzes played; progress through the topics); whether only the latest try of each quiz counts or every try; whether the same-duration (60 s) switch, extra time or SmartBoard mode changes anything (tapping is easier than typing, so scores may not be comparable); how it is shown (numbers, bars, a chart). For the recommendations: what score counts as strong or weak, and how many plays of a topic are needed before judging it; only topics with real content count. The comments and recommendation texts need the owner's approval (AGENTS.md rule 9).
 - **Resets (5, 6):** where the buttons are; a confirmation pop-up before clearing ("Are you sure?"), since a reset can't be undone.
 - **Next exercise (7):** what "next" means: the next difficulty of the same quiz (Easy → Medium → Hard → Very Hard, following the expected progression), the next question type of the same topic, or the next topic; what happens after the last one; whether it skips quizzes that are still lorem.
-- **Credits (8):** the Claude line is just the name "Claude" together with the other names; the owner confirms the final order. DESIGN.md lists the fixed names and must be updated when it is built.
+- **Credits (8):** done. The order is Claude first, then the two people's names.
 - **Settings (9):** the pop-up, its place (top corner, not on the quiz screen) and the remembered duration switch are decided and built; the texts are in DESIGN.md. Still open: whether the results note that SmartBoard mode was on (when SmartBoard mode is built).
 - **Lesson-file maker (10):** its file name and where it lives in the repository; which parts of the game it keeps (probably no level / category menus) and how the theme's questions get into it; how it is kept in step with `index.html` when the design or logic changes (AGENTS.md rule 11 will need to say what covers it).
 - **Storage (3–6):** everything is saved in the browser (`localStorage`), like the Settings choices (theme, sound, same duration). So it belongs to one device and one browser, and clearing the browser's data deletes it. Ask whether that is enough, or whether students will need it on several devices (that would need accounts and a server, which goes against the single-file rule).

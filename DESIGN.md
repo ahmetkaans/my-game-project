@@ -8,7 +8,7 @@ Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Mult
 
 Student-facing text approved in real short English (not lorem): "Words in this game" and "Start" (pop-up), "Almost!", "Check your spelling: …", "Partly correct.", "… of 4 pairs are correct.".
 
-Game name: **My Game Project** (level screen title and browser tab). Credits: **Ahmet Kaan Sarılarlı**, **Enes Miraç Ateş**.
+Game name: **My Game Project** (level screen title and browser tab). Credits: **Claude**, **Ahmet Kaan Sarılarlı**, **Enes Miraç Ateş**.
 
 Settings pop-up texts (approved with the plan, 2026-11-01; "Work in Progress" is the owner's own text):
 - Title: "Settings"; button: "Close".
