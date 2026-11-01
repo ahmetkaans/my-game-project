@@ -1,0 +1,70 @@
+# Changelog
+
+What changed in My Game Project, in plain language. The newest change is at the top. Every commit adds one entry here: its date, a short title and two or three sentences about what was added or changed. The code in brackets is the commit's ID on GitHub, so you can open that exact version.
+
+## 2026-11-01
+
+### Added this changelog
+A list of every change, written in simple language, so friends and visitors can follow what was built and when. From now on, each commit adds a new entry to it.
+
+### Fixed the word list pop-up and added a back arrow (`002e159`)
+The "Words in this game" pop-up used to open already scrolled to the bottom, so the first words were hidden. It now always opens at the top. A round arrow button next to its title also lets players go back to the difficulty screen before the quiz starts.
+
+### Added a menu tree and made pop-ups smoother (`8f8bf35`)
+A small pine-tree button next to Settings opens a panel that shows where you are in the menu: level, category, topic, question type and difficulty. Every step you have already chosen is clickable, so you can jump back and change it. The panel slides in from the right on computers and up from the bottom on phones, and the blur behind pop-ups was removed so their animations run more smoothly.
+
+### Added a "Next exercise" button (`1a57cc1`)
+Every results page now has a "Next exercise" button. It opens the difficulty screen of the next quiz and marks it with a small "Next" tag: first the next difficulty, then the next question type, then the next topic. At the end of a category, a pop-up lets you choose where to go next.
+
+### Added Claude to the Credits page (`db450c4`)
+Claude is now listed on the Credits page, in first place, together with the two creators of the game.
+
+### Added a Settings menu (`322f7e4`)
+One gear button at the top now opens a Settings pop-up that replaces the old theme and sound buttons. It has the light/dark/auto theme choice, a sound switch and the "same duration" switch, each with a short explanation. The "same duration" switch is remembered, and it always matches the one on the difficulty screen.
+
+### Moved two question checks to the written review (`b47c84f`)
+Two checks (a Matching meaning that contains one of its own words, and repeated sentence patterns) are now done by the reviewer with the review checklist, instead of by the automatic checking tool. The tool's other checks stay as they were, because counting and word-list lookups are better done by a program.
+
+### Wrote the rules for numbers and for new levels (`cdb6cb3`)
+Added the rules for using numbers such as 12, 3rd or 10:30 in questions: they may appear in sentences, but the answer itself is always a word. Added notes for the future "Numbers and Amounts" theme, new items in the review checklist, and step-by-step instructions for preparing the word lists of other levels.
+
+### Rewrote the list of planned features (`7dba5b0`)
+The Roadmap now lists the plans: a history of plays, overall performance with comments, two separate reset buttons, a "Next exercise" button, a Settings menu, a maker for small lesson files, and a website. Each item has its open questions, so we decide them before building.
+
+### Added two working rules and a "How to play" section (`aa7e6c3`)
+Two new rules for the helper assistant: check that nothing contradicts before starting a task, and change every place at once when a rule changes. A new "How to play" section tells people to download only the `index.html` file and open it in a browser.
+
+### Added a review checklist (`4dc2b37`)
+A long checklist for reviewing questions the way an experienced teacher would, built from real mistakes found while writing the first theme. Also added the rule "draft first, review, then write" and a step-by-step guide for writing the next theme. The Roadmap gained a history, an overall performance score and a "Next exercise" button.
+
+## 2026-10-31
+
+### Finished the first theme and gave the game its name (`78e5424`)
+All 16 quizzes of the first theme, "Greetings and Feelings", now have real questions, after adding True or False and Matching. Matching looks better on phones, with the pair number on the corner of each box. The game also got its name, "My Game Project", its credits, and final English texts for the menus and pop-ups.
+
+### Added the first real questions (`e2f6e31`)
+The first real questions (Multiple Choice and Fill in the Blanks) for "Greetings and Feelings", each with an explanation, and short meanings for the 34 words of the theme. The blank in Fill in the Blanks now has natural spacing around it, and the word pop-up has a single Start button.
+
+### Prepared the game for real English vocabulary (`af6e5ee`)
+Added the 15 A1 vocabulary themes, one separate quiz for each difficulty, and a "Words in this game" pop-up that shows the meanings before every quiz. Fill in the Blanks now needs typing and forgives small spelling mistakes (half points), Matching gives points for each correct pair, and the right answers are spread fairly across the positions. A long set of notes explains how questions should be planned and written.
+
+### Added a rule to keep private files off GitHub (`d6b6424`)
+A rule that the private folder with working files (word lists and plans) must never be uploaded to GitHub.
+
+### Added 21 named grammar topics (`4b6ead0`)
+A1 Grammar now shows 21 named topics, such as "To be", "Present simple" and "Comparatives and superlatives", instead of placeholder names. Other levels still use placeholders. The topic buttons now update whenever you choose a category.
+
+### Added the first working rules (`41a1be8`)
+Rules for the helper assistant: ask before building, keep everything in one file, keep placeholder text until it is named, keep all numbers in one settings block, test before handing over, and commit only when asked.
+
+### Gave the game its look (`42c202e`)
+Each level has its own color, there is a light and a dark mode, and the text uses the Inter font. Small effects were added: a gentle pop for correct answers, confetti for high scores, simple generated sounds and a mute button. All motion turns off for people who ask their device to reduce motion.
+
+### Added the Roadmap (`d60c899`)
+A list of planned work in the README: the design, deciding the menu items, filling the menus with real content, and a separate Academic Word List section.
+
+### The first working version (`ec29752`)
+A complete game in a single file: five levels, two categories, topics, four question types, four difficulties with timers, a results screen and a Credits pop-up. The questions were still placeholder text. The first documents describing how the game works and how it looks were added too.
+
+### Project started (`ebaf01d`)
+The repository was created.

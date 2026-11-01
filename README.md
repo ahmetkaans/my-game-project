@@ -3,7 +3,7 @@ I have a dream so close.
 
 A language-learning quiz game in a single file: [index.html](index.html). No build step — open the file in a browser. The only external resource is the Inter font from Google Fonts (optional: the system font is used when it can't load).
 
-The game is called **My Game Project**. Texts the owner has not named are still lorem ipsum (mostly questions and the topic names of other levels); the approved screen and pop-up texts are listed in DESIGN.md. The visual design ("clean study app", level colors, dark mode, motion, sound) is documented in [DESIGN.md](DESIGN.md). Agents must read [AGENTS.md](AGENTS.md) first.
+The game is called **My Game Project**. Texts the owner has not named are still lorem ipsum (mostly questions and the topic names of other levels); the approved screen and pop-up texts are listed in DESIGN.md. The visual design ("clean study app", level colors, dark mode, motion, sound) is documented in [DESIGN.md](DESIGN.md). Agents must read [AGENTS.md](AGENTS.md) first. What changed and when is listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## How to play
 
@@ -573,6 +573,10 @@ All built and tested with lorem questions (see the sections above for how each w
 - Quizzes of a level may use the words of all lower levels (e.g. A2 quizzes may use A1 words).
 - Questions follow the "Question content method" (never ambiguous; target words split by difficulty, at least 8 per difficulty; expected progression; wrong options of the same word type, more similar at higher levels and difficulties; variable-length Matching; planned, smooth overlap; approved target-word plan first).
 - From the pilot (2026-10-31 / 11-01): difficulty split by "Frequency + teaching"; Fill banks of 3 (Easy, Medium) and 4 (Hard, Very Hard); synonyms never together; capitalized options when the blank starts a sentence; `target` for answers not in dictionary form; every question is drafted, reviewed with the "Review checklist" and written only on the owner's go-ahead (AGENTS.md rule 9).
+
+## Changelog
+
+[CHANGELOG.md](CHANGELOG.md) lists every change in plain language, newest first, so friends and visitors can follow what was built. **With every commit, add one entry at the top:** its date, a short title and two or three simple sentences about what was added or changed (what a player or a reader would notice, not the code). Write the commit's short ID in brackets after the title; the commit that adds an entry cannot know its own ID, so the newest entry gets its ID in the next commit. Commit messages stay as they are (they list the details for developers).
 
 ## Roadmap
 
