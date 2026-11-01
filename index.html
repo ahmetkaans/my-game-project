@@ -403,7 +403,6 @@
 
   /* SmartBoard mode: tappable bank words and a tappable blank (no typing) */
   button.chip { cursor: pointer; font: inherit; font-weight: 500; color: var(--fg); }
-  .chip.is-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
   .chip.is-used { opacity: 0.4; border-style: dashed; }
   .blank-slot {
     display: inline-block;
@@ -422,7 +421,6 @@
     border-radius: 8px 8px 0 0;
     cursor: pointer;
   }
-  .blank-slot.is-target { background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-line); }
   .blank-slot:disabled { opacity: 1; }
 
   /* Matching */
@@ -1009,6 +1007,86 @@
       { "left": "happen", "right": "to take place, like a party or a problem" },
       { "left": "feeling", "right": "happy, sad and angry are examples of this" }
     ], "explanation": "An interesting book makes us want to read more, and we hope for good results. Events happen, and happy, sad and angry are feelings." }
+  ],
+  "A1|vocabulary|1|mc|easy": [
+    { "type": "mc", "prompt": "The teacher says, \"Open your book at page 1.\" That is page ___.", "options": ["one", "four", "seven", "nine"], "target": "one", "targetType": "number", "explanation": "The number 1 is \"one\". Page one is the first page of the book." },
+    { "type": "mc", "prompt": "People have ___ hands.", "options": ["two", "five", "eight", "ten"], "explanation": "We have a left hand and a right hand. That is two hands." },
+    { "type": "mc", "prompt": "Ken has an apple, a banana and an egg in his bag. He has ___ things in his bag.", "options": ["three", "six", "eight", "ten"], "explanation": "An apple, a banana and an egg are three things." },
+    { "type": "mc", "prompt": "A cat has ___ legs.", "options": ["four", "two", "six", "nine"], "explanation": "A cat walks on four legs. A person has two legs." },
+    { "type": "mc", "prompt": "Mia has pens: red, blue, green, pink and black. She has ___ pens.", "options": ["five", "two", "three", "seven"], "explanation": "Red, blue, green, pink and black are five colors, so Mia has five pens." },
+    { "type": "mc", "prompt": "Ali takes bus 6 to school. He takes bus ___.", "options": ["six", "one", "three", "ten"], "explanation": "The number 6 is \"six\"." },
+    { "type": "mc", "prompt": "A week has ___ days.", "options": ["seven", "three", "four", "nine"], "explanation": "A week has seven days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday and Sunday." },
+    { "type": "mc", "prompt": "The book is $8. It is ___ dollars.", "options": ["eight", "two", "five", "six"], "explanation": "The number 8 is \"eight\". The book is eight dollars." }
+  ],
+  "A1|vocabulary|1|mc|medium": [
+    { "type": "mc", "prompt": "January is the ___ month of the year.", "options": ["first", "second", "third", "fourth"], "target": "first", "targetType": "number", "explanation": "January comes first in the year, so it is the first month." },
+    { "type": "mc", "prompt": "Ali, Ken and Tom run to school. Ali is 1st and Ken is 2nd. Ken is ___.", "options": ["second", "first", "third", "fifth"], "target": "second", "targetType": "number", "explanation": "Ali is first. Ken comes next after Ali, so he is second." },
+    { "type": "mc", "prompt": "Sam lives on the 3rd floor. He lives on the ___ floor.", "options": ["third", "second", "fourth", "fifth"], "explanation": "We write 3rd and we say \"third\"." },
+    { "type": "mc", "prompt": "Today is July 4th. It is the ___ of July.", "options": ["fourth", "third", "fifth", "first"], "explanation": "We write 4th and we say \"fourth\". July 4th is the fourth day of July." },
+    { "type": "mc", "prompt": "Anna writes her phone ___ on the paper: 555-0182.", "options": ["number", "name", "address", "email"], "explanation": "A phone number has numbers in it. Anna writes them on the paper." },
+    { "type": "mc", "prompt": "Maria cuts a pizza in two. The two parts look the same. Each part is a ___.", "options": ["half", "quarter", "pair", "number"], "target": "half", "targetType": "noun", "explanation": "Each of two parts that look the same is a half. A quarter is one of four parts." },
+    { "type": "mc", "prompt": "Anna buys new shoes. One shoe is for each foot, so she buys a ___ of shoes.", "options": ["pair", "mile", "meter", "quarter"], "explanation": "A pair is two things that go together, like two shoes." },
+    { "type": "mc", "prompt": "Ali walks to school every day. It is 2 ___ and takes him one hour.", "options": ["miles", "meters", "pairs", "numbers"], "target": "mile", "explanation": "A meter is very short, but Ali walks for one hour. A mile is a long way, so it is two miles." }
+  ],
+  "A1|vocabulary|1|mc|hard": [
+    { "type": "mc", "prompt": "The movie starts at 11:15. Ben says, \"Oh! It starts at ___ fifteen!\"", "options": ["eleven", "twelve", "ten", "twenty"], "explanation": "We say 11:15 \"eleven fifteen\". The number 11 is \"eleven\"." },
+    { "type": "mc", "prompt": "A year has ___ months.", "options": ["twelve", "eleven", "thirteen", "ten"], "explanation": "A year has twelve months, from January to December." },
+    { "type": "mc", "prompt": "Emma opens her birthday card. It says, \"Happy birthday! You are 13 today!\" Emma says, \"Yes, I am ___!\"", "options": ["thirteen", "thirty", "twelve", "fourteen"], "explanation": "The number 13 ends with \"-teen\": thirteen. The number 30 ends with \"-ty\": thirty." },
+    { "type": "mc", "prompt": "The teacher says, \"Go to room 14.\" Tom says, \"OK, room ___.\"", "options": ["fourteen", "forty", "fifteen", "thirteen"], "explanation": "The number 14 ends with \"-teen\": fourteen. The number 40 is \"forty\"." },
+    { "type": "mc", "prompt": "The bus comes at 8:15. It comes at eight ___.", "options": ["fifteen", "fifty", "fourteen", "sixteen"], "explanation": "We say 8:15 \"eight fifteen\". The number 15 is \"fifteen\" and the number 50 is \"fifty\"." },
+    { "type": "mc", "prompt": "The teacher says, \"Open your books at page 16.\" Anna says, \"Page ___?\"", "options": ["sixteen", "sixty", "fifteen", "seventeen"], "explanation": "The number 16 ends with \"-teen\": sixteen. The number 60 ends with \"-ty\": sixty." },
+    { "type": "mc", "prompt": "The big building has 18 floors. It has ___ floors.", "options": ["eighteen", "eighty", "seventeen", "nineteen"], "explanation": "In 18, the 1 comes first and the 8 comes next: eighteen. In 80, the 8 comes first: eighty." },
+    { "type": "mc", "prompt": "The pizza is $20. It is ___ dollars.", "options": ["twenty", "twelve", "thirty", "nineteen"], "explanation": "The number 20 is \"twenty\". It has no \"-teen\" at the end." }
+  ],
+  "A1|vocabulary|1|mc|veryhard": [
+    { "type": "mc", "prompt": "Ali says, \"The bag is $30.\" Anna says, \"OK, ___ dollars.\"", "options": ["thirty", "thirteen", "forty", "twenty"], "explanation": "The number 30 ends with \"-ty\": thirty. The number 13 ends with \"-teen\": thirteen." },
+    { "type": "mc", "prompt": "The bus is late! It is 6:40. Ali says, \"It is six ___!\"", "options": ["forty", "fourteen", "fifty", "thirty"], "explanation": "We say 6:40 \"six forty\". Forty has no \"u\"." },
+    { "type": "mc", "prompt": "Mia says, \"My class is big. It has 50 students.\" Ken says, \"Oh, ___ students!\"", "options": ["fifty", "fifteen", "sixty", "forty"], "explanation": "The number 50 ends with \"-ty\": fifty. The number 15 ends with \"-teen\": fifteen." },
+    { "type": "mc", "prompt": "A minute has ___ seconds.", "options": ["sixty", "sixteen", "fifty", "seventy"], "explanation": "A minute has sixty seconds. The number 60 is \"sixty\" and the number 16 is \"sixteen\"." },
+    { "type": "mc", "prompt": "Mia says, \"My grandmother is 70.\" Ken says, \"Oh, she is ___!\"", "options": ["seventy", "seventeen", "sixty", "eighty"], "explanation": "The number 70 ends with \"-ty\": seventy. The number 17 ends with \"-teen\": seventeen." },
+    { "type": "mc", "prompt": "The city is 80 miles from here. It is ___ miles.", "options": ["eighty", "eighteen", "seventy", "ninety"], "explanation": "In 80, the 8 comes first: eighty. In 18, the 1 comes first and the 8 comes next: eighteen." },
+    { "type": "mc", "prompt": "The test is 90 minutes long. It is ___ minutes.", "options": ["ninety", "nineteen", "eighty", "seventy"], "explanation": "The number 90 is \"ninety\". The number 19 is \"nineteen\" and ends with \"-teen\"." },
+    { "type": "mc", "prompt": "The new bike costs $1,000. It costs one ___ dollars.", "options": ["thousand", "hundred", "million", "ten"], "explanation": "One thousand is 1,000. One hundred is only 100, and one million is a very big number." }
+  ],
+  "A1|vocabulary|1|fill|easy": [
+    { "type": "fill", "before": "Mia's bus is number 1. She takes bus", "after": ".", "answer": "one", "bank": ["one", "five", "nine"], "target": "one", "targetType": "number", "explanation": "The number 1 is \"one\". Mia takes bus one." },
+    { "type": "fill", "before": "One, two,", "after": ", four.", "answer": "three", "bank": ["three", "eight", "ten"], "explanation": "The numbers go: one, two, three, four." },
+    { "type": "fill", "before": "The bus leaves at 5:30. It leaves at", "after": "thirty.", "answer": "five", "bank": ["five", "seven", "ten"], "explanation": "We say 5:30 \"five thirty\". The number 5 is \"five\"." },
+    { "type": "fill", "before": "Open your book at page 6. Please read page", "after": ".", "answer": "six", "bank": ["six", "three", "eight"], "explanation": "The number 6 is \"six\"." },
+    { "type": "fill", "before": "Ali lives at 7 Park Street. He lives at number", "after": "Park Street.", "answer": "seven", "bank": ["seven", "one", "nine"], "explanation": "The number 7 is \"seven\". Ali lives at number seven." },
+    { "type": "fill", "before": "Mia's phone number is 555-0128. The last number is", "after": ".", "answer": "eight", "bank": ["eight", "three", "five"], "explanation": "The last number in 555-0128 is 8, and 8 is \"eight\"." },
+    { "type": "fill", "before": "The class has 9 boys. There are", "after": "boys in the class.", "answer": "nine", "bank": ["nine", "six", "ten"], "explanation": "The number 9 is \"nine\"." },
+    { "type": "fill", "before": "Tom says the numbers: eight, nine,", "after": ".", "answer": "ten", "bank": ["ten", "five", "one"], "explanation": "After nine comes ten." }
+  ],
+  "A1|vocabulary|1|fill|medium": [
+    { "type": "fill", "before": "Sam lives on floor 3. It is the", "after": "floor.", "answer": "third", "bank": ["third", "first", "fifth"], "explanation": "Floor 3 is the third floor. We write 3rd and we say \"third\"." },
+    { "type": "fill", "before": "Tom lives at 12 Green Street. His house", "after": "is 12.", "answer": "number", "bank": ["number", "name", "color"], "explanation": "A house number tells us where a house is on the street. Tom's house number is 12." },
+    { "type": "fill", "before": "Ken and Mia run to school. Ken is 3rd and Mia is 4th. Mia is", "after": ".", "answer": "fourth", "bank": ["fourth", "second", "fifth"], "explanation": "Ken is third and Mia comes next, so she is fourth." },
+    { "type": "fill", "before": "Maria cuts a cake in four parts that look the same. Each part is a", "after": ".", "answer": "quarter", "bank": ["quarter", "half", "pair"], "explanation": "Each of four parts that look the same is a quarter. Two of them make a half." },
+    { "type": "fill", "before": "Maria's birthday is on May 5th. It is on May", "after": ".", "answer": "fifth", "bank": ["fifth", "third", "fourth"], "explanation": "We write 5th and we say \"fifth\". We say \"May fifth\"." },
+    { "type": "fill", "before": "Ken has two new shoes. They are a", "after": "of shoes.", "answer": "pair", "bank": ["pair", "mile", "meter"], "explanation": "A pair is two things that go together, like two shoes." },
+    { "type": "fill", "before": "A door is about two", "after": "tall.", "answer": "meters", "bank": ["meters", "miles", "numbers"], "target": "meter", "explanation": "A door is not very tall, so it is two meters, not two miles." },
+    { "type": "fill", "before": "The bus goes 60", "after": "in one hour.", "answer": "miles", "bank": ["miles", "meters", "pairs"], "target": "mile", "explanation": "A bus goes a long way in one hour. A mile is much longer than a meter, so the bus goes 60 miles." }
+  ],
+  "A1|vocabulary|1|fill|hard": [
+    { "type": "fill", "before": "Ten,", "after": ", twelve.", "answer": "eleven", "bank": ["eleven", "thirteen", "fifteen", "twenty"], "explanation": "The numbers go: ten, eleven, twelve." },
+    { "type": "fill", "before": "It is 12:30. It is", "after": "thirty.", "answer": "twelve", "bank": ["twelve", "ten", "nineteen", "fourteen"], "explanation": "We say 12:30 \"twelve thirty\". The number 12 is \"twelve\"." },
+    { "type": "fill", "before": "Ken says, \"I am in room 13.\" Mia asks, \"Room", "after": "?\"", "answer": "thirteen", "bank": ["thirteen", "thirty", "fourteen", "eleven"], "explanation": "The number 13 ends with \"-teen\": thirteen. The number 30 ends with \"-ty\": thirty." },
+    { "type": "fill", "before": "The teacher says, \"Read page 14.\" Mia says, \"Page", "after": "?\"", "answer": "fourteen", "bank": ["fourteen", "forty", "sixteen", "twelve"], "explanation": "The number 14 ends with \"-teen\": fourteen. The number 40 is \"forty\"." },
+    { "type": "fill", "before": "Ali says, \"The test is 15 minutes long.\" Ken says, \"OK,", "after": "minutes.\"", "answer": "fifteen", "bank": ["fifteen", "fifty", "fourteen", "eleven"], "explanation": "The number 15 is \"fifteen\" and the number 50 is \"fifty\"." },
+    { "type": "fill", "before": "The big hotel has 17 floors. It has", "after": "floors.", "answer": "seventeen", "bank": ["seventeen", "seventy", "eighteen", "sixteen"], "explanation": "In 17, the 1 comes first: seventeen. In 70, the 7 comes first: seventy." },
+    { "type": "fill", "before": "The ticket is $19. It is", "after": "dollars.", "answer": "nineteen", "bank": ["nineteen", "ninety", "eleven", "twelve"], "explanation": "The number 19 ends with \"-teen\": nineteen. The number 90 is \"ninety\"." },
+    { "type": "fill", "before": "Eighteen, nineteen,", "after": ".", "answer": "twenty", "bank": ["twenty", "twelve", "thirty", "fifteen"], "explanation": "The numbers go: eighteen, nineteen, twenty." }
+  ],
+  "A1|vocabulary|1|fill|veryhard": [
+    { "type": "fill", "before": "Ten, twenty,", "after": ", forty.", "answer": "thirty", "bank": ["thirty", "thirteen", "fifty", "sixty"], "explanation": "The numbers go up by tens: ten, twenty, thirty, forty." },
+    { "type": "fill", "before": "Mia says, \"The bag is $40.\" Ali says, \"OK,", "after": "dollars.\"", "answer": "forty", "bank": ["forty", "fourteen", "fifty", "thirty"], "explanation": "The number 40 is \"forty\". Forty has no \"u\"." },
+    { "type": "fill", "before": "Half of 100 is", "after": ".", "answer": "fifty", "bank": ["fifty", "fifteen", "forty", "sixty"], "explanation": "One of two same parts of 100 is 50, and 50 is \"fifty\"." },
+    { "type": "fill", "before": "An hour has", "after": "minutes.", "answer": "sixty", "bank": ["sixty", "sixteen", "seventy", "fifty"], "explanation": "An hour has sixty minutes. The number 60 is \"sixty\"." },
+    { "type": "fill", "before": "Ken says, \"The bus has 70 students.\" Mia says, \"Oh,", "after": "students!\"", "answer": "seventy", "bank": ["seventy", "seventeen", "sixty", "eighty"], "explanation": "The number 70 is \"seventy\". The number 17 is \"seventeen\"." },
+    { "type": "fill", "before": "Eighty,", "after": ", one hundred.", "answer": "ninety", "bank": ["ninety", "nineteen", "forty", "seventy"], "explanation": "The numbers go up by tens: eighty, ninety, one hundred." },
+    { "type": "fill", "before": "The old tree is 100 years old. It is one", "after": "years old.", "answer": "hundred", "bank": ["hundred", "thousand", "million", "seventy"], "explanation": "The number 100 is \"one hundred\". One thousand is much more than that." },
+    { "type": "fill", "before": "The city has 1,000,000 people. It has a", "after": "people.", "answer": "million", "bank": ["million", "hundred", "thousand", "ninety"], "explanation": "The number 1,000,000 is \"one million\". A million is much more than a thousand." }
   ]
 }
 </script>
@@ -1076,6 +1154,63 @@
     "believe": { "type": "verb", "meaning": "to think that something is true" },
     "hope": { "type": "verb", "meaning": "to want something good to happen" },
     "happen": { "type": "verb", "meaning": "to take place, like an event or a problem" },
+    "one": [
+      { "type": "number", "meaning": "the number 1" },
+      { "type": "determiner", "meaning": "only this person or thing, not two or more" },
+      { "type": "pronoun", "meaning": "a person or thing from a group of them" }
+    ],
+    "two": { "type": "number", "meaning": "the number 2" },
+    "three": { "type": "number", "meaning": "the number 3" },
+    "four": { "type": "number", "meaning": "the number 4" },
+    "five": { "type": "number", "meaning": "the number 5" },
+    "six": { "type": "number", "meaning": "the number 6" },
+    "seven": { "type": "number", "meaning": "the number 7" },
+    "eight": { "type": "number", "meaning": "the number 8" },
+    "first": [
+      { "type": "determiner", "meaning": "that comes before all the others" },
+      { "type": "number", "meaning": "the one in place number 1, like 1st" },
+      { "type": "adverb", "meaning": "before anyone or anything else" }
+    ],
+    "second": [
+      { "type": "number", "meaning": "the one in place number 2, like 2nd" },
+      { "type": "determiner", "meaning": "that comes after the first one" },
+      { "type": "noun", "meaning": "a very short time: 60 of them make a minute" }
+    ],
+    "third": { "type": "number", "meaning": "the one in place number 3, like 3rd" },
+    "fourth": { "type": "number", "meaning": "the one in place number 4, like 4th" },
+    "number": { "type": "noun", "meaning": "something like 7 or 15 that tells how many" },
+    "half": [
+      { "type": "noun", "meaning": "one of two parts that look the same" },
+      { "type": "determiner", "meaning": "one of two parts that look the same, said before a word like class or cake" },
+      { "type": "pronoun", "meaning": "one of two parts that look the same, said without a word after it" }
+    ],
+    "pair": { "type": "noun", "meaning": "two things that go together, like two shoes" },
+    "mile": { "type": "noun", "meaning": "a long way, much longer than a meter" },
+    "eleven": { "type": "number", "meaning": "the number 11" },
+    "twelve": { "type": "number", "meaning": "the number 12" },
+    "thirteen": { "type": "number", "meaning": "the number 13" },
+    "fourteen": { "type": "number", "meaning": "the number 14" },
+    "fifteen": { "type": "number", "meaning": "the number 15" },
+    "sixteen": { "type": "number", "meaning": "the number 16" },
+    "eighteen": { "type": "number", "meaning": "the number 18" },
+    "twenty": { "type": "number", "meaning": "the number 20" },
+    "thirty": { "type": "number", "meaning": "the number 30" },
+    "forty": { "type": "number", "meaning": "the number 40" },
+    "fifty": { "type": "number", "meaning": "the number 50" },
+    "sixty": { "type": "number", "meaning": "the number 60" },
+    "seventy": { "type": "number", "meaning": "the number 70" },
+    "eighty": { "type": "number", "meaning": "the number 80" },
+    "ninety": { "type": "number", "meaning": "the number 90" },
+    "thousand": { "type": "number", "meaning": "the number 1,000" },
+    "nine": { "type": "number", "meaning": "the number 9" },
+    "ten": { "type": "number", "meaning": "the number 10" },
+    "fifth": { "type": "number", "meaning": "the one in place number 5, like 5th" },
+    "quarter": { "type": "noun", "meaning": "one of four parts that look the same" },
+    "meter": { "type": "noun", "meaning": "a way to say how long or tall something is; a door is about 2 of them tall" },
+    "seventeen": { "type": "number", "meaning": "the number 17" },
+    "nineteen": { "type": "number", "meaning": "the number 19" },
+    "hundred": { "type": "number", "meaning": "the number 100" },
+    "million": { "type": "number", "meaning": "the number 1,000,000" },
     "miss": { "type": "verb", "meaning": "to feel sad because someone is not with you; also, to be late for a bus, train or plane" },
     "feeling": { "type": "noun", "meaning": "something you feel, like happy or sad" }
   }
@@ -1130,6 +1265,7 @@ const CONFIG = {
   FILL_BANK_MIN: 3,
   FILL_BANK_MAX: 4,
   FILL_MISSPELLED_SHARE: 0.5,    // misspelled fill answer: this share of POINTS_CORRECT, no penalty
+  SPELL_EXACT_MAX_LENGTH: 3,     // answers up to this many letters must be typed exactly (no "misspelled" half points)
   SPELL_SHORT_MAX_LENGTH: 5,     // answers up to this many letters count as "short"
   SPELL_MAX_EDITS_SHORT: 1,      // allowed spelling differences for short answers
   SPELL_MAX_EDITS_LONG: 2,       // allowed spelling differences for longer answers
@@ -1614,6 +1750,7 @@ function judgeFill(input, q) {
   const others = q.bank.map(normalizeAnswer).filter((w) => w !== answer);
   if (typed === answer) return 'correct';
   if (others.includes(typed)) return 'incorrect';
+  if (answer.length <= CONFIG.SPELL_EXACT_MAX_LENGTH) return 'incorrect'; // very short answers (hi, oh, one, six) must be exact: one wrong letter often makes another real word
   const allowed = answer.length <= CONFIG.SPELL_SHORT_MAX_LENGTH ? CONFIG.SPELL_MAX_EDITS_SHORT : CONFIG.SPELL_MAX_EDITS_LONG;
   const toAnswer = editDistance(typed, answer);
   const closerToAnswer = others.every((w) => toAnswer < editDistance(typed, w));
@@ -1934,7 +2071,7 @@ function openSettings() {
   const durationRow = settingSwitch('setting-duration', 'Same duration per question across all difficulty settings',
     `Every question gets ${CONFIG.SAME_DURATION_SECONDS} seconds, whatever the difficulty.`, (on) => setSameDuration(on));
   const smartBoardRow = settingSwitch('setting-smartboard', 'SmartBoard mode',
-    'Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word and then tap the blank to put it there instead.',
+    'Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word to put it in the blank instead.',
     (on) => setSmartBoard(on));
   const smartBoardLock = el('p', { class: 'setting-help', text: 'You can change this between quizzes.' });
   smartBoardRow.row.append(smartBoardLock);
@@ -2430,16 +2567,15 @@ function renderFill(q, area) {
   input.focus({ preventScroll: true });
 }
 
-// SmartBoard mode: the same question, answered with taps. Tap a bank word, then tap the blank to put it there;
+// SmartBoard mode: the same question, answered with taps. Tap a bank word and it goes into the blank;
 // tap the placed word (or the blank) to take it back. No "misspelled" case: the word is right or wrong.
 function renderFillTap(q, area) {
-  const ui = { selected: null, placed: null }; // indexes into q.bank
+  const ui = { placed: null }; // index into q.bank of the word in the blank
   const chips = q.bank.map((word, i) => {
     const chip = el('button', { class: 'chip', type: 'button', text: word });
     chip.addEventListener('click', () => {
       if (state.quiz.answered) return;
-      if (ui.placed === i) ui.placed = null;          // tapping a placed word takes it back
-      else ui.selected = ui.selected === i ? null : i;
+      ui.placed = ui.placed === i ? null : i;         // tapping a word puts it in the blank (replacing another); tapping the placed one takes it back
       refresh();
     });
     return chip;
@@ -2447,19 +2583,14 @@ function renderFillTap(q, area) {
   const slot = el('button', { class: 'blank-slot', type: 'button', 'aria-label': 'The blank' });
   slot.addEventListener('click', () => {
     if (state.quiz.answered) return;
-    if (ui.selected !== null) { ui.placed = ui.selected; ui.selected = null; }
-    else ui.placed = null;
+    ui.placed = null;                                 // tapping the word in the blank takes it out
     refresh();
   });
   const check = el('button', { class: 'primary check-btn', text: 'Check', disabled: true });
   const refresh = () => {
-    chips.forEach((chip, i) => {
-      chip.classList.toggle('is-selected', ui.selected === i);
-      chip.classList.toggle('is-used', ui.placed === i);
-    });
+    chips.forEach((chip, i) => chip.classList.toggle('is-used', ui.placed === i));
     slot.textContent = ui.placed === null ? '' : q.bank[ui.placed];
     slot.classList.toggle('is-filled', ui.placed !== null);
-    slot.classList.toggle('is-target', ui.selected !== null);
     check.disabled = ui.placed === null;
   };
   check.addEventListener('click', () => {
@@ -2474,7 +2605,7 @@ function renderFillTap(q, area) {
     }
   });
   area.append(
-    el('p', { class: 'instructions', text: 'Tap a word, then tap the blank.' }),
+    el('p', { class: 'instructions', text: 'Tap a word to put it in the blank.' }),
     el('div', { class: 'word-bank' }, chips),
     el('p', { class: 'prompt fill-sentence' }, [fillBefore(q.before), slot, fillAfter(q.after)]),
     check,

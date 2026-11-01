@@ -4,7 +4,16 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Fixed keyboard focus behind pop-ups
+### Wrote the Multiple Choice and Fill in the Blanks questions for "Numbers and Amounts"
+The second theme now has real questions: all four difficulties of Multiple Choice and Fill in the Blanks (64 questions), with short meanings in the word pop-up for all 41 words. Many questions use real-life numbers, such as bus numbers, prices, times and ages, and some are written as small dialogues. The notes now also hold two new rules for writing questions: every word should be tested about equally often, and no wrong answer should appear too often in one quiz.
+
+### Made very short answers stricter in Fill in the Blanks
+Answers of one to three letters, like "hi", "one" or "six", must now be typed exactly. Before, one wrong letter earned half points, which could reward a different real word, like "he" for "hey". Longer answers keep the old, forgiving rule.
+
+### Made SmartBoard Fill in the Blanks one tap
+In SmartBoard mode, tapping a word now puts it straight into the blank. Tapping the word in the blank takes it out. Before, you had to tap the word first and then tap the only blank.
+
+### Fixed keyboard focus behind pop-ups (`d43415c`)
 While a pop-up or the menu tree is open, the keyboard can no longer reach the page behind it. Before, someone using the Tab key could answer a question behind the "Time out" pop-up and be charged the extra-time penalty for it. Focus now also returns to the button that opened the pop-up.
 
 ### Made SmartBoard mode work (`c5db62d`)
