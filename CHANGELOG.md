@@ -4,7 +4,13 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Filled gaps in the project notes
+### Added a main menu button
+A house button next to the menu tree takes you back to the level screen after a "Go to the main menu?" question with Yes and No buttons. It is hidden on the level screen itself.
+
+### Grouped the levels and added their names
+The main menu now splits the levels into three groups with headings (A - Basic user, B - Independent user, C - Proficient user), and each level button shows its name under the code: Beginner, Elementary, Intermediate, Upper Intermediate and Advanced.
+
+### Filled gaps in the project notes (`a45a14d`)
 Wrote down details that were only in our conversation: how to test saved settings on a real web address, how the Settings pop-up keeps its controls in sync, two internal fields of the menu, and the idea of splitting the game file later. Also added a small private test-server tool and the color of the dim background behind pop-ups, and updated the testing rule in the working rules to list all three remembered settings (theme, sound and same duration).
 
 ### Added a SmartBoard mode switch (preview only) (`9935304`)

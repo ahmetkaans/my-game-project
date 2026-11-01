@@ -261,6 +261,16 @@
     background: color-mix(in srgb, var(--chip) var(--soft), var(--surface));
     border-color: color-mix(in srgb, var(--chip) 35%, var(--border));
   }
+  .level-btn small { color: var(--chip); opacity: 0.8; font-size: 0.85rem; letter-spacing: 0; }
+  .level-group + .level-group { margin-top: 28px; }
+  .level-group-title {
+    margin: 0 0 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
   .level-btn:hover:not(:disabled) {
     background: color-mix(in srgb, var(--chip) calc(var(--soft) * 1.7), var(--surface));
     border-color: var(--chip);
@@ -557,7 +567,7 @@
   .settings-note { margin: 12px 0 0; text-align: center; font-size: 0.85rem; color: var(--muted); }
 
   /* Menu tree: a drawer on the right on wide screens, a bottom sheet on phones */
-  #tree-btn { color: var(--accent); }
+  #tree-btn, #home-btn { color: var(--accent); }
   .tree-overlay {
     position: fixed;
     inset: 0;
@@ -680,6 +690,7 @@
 <body>
 
 <header class="topbar" id="topbar">
+  <button class="icon-btn" id="home-btn" type="button" title="Main menu" aria-label="Main menu"></button>
   <button class="icon-btn" id="tree-btn" type="button" title="Menu tree" aria-label="Menu tree"></button>
   <button class="icon-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings"></button>
 </header>
@@ -690,7 +701,7 @@
   <section id="screen-level" class="screen">
     <h1>My Game Project</h1>
     <p class="subtitle">Choose your level.</p>
-    <div class="grid" id="level-buttons"></div>
+    <div id="level-buttons"></div>
   </section>
 
   <!-- Screen: category (Vocabulary / Grammar) -->
@@ -1055,6 +1066,13 @@
  * ========================================================================= */
 const CONFIG = {
   LEVELS: ['A1', 'A2', 'B1', 'B2', 'C1'],
+  // Level screen: the buttons are shown in these groups, each level with its name below the code.
+  LEVEL_GROUPS: [
+    { label: 'A – Basic user', levels: ['A1', 'A2'] },
+    { label: 'B – Independent user', levels: ['B1', 'B2'] },
+    { label: 'C – Proficient user', levels: ['C1'] },
+  ],
+  LEVEL_NAMES: { A1: 'Beginner', A2: 'Elementary', B1: 'Intermediate', B2: 'Upper Intermediate', C1: 'Advanced' },
   CATEGORIES: [
     { id: 'vocabulary', label: 'Vocabulary' },
     { id: 'grammar', label: 'Grammar' },
@@ -1185,6 +1203,7 @@ const ICONS = {
   light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
   back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></svg>',
   tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5.5 12H9l-4 6h14l-4-6h3.5z"/><path d="M12 18v3"/></svg>',
   settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
 };
@@ -1617,6 +1636,7 @@ function showScreen(name) {
   // Credits and the theme/mute bar are shown on every page except the game (quiz) page.
   $('#credits-footer').hidden = name === 'quiz';
   $('#topbar').hidden = name === 'quiz';
+  $('#home-btn').hidden = name === 'level'; // already on the main menu
   const crumb = $(`#screen-${name} .breadcrumb`);
   if (crumb) crumb.textContent = breadcrumbParts().slice(0, SCREEN_DEPTH[name]).join(' › ');
   if (name === 'difficulty') renderDifficultyButtons();
@@ -1690,6 +1710,19 @@ function levelCategoryLabel(nav) {
   return `${nav.level} ${findById(CONFIG.CATEGORIES, nav.category).label}`;
 }
 
+// Asks before leaving the current screen for the level screen (the top bar's Main menu button).
+function openHomeConfirm() {
+  openModal({
+    title: 'Go to the main menu?',
+    body: 'You will go back to the level selection screen.',
+    dismissible: true,
+    buttons: [
+      { label: 'No', onClick: closeModal },
+      { label: 'Yes', primary: true, onClick: () => { closeModal(); goHome(); } },
+    ],
+  });
+}
+
 function goHome() {
   state.quiz = null;
   showScreen('level');
@@ -1729,15 +1762,19 @@ function renderTopicButtons() {
 }
 
 function initMenus() {
-  renderButtons($('#level-buttons'), CONFIG.LEVELS.map((l) => ({ id: l, label: l })), (item) => {
-    state.nav.level = item.id;
-    showScreen('category');
-  });
-  // Each level button previews its own level color.
-  [...$('#level-buttons').children].forEach((btn, i) => {
-    btn.classList.add('level-btn');
-    btn.style.setProperty('--chip', `var(--lvl-${CONFIG.LEVELS[i]})`);
-  });
+  $('#level-buttons').replaceChildren(...CONFIG.LEVEL_GROUPS.map((group) => {
+    const grid = el('div', { class: 'grid' });
+    renderButtons(grid, group.levels.map((l) => ({ id: l, label: l, sub: CONFIG.LEVEL_NAMES[l] })), (item) => {
+      state.nav.level = item.id;
+      showScreen('category');
+    });
+    // Each level button previews its own level color.
+    [...grid.children].forEach((btn, i) => {
+      btn.classList.add('level-btn');
+      btn.style.setProperty('--chip', `var(--lvl-${group.levels[i]})`);
+    });
+    return el('div', { class: 'level-group' }, [el('h2', { class: 'level-group-title', text: group.label }), grid]);
+  }));
   renderButtons($('#category-buttons'), CONFIG.CATEGORIES, (item) => {
     state.nav.category = item.id;
     renderTopicButtons();
@@ -1917,6 +1954,9 @@ function closeTree() {
 }
 
 function initTree() {
+  const home = $('#home-btn');
+  home.innerHTML = ICONS.home;
+  home.addEventListener('click', openHomeConfirm);
   const btn = $('#tree-btn');
   btn.innerHTML = ICONS.tree;
   btn.addEventListener('click', openTree);

@@ -28,6 +28,8 @@ Menu tree texts (approved with the plan, 2026-11-01):
 
 Screen and pop-up texts approved by the owner:
 - Level screen subtitle: "Choose your level."
+- Main menu pop-up (approved 2026-11-01): title "Go to the main menu?"; text "You will go back to the level selection screen."; buttons "No" and "Yes" (Yes is primary).
+- Level screen groups (approved 2026-11-01): "A - Basic user", "B - Independent user", "C - Proficient user" (shown with an en dash, in small capitals). Level names under the codes: A1 Beginner, A2 Elementary, B1 Intermediate, B2 Upper Intermediate, C1 Advanced.
 - Screen titles: "What do you want to practice?" (category), "Choose a topic", "Choose a question type", "Choose a difficulty", "Your results".
 - Fill in the Blanks instruction: "Type the missing word."
 - Quit pop-up: "Your answers in this quiz will be lost."
@@ -111,14 +113,14 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 
 ## Controls placement
 
-- Top bar (`.topbar`, right-aligned): two round icon buttons (inline SVG), the **menu tree** (a minimal pine tree, in the level accent) and **Settings** (a gear), the tree to the left of the gear. Shown on every screen **except the quiz screen**, to keep the quiz focused. The tree opens the menu tree panel; the gear opens the Settings pop-up (Theme, Sound, Same duration, "Work in Progress"). The Same duration switch also stays on the Difficulty screen, always showing the same value.
+- Top bar (`.topbar`, right-aligned): three round icon buttons (inline SVG), **Main menu** (a house, in the level accent, hidden on the level screen; asks "Go to the main menu?" with No / Yes), the **menu tree** (a minimal pine tree, in the level accent) and **Settings** (a gear), the tree to the left of the gear. Shown on every screen **except the quiz screen**, to keep the quiz focused. The tree opens the menu tree panel; the gear opens the Settings pop-up (Theme, Sound, Same duration, "Work in Progress"). The Same duration switch also stays on the Difficulty screen, always showing the same value.
 - Back button: top-left text button on every screen except the level screen.
 - Footer: Credits link on every screen except the quiz screen.
 
 ## Components
 
 - **Menu button** (`.menu-btn`): white card button in a grid; optional `<small>` sub-label (seconds on difficulty buttons).
-- **Level button** (`.level-btn`): bigger, tinted in its own level color.
+- **Level button** (`.level-btn`): bigger, tinted in its own level color; the level code in large type with its name below in a small, softer line. The buttons sit in three groups (`.level-group`) with a small muted uppercase heading (`.level-group-title`), 28px apart.
 - **Primary button** (`button.primary`): accent background; Next, Check, Next exercise, main modal action. (Retry is a normal button.)
 - **Next-quiz mark** (`.menu-btn.is-next`, `.next-tag`): after Next exercise, the suggested difficulty on the Difficulty screen gets an accent outline and a small accent pill "Next" in its top-right corner. It disappears when the student leaves the screen.
 - **Icon button** (`.icon-btn`): 44px round, the menu tree and the Settings gear.
