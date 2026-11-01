@@ -225,6 +225,7 @@
     .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
   }
   .menu-btn {
+    position: relative;
     min-height: 72px;
     padding: 14px 16px;
     border-radius: var(--radius);
@@ -236,6 +237,20 @@
     gap: 2px;
   }
   .menu-btn small { color: var(--muted); font-weight: 400; font-size: 0.9rem; }
+  /* The quiz suggested by "Next exercise" on the Difficulty screen */
+  .menu-btn.is-next { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .next-tag {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    padding: 1px 9px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
 
   .level-btn {
     --chip: var(--accent);
@@ -629,7 +644,8 @@
       <p class="results-score" id="results-score"></p>
       <ul class="results-summary" id="results-summary"></ul>
       <div class="actions">
-        <button class="primary" id="results-retry">Retry</button>
+        <button class="primary" id="results-next">Next exercise</button>
+        <button id="results-retry">Retry</button>
         <button id="results-home">Main menu</button>
       </div>
     </div>
@@ -1051,6 +1067,7 @@ const ICONS = {
 const state = {
   nav: { level: null, category: null, topic: null, type: null, difficulty: null, sameDuration: false },
   quiz: null, // created by startQuiz()
+  nextHint: null, // { difficulty }: the quiz "Next exercise" suggests; marked on the Difficulty screen, cleared on any other screen
 };
 
 /* =========================================================================
@@ -1462,6 +1479,7 @@ function breadcrumbParts() {
 
 function showScreen(name) {
   stopConfetti();
+  if (name !== 'difficulty') state.nextHint = null;
   document.querySelectorAll('.screen').forEach((s) => { s.hidden = s.id !== `screen-${name}`; });
   // Level accent: neutral on the level screen, the chosen level's color everywhere inside a level.
   if (name === 'level') delete document.body.dataset.level;
@@ -1479,6 +1497,10 @@ function renderButtons(container, items, onClick) {
   container.replaceChildren(...items.map((item) => {
     const btn = el('button', { class: 'menu-btn' }, [item.label]);
     if (item.sub) btn.append(el('small', { text: item.sub }));
+    if (item.tag) {
+      btn.classList.add('is-next');
+      btn.append(el('span', { class: 'next-tag', text: item.tag }));
+    }
     btn.addEventListener('click', () => onClick(item));
     return btn;
   }));
@@ -1502,10 +1524,69 @@ function renderDifficultyButtons() {
   const items = CONFIG.DIFFICULTIES.map((d) => ({
     ...d,
     sub: `${state.nav.sameDuration ? CONFIG.SAME_DURATION_SECONDS : d.seconds}s`,
+    tag: state.nextHint && state.nextHint.difficulty === d.id ? 'Next' : null,
   }));
   renderButtons($('#difficulty-buttons'), items, (d) => {
     state.nav.difficulty = d.id;
     startQuiz();
+  });
+}
+
+/* =========================================================================
+ * NEXT EXERCISE  (results screen: difficulty -> question type -> topic; the student chooses at the end of a category)
+ * ========================================================================= */
+// The next quiz after `nav`: { nav } for the next quiz, { options: [{ nav }] } when the category's topics are finished
+// (the student decides where to go), or null after the very last quiz.
+function getNextExercise(nav) {
+  const diffs = CONFIG.DIFFICULTIES;
+  const types = CONFIG.TYPES;
+  const d = diffs.findIndex((x) => x.id === nav.difficulty);
+  if (d < diffs.length - 1) return { nav: { ...nav, difficulty: diffs[d + 1].id } };
+  const t = types.findIndex((x) => x.id === nav.type);
+  if (t < types.length - 1) return { nav: { ...nav, type: types[t + 1].id, difficulty: diffs[0].id } };
+  if (nav.topic < getTopics(nav).length - 1) {
+    return { nav: { ...nav, topic: nav.topic + 1, type: types[0].id, difficulty: diffs[0].id } };
+  }
+  const start = (level, category) => ({ ...nav, level, category, topic: 0, type: types[0].id, difficulty: diffs[0].id });
+  const c = CONFIG.CATEGORIES.findIndex((x) => x.id === nav.category);
+  const l = CONFIG.LEVELS.indexOf(nav.level);
+  const options = [];
+  if (c < CONFIG.CATEGORIES.length - 1) options.push({ nav: start(nav.level, CONFIG.CATEGORIES[c + 1].id) });
+  if (l < CONFIG.LEVELS.length - 1) options.push({ nav: start(CONFIG.LEVELS[l + 1], CONFIG.CATEGORIES[0].id) });
+  return options.length ? { options } : null;
+}
+
+function levelCategoryLabel(nav) {
+  return `${nav.level} ${findById(CONFIG.CATEGORIES, nav.category).label}`;
+}
+
+function goHome() {
+  state.quiz = null;
+  showScreen('level');
+}
+
+// Opens the Difficulty screen of the next quiz and marks it; the student presses it to start.
+function goToNextExercise(nav) {
+  Object.assign(state.nav, nav);
+  state.quiz = null;
+  closeModal();
+  state.nextHint = { difficulty: nav.difficulty };
+  showScreen('difficulty');
+}
+
+function openNextExercise() {
+  const next = getNextExercise(state.nav);
+  if (!next) return;
+  if (next.nav) { goToNextExercise(next.nav); return; }
+  const here = levelCategoryLabel(state.nav);
+  openModal({
+    title: `End of ${here}`,
+    body: `You have reached the end of ${here}. Where do you want to go next?`,
+    buttons: [
+      ...next.options.map((o, i) => ({ label: levelCategoryLabel(o.nav), primary: i === 0, onClick: () => goToNextExercise(o.nav) })),
+      { label: 'Main menu', onClick: () => { closeModal(); goHome(); } },
+    ],
+    dismissible: true,
   });
 }
 
@@ -1552,11 +1633,9 @@ function initMenus() {
   $('#credits-btn').addEventListener('click', openCredits);
   $('#quiz-quit').addEventListener('click', requestQuit);
   $('#quiz-next').addEventListener('click', goNext);
+  $('#results-next').addEventListener('click', openNextExercise);
   $('#results-retry').addEventListener('click', startQuiz);
-  $('#results-home').addEventListener('click', () => {
-    state.quiz = null;
-    showScreen('level');
-  });
+  $('#results-home').addEventListener('click', goHome);
 }
 
 /* =========================================================================
@@ -2178,6 +2257,7 @@ function showResults() {
     return el('li', { class: `st-${rec.status}` }, children);
   }));
 
+  $('#results-next').hidden = !getNextExercise(state.nav);   // hidden after the very last quiz
   showScreen('results');
   const minScore = type === 'match' ? CONFIG.CONFETTI_MIN_MATCH_SCORE : CONFIG.CONFETTI_MIN_SCORE;
   if (quiz.graded && finalScore >= minScore) launchConfetti();

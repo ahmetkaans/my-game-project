@@ -4,7 +4,7 @@
 
 The visual design is **decided** and applied in [index.html](index.html) (all CSS lives in its `<style>` block). Copy that the owner has not named explicitly is still lorem ipsum.
 
-Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry.
+Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry, Next exercise.
 
 Student-facing text approved in real short English (not lorem): "Words in this game" and "Start" (pop-up), "Almost!", "Check your spelling: …", "Partly correct.", "… of 4 pairs are correct.".
 
@@ -16,6 +16,10 @@ Settings pop-up texts (approved with the plan, 2026-11-01; "Work in Progress" is
 - Sound: "Play sounds for correct and wrong answers and for the timer."
 - Same duration per question across all difficulty settings (the fixed name, as on the Difficulty screen): "Every question gets 60 seconds, whatever the difficulty." (the number comes from `CONFIG.SAME_DURATION_SECONDS`)
 - Note at the bottom: "Work in Progress".
+
+Next exercise texts (approved with the plan, 2026-11-01):
+- Results button: "Next exercise"; mark on the Difficulty screen: "Next".
+- End-of-category pop-up: title "End of {level} {category}" (for example "End of A1 Vocabulary"); text "You have reached the end of {level} {category}. Where do you want to go next?"; buttons "{level} {category}" (for example "A1 Grammar", "A2 Vocabulary") and "Main menu".
 
 Screen and pop-up texts approved by the owner:
 - Level screen subtitle: "Choose your level."
@@ -108,7 +112,8 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 
 - **Menu button** (`.menu-btn`): white card button in a grid; optional `<small>` sub-label (seconds on difficulty buttons).
 - **Level button** (`.level-btn`): bigger, tinted in its own level color.
-- **Primary button** (`button.primary`): accent background; Next, Check, Retry, main modal action.
+- **Primary button** (`button.primary`): accent background; Next, Check, Next exercise, main modal action. (Retry is a normal button.)
+- **Next-quiz mark** (`.menu-btn.is-next`, `.next-tag`): after Next exercise, the suggested difficulty on the Difficulty screen gets an accent outline and a small accent pill "Next" in its top-right corner. It disappears when the student leaves the screen.
 - **Icon button** (`.icon-btn`): 44px round, the Settings gear.
 - **Settings pop-up** (`.settings`, `.setting`, `.setting-head`, `.setting-help`, `.segmented`, `.settings-note`): a dismissible modal (Escape or a click outside closes it; one **Close** button). One bordered row per setting: its name and control on one line (a **switch** on the right, or a three-button **segmented control** for Theme, selected button in the accent color), then a short muted explanation (0.9rem) underneath. At the bottom, a small muted centered "Work in Progress". Tap targets are at least 44px; rows and explanations wrap on phones.
 - **Switch** (`.switch-row` / `.switch`): card row with a toggle in the accent color.
@@ -120,7 +125,7 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Matching** (`.match-columns`, `.match-item`): two columns. On phones the word column is only as wide as its longest word (words never break in the middle), the meanings get the rest of the width, and the pair number badge sits on the box's top-right corner, so long meanings don't wrap into tall, narrow boxes. From 600px: equal columns, badge inside the box on the right; selected item gets accent outline + tint; paired items share a round number badge.
 - **Modal** (`.modal-overlay`, `.modal`): card with soft shadow over a dimmed, slightly blurred page.
 - **"Words in this game" pop-up** (`.word-list`): a modal before every quiz (and Retry). One soft accent-tinted row per tested word: the word (medium weight), then one line per word type it has at that level: the type (small, muted, italic) and its meaning. **The type used in that game is underlined** in the level color and shown in the normal text color. One button, **Start** (primary); the list scrolls inside the modal when it is long (Matching: up to 16 words).
-- **Results**: hero card with big score in the accent color, summary, actions; then one card per question with a colored left border (green / red / grey).
+- **Results**: hero card with big score in the accent color, summary, actions; then one card per question with a colored left border (green / red / grey). Actions: **Next exercise** (primary, hidden after the very last quiz), Retry, Main menu; they wrap on phones.
 
 ## Open design work
 
