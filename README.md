@@ -86,6 +86,8 @@ All tunable numbers are in the `CONFIG` object at the top of the script:
 
 ```js
 state.nav  = { level, category, topic /* index */, type, difficulty, sameDuration }   // sameDuration is remembered: localStorage "lg-same-duration"
+state.screen = 'level'   // the screen being shown (set by showScreen); the menu tree reads it with SCREEN_DEPTH
+state.nextHint = null   // { difficulty }: the quiz "Next exercise" marks on the Difficulty screen; cleared as soon as any other screen is shown
 state.quiz = {
   questions, index,
   score,          // raw running score, can go negative mid-quiz
@@ -133,6 +135,7 @@ record = { status: 'correct'|'partial'|'incorrect'|'skipped'|'unanswered', userA
 - **Theme** (`setTheme`, `initTheme`; chosen in Settings with the Auto / Light / Dark buttons): `auto` removes `html[data-theme]` so CSS follows `prefers-color-scheme`. Saved in `localStorage["lg-theme"]`; an inline script in `<head>` applies it before first paint.
 - **Sound** (`initSound`, `getAudio`, `playNote`, `playSound(name)`): Web Audio API, notes defined in `SOUNDS` (`correct`, `partial`, `wrong`, `tick`). The `AudioContext` is created/resumed on the first `pointerdown`/`keydown` (browser autoplay rules). On by default; the Sound switch in Settings (`setMuted`) saves the choice in `localStorage["lg-muted"]` (`'1'` = muted). `submitAnswer()` plays `correct` / `partial` / `wrong`.
 - **Same duration** (`setSameDuration`): the switch exists on the Difficulty screen and in Settings, and both always show `state.nav.sameDuration`. `setSameDuration(value)` updates the state, `localStorage["lg-same-duration"]` (`'1'` = on), both switches and the seconds on the difficulty buttons. `initMenus()` loads the saved value before the first render. Settings is not available during a quiz, so the time of a running quiz never changes.
+- **Settings pop-up internals** (`openSettings()`, `settingSwitch()`, `refreshSettings()`, `settingsUi`): `openSettings()` builds the rows and keeps references to the open controls in `settingsUi`. Every setter (`setTheme`, `setMuted`, `setSameDuration`) ends with `refreshSettings()`, which sets the open controls from the real values (the selected theme button, the Sound switch = not muted, the duration switch), so a change made anywhere shows everywhere. **To add a setting:** add a row in `openSettings()` (a switch with `settingSwitch(id, name, help, onChange)`), a setter that saves to `localStorage` and calls `refreshSettings()`, and one line in `refreshSettings()`. The SmartBoard row is only a preview: its `onChange` is empty and it is not in `refreshSettings()`.
 - **Storage**: `loadPref` / `savePref` wrap `localStorage` in try/catch; if storage is blocked (private mode, `data:` previews) the game still works and simply doesn't remember.
 - **Correct animation**: `submitAnswer()` adds `.pop` to every `.is-correct` element in the question when the answer is correct.
 - **Confetti** (`launchConfetti`, `stopConfetti`): `<canvas>` overlay drawn with `requestAnimationFrame` in the five level colors (read from CSS `--lvl-*`). Triggered at the end of `showResults()` when the final score ≥ `CONFETTI_MIN_SCORE` (80), or ≥ `CONFETTI_MIN_MATCH_SCORE` (75) for Matching. Removed after `CONFETTI_MS` or by `showScreen()`.
@@ -546,6 +549,7 @@ Use this the way an experienced English teacher checks coursebook material, and 
 
 1. **Grammar topics**: their content method is decided when grammar content starts.
 2. **Spelling tolerance for very short answers** (decide before grammar content starts): typed Fill allows 1 wrong letter for answers of up to 5 letters, so 2–3 letter answers are very forgiving (typing "n" for "in" counts as misspelled). The owner may want a stricter rule for them. Seen in the pilot: typing **"he"** (a real, different word) for *hey* got "Almost!" and half points; it affects *hi, oh, hey* in Greetings and Feelings already.
+3. **Matching meaning vs pop-up meaning:** the Review checklist asks for a Matching meaning that is not identical to the pop-up meaning, so Matching does not only test memory of the pop-up. The owner noted (2026-11-01) that seeing the same wording again can help students memorize, and chose to keep the rule as it is. The middle path discussed: the same wording is fine at Easy and Medium, a fresh wording is preferred at Hard and Very Hard. Revisit if the owner wants.
 
 ### Code changes for real questions: done
 
@@ -573,6 +577,15 @@ All built and tested with lorem questions (see the sections above for how each w
 - Quizzes of a level may use the words of all lower levels (e.g. A2 quizzes may use A1 words).
 - Questions follow the "Question content method" (never ambiguous; target words split by difficulty, at least 8 per difficulty; expected progression; wrong options of the same word type, more similar at higher levels and difficulties; variable-length Matching; planned, smooth overlap; approved target-word plan first).
 - From the pilot (2026-10-31 / 11-01): difficulty split by "Frequency + teaching"; Fill banks of 3 (Easy, Medium) and 4 (Hard, Very Hard); synonyms never together; capitalized options when the blank starts a sentence; `target` for answers not in dictionary form; every question is drafted, reviewed with the "Review checklist" and written only on the owner's go-ahead (AGENTS.md rule 9).
+
+## Testing
+
+AGENTS.md rule 6 lists what to check before handing over. Practical notes from building the Settings menu, Next exercise and the menu tree:
+- **Saved settings need a real web address.** A preview of the file (a `data:` address, or a file shown as a snapshot) blocks `localStorage`, so theme, sound and same-duration cannot be tested there. Start the private test server with `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve.ps1` (it serves only `index.html` at `http://localhost:8765/`), open that address, and stop the server when done (Ctrl+C, or end its PowerShell process). Clear the test storage afterwards (`localStorage.clear()` in the console). The server never serves a cached page, so a reload always shows the latest `index.html`. If it says the port is busy, an old server is still running: stop it (below) or start another with `-Port 8766` (then open that port). If it was started hidden (for example by an assistant), stop it with `Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*serve.ps1*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`. The tool is private (in `.gitignore/tools/`) and only for testing; players never need it.
+- **Phone width:** use a 375px wide view (the preview's Mobile size) and reset it to desktop afterwards. Changing the size can reload the page, so set the state again.
+- **Animations in previews:** the preview can run slower than a real browser, and a screenshot may catch a pop-up in the middle of its slide, so take a second screenshot before judging the final look. How smooth an animation feels can only be judged on a real device.
+- **Reaching any screen quickly:** in the browser console, set `state.nav` and call `startQuiz()` or `showResults()`; the order of Next exercise can be tested with `getNextExercise(nav)` (all 1,856 quizzes are visited once, in order).
+- Run the question check (`check_questions.ps1`) after any change; the expected result is 0 errors and 6 warnings.
 
 ## Changelog
 
@@ -607,3 +620,11 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
 - **Lesson-file maker (10):** its file name and where it lives in the repository; which parts of the game it keeps (probably no level / category menus) and how the theme's questions get into it; how it is kept in step with `index.html` when the design or logic changes (AGENTS.md rule 11 will need to say what covers it).
 - **Storage (3–6):** everything is saved in the browser (`localStorage`), like the Settings choices (theme, sound, same duration). So it belongs to one device and one browser, and clearing the browser's data deletes it. Ask whether that is enough, or whether students will need it on several devices (that would need accounts and a server, which goes against the single-file rule).
 - **Design (all):** new screens or pop-ups and their texts need the owner's approved names (DESIGN.md).
+
+### Later, not planned yet: splitting the file
+
+Discussed 2026-11-01; nothing is decided or built. `index.html` is about 120 KB today, and 76 KB of the question data is for one theme; a rough estimate is 2-3 MB for all of A1 and 10 MB or more for all five levels. If it grows too big, the idea is to keep separate source files (styles, code, one data file per theme or level) and join them into the single `index.html` that learners download, with a PowerShell bundling script. Learners would still download one file that works offline.
+- **When to bring it up:** the file passes about 1 MB, A2 starts, the game feels slow to open, or edits to the big file start going wrong. Until then one file is fine; writing the question JSON without indentation comes first.
+- **Cautions agreed with the owner:** ask the owner first (AGENTS.md rule 1; rule 2, "single file, no build step", would need new wording, and AGENTS.md changes only when the owner asks). Never edit the built `index.html` by hand once it is generated; rebuild after every change and check it in the browser. First test: split today's file, glue it back and compare it with the original; any difference is a bug in the bundler. The check script should warn when `index.html` is older than its sources, and the build should run the check script. Keep the bundler pure ASCII, write UTF-8 without BOM and LF line endings, wrap one-item results in `@()`, escape a stray `</script>` inside data, and use a `.ps1` file (Node and Python are not installed).
+- A "load each level only when chosen" mode would work only on the website, not in the downloaded file.
+- The lesson-file maker (item 10) would use the same pieces.

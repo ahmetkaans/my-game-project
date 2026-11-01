@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Added a SmartBoard mode switch (preview only)
+### Filled gaps in the project notes
+Wrote down details that were only in our conversation: how to test saved settings on a real web address, how the Settings pop-up keeps its controls in sync, two internal fields of the menu, and the idea of splitting the game file later. Also added a small private test-server tool and the color of the dim background behind pop-ups, and updated the testing rule in the working rules to list all three remembered settings (theme, sound and same duration).
+
+### Added a SmartBoard mode switch (preview only) (`9935304`)
 The Settings menu now has a "SmartBoard mode" switch with an explanation: it is meant to let students tap a word instead of typing it on a smart board. For now it is only there to show how it will look, and its explanation ends with "Its code hasn't been written yet", because the feature itself is not built.
 
 ### Added the changelog rule to the working rules (`d70fbd8`)

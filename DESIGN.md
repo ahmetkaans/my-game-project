@@ -70,6 +70,7 @@ Each level's color is the accent (`--accent`) on **every screen inside that leve
 | `--extra` | `#C2410C` | `#FB923C` | timer during the +10 s extra time |
 | `--bg` / `--surface` | `#F6F6F3` / `#FFFFFF` | `#121417` / `#1A1D21` | page base / cards |
 | `--fg` / `--muted` / `--border` | `#1D2125` / `#5F6670` / `#E3E3DE` | `#E6E8EB` / `#9AA1AA` / `#2C3137` | text / secondary text / lines |
+| `--overlay` | `rgba(20,24,28,.5)` | `rgba(0,0,0,.66)` | the dim behind pop-ups and the menu tree (no blur, so their animations stay smooth) |
 
 - Green and red are used **only** for correct and wrong answers (buttons, feedback box, results cards). Partly right answers use the level color.
 - **Timer**: normal and low time use the level accent. Low time (< 25%) is shown with a gentle pulse and the ticking sound, not with red. Extra time uses deep orange **plus a diagonal stripe pattern** and an "Extra time" label, so it is clearly different from C1 gold (also in dark mode).
