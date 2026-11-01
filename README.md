@@ -5,6 +5,20 @@ A language-learning quiz game in a single file: [index.html](index.html). No bui
 
 The game is called **My Game Project**. Texts the owner has not named are still lorem ipsum (mostly questions and the topic names of other levels); the approved screen and pop-up texts are listed in DESIGN.md. The visual design ("clean study app", level colors, dark mode, motion, sound) is documented in [DESIGN.md](DESIGN.md). Agents must read [AGENTS.md](AGENTS.md) first.
 
+## How to play
+
+**You only need one file: [`index.html`](index.html).** Nothing to install, no account.
+
+1. Open [`index.html`](index.html) here on GitHub.
+2. Click the **download** button (the arrow icon, "Download raw file") at the top right of the file.
+3. Open the downloaded file with your browser (Chrome, Edge, Firefox or Safari): double-click it, or drag it into a browser window.
+
+- The game works on **phones and computers**.
+- Works **offline**, too: without internet, the game uses your device's own font instead of Inter.
+- Your theme and sound choices are remembered in that browser.
+
+**Coming later: a website.** The plan is to publish the game on a website, so anyone can play it from a link on a computer or a phone, with nothing to download (see "Roadmap").
+
 ## Screen flow
 
 ```
@@ -541,6 +555,7 @@ Planned work (not implemented yet):
 6. **Overall performance** (owner's request, 2026-11-01): the game calculates the student's overall performance from the played quizzes.
    - **Two separate reset buttons**: one clears the history, the other clears the overall performance calculation. Each works on its own.
 7. **"Next exercise" button** (owner's request, 2026-11-01) on every results screen, so the student can go straight on to the next exercise.
+8. **Website** (owner's plan, 2026-11-01): publish the game online so anyone can play it from a link, on a computer or a phone, without downloading. Open questions (ask the owner): where to host it (for example GitHub Pages, which is free and works with this repository as it is, or the owner's own domain), the web address, and when (now, or after more content is ready). Saved progress (theme, sound, and later history and performance) is stored per website, so moving to another address later starts it fresh. Once it is online, put the link in the GitHub "About" section ("Website") and in "How to play".
 
 Open questions for items 5–7 (ask the owner before building; AGENTS.md rules 1 and 4):
 - **History:** what one entry shows (date and time, level › category › topic › type › difficulty, score, correct / partly correct / wrong / skipped counts, used extra time?); whether the student can open an entry to see its answers; how many entries are kept; where it is opened (a button on the level screen, the top bar, the results screen).
