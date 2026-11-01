@@ -21,6 +21,10 @@ Next exercise texts (approved with the plan, 2026-11-01):
 - Results button: "Next exercise"; mark on the Difficulty screen: "Next".
 - End-of-category pop-up: title "End of {level} {category}" (for example "End of A1 Vocabulary"); text "You have reached the end of {level} {category}. Where do you want to go next?"; buttons "{level} {category}" (for example "A1 Grammar", "A2 Vocabulary") and "Main menu".
 
+Menu tree texts (approved with the plan, 2026-11-01):
+- Button name (tooltip and screen readers): "Menu tree"; panel title: "Where you are"; button: "Close".
+- Step captions: "Level", "Category", "Topic", "Question type", "Difficulty"; a step not chosen yet: "Not chosen yet"; the current step: "You are here".
+
 Screen and pop-up texts approved by the owner:
 - Level screen subtitle: "Choose your level."
 - Screen titles: "What do you want to practice?" (category), "Choose a topic", "Choose a question type", "Choose a difficulty", "Your results".
@@ -90,6 +94,7 @@ All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distanc
 - Buttons press down slightly (`scale(.98)`).
 - Low-time timer bar pulses softly.
 - **Confetti** on the results screen for a high score: final score **≥ 80** (Multiple Choice, Fill in the Blanks, True or False) or **≥ 75** (Matching, which has partial points). Drawn on a temporary `<canvas>` in the five level colors, removed when done or when leaving the screen.
+- **Menu tree**: the backdrop fades in (0.25s); on wide screens the drawer slides in from the right (0.28s, ease-out), on phones the sheet slides up (0.22s); then the steps fade and slide in one after another (0.06s apart, starting 0.12s in). Closing reverses it (`CONFIG.TREE_CLOSE_MS` = 280).
 - **Reduce motion**: when the device has "reduce motion" on, all CSS animations/transitions are disabled and confetti is skipped.
 
 ## Sound
@@ -104,7 +109,7 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 
 ## Controls placement
 
-- Top bar (`.topbar`, right-aligned): one **Settings** round icon button (a gear, inline SVG). Shown on every screen **except the quiz screen**, to keep the quiz focused. It opens the Settings pop-up (Theme, Sound, Same duration, "Work in Progress"). The Same duration switch also stays on the Difficulty screen, always showing the same value.
+- Top bar (`.topbar`, right-aligned): two round icon buttons (inline SVG), the **menu tree** (a minimal pine tree, in the level accent) and **Settings** (a gear), the tree to the left of the gear. Shown on every screen **except the quiz screen**, to keep the quiz focused. The tree opens the menu tree panel; the gear opens the Settings pop-up (Theme, Sound, Same duration, "Work in Progress"). The Same duration switch also stays on the Difficulty screen, always showing the same value.
 - Back button: top-left text button on every screen except the level screen.
 - Footer: Credits link on every screen except the quiz screen.
 
@@ -114,8 +119,9 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Level button** (`.level-btn`): bigger, tinted in its own level color.
 - **Primary button** (`button.primary`): accent background; Next, Check, Next exercise, main modal action. (Retry is a normal button.)
 - **Next-quiz mark** (`.menu-btn.is-next`, `.next-tag`): after Next exercise, the suggested difficulty on the Difficulty screen gets an accent outline and a small accent pill "Next" in its top-right corner. It disappears when the student leaves the screen.
-- **Icon button** (`.icon-btn`): 44px round, the Settings gear.
+- **Icon button** (`.icon-btn`): 44px round, the menu tree and the Settings gear.
 - **Settings pop-up** (`.settings`, `.setting`, `.setting-head`, `.setting-help`, `.segmented`, `.settings-note`): a dismissible modal (Escape or a click outside closes it; one **Close** button). One bordered row per setting: its name and control on one line (a **switch** on the right, or a three-button **segmented control** for Theme, selected button in the accent color), then a short muted explanation (0.9rem) underneath. At the bottom, a small muted centered "Work in Progress". Tap targets are at least 44px; rows and explanations wrap on phones.
+- **Menu tree** (`.tree-overlay`, `.tree-panel`, `.tree`, `.tree-step`, `.tree-here`): a panel with the dimmed page behind it (no blur: a blur is recomputed on every animation frame and made the pop-ups choppy). Wide screens (600px and up): a full-height drawer on the right, about 340px wide. Phones: a bottom sheet with rounded top corners, at most 75% of the screen height, scrolling inside if needed. Inside, the five menu steps form a vertical tree, each one level deeper (14px) than the step above, joined by a thin elbow line (level-accent line color) and marked with a dot in the level accent. A step is a button of at least 56px: a small muted caption above its bold value. The step being chosen has an accent-soft background, a ring around its dot and a small accent pill "You are here"; steps not chosen yet are muted, with a hollow dot, and disabled. The tree uses the **level accent, not green** (green stays for answers only; the owner agreed).
 - **Switch** (`.switch-row` / `.switch`): card row with a toggle in the accent color.
 - **Quiz header**: progress, running score, timer text (`.quiz-meta`) and a rounded timer bar (`.timer-bar`, states `.is-low`, `.is-extension`).
 - **Question card** (`#quiz-question.card`): options are full-width 56px buttons; True/False are side by side.
@@ -123,7 +129,7 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Word bank + typed blank** (`.word-bank`, `.chip`, `.blank-input`): dashed accent-tinted bank with pill chips (display only) above the sentence; the blank is a text input inside the sentence with a light accent tint and an accent underline, fixed width (9.5em, never hints at the word's length), focus ring in the accent color. After Check it turns green (correct), red (wrong) or level-color tint (misspelled).
 - **Partly right** (misspelled Fill answer, Matching question with 1–3 correct pairs): uses the **level color**, never green or red. Feedback box `.feedback.partial` (accent-soft background, accent heading "Almost!" / "Partly correct."), result card `st-partial` (accent left border).
 - **Matching** (`.match-columns`, `.match-item`): two columns. On phones the word column is only as wide as its longest word (words never break in the middle), the meanings get the rest of the width, and the pair number badge sits on the box's top-right corner, so long meanings don't wrap into tall, narrow boxes. From 600px: equal columns, badge inside the box on the right; selected item gets accent outline + tint; paired items share a round number badge.
-- **Modal** (`.modal-overlay`, `.modal`): card with soft shadow over a dimmed, slightly blurred page.
+- **Modal** (`.modal-overlay`, `.modal`): card with soft shadow over a dimmed page (no blur, for smooth animation; the dim fades in over 0.2s, then the card rises).
 - **"Words in this game" pop-up** (`.word-list`): a modal before every quiz (and Retry). One soft accent-tinted row per tested word: the word (medium weight), then one line per word type it has at that level: the type (small, muted, italic) and its meaning. **The type used in that game is underlined** in the level color and shown in the normal text color. One button, **Start** (primary); the list scrolls inside the modal when it is long (Matching: up to 16 words).
 - **Results**: hero card with big score in the accent color, summary, actions; then one card per question with a colored left border (green / red / grey). Actions: **Next exercise** (primary, hidden after the very last quiz), Retry, Main menu; they wrap on phones.
 
