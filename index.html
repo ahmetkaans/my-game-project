@@ -1834,7 +1834,14 @@ function initMenus() {
 /* =========================================================================
  * MODAL
  * ========================================================================= */
-const modalState = { dismissible: false };
+const modalState = { dismissible: false, opener: null };
+
+// While a pop-up or the menu tree is open, the page behind it can't be reached with the keyboard
+// (Tab, Shift+Tab) or a screen reader: it is made `inert`. Called whenever either one opens or closes.
+function updateInert() {
+  const active = !$('#modal-overlay').hidden || $('#tree-overlay').classList.contains('is-open');
+  ['#topbar', '#app', '#credits-footer'].forEach((sel) => { $(sel).inert = active; });
+}
 
 // onBack (optional): shows a left arrow button before the title that runs it (used by the "Words in this game" pop-up).
 function openModal({ title, body, buttons, dismissible = false, onBack = null }) {
@@ -1847,15 +1854,22 @@ function openModal({ title, body, buttons, dismissible = false, onBack = null })
     btn.addEventListener('click', b.onClick);
     return btn;
   }));
+  if ($('#modal-overlay').hidden) modalState.opener = document.activeElement; // focus goes back here when it closes
   modalState.dismissible = dismissible;
   $('#modal-overlay').hidden = false;
+  updateInert();
   $('#modal-overlay .modal').scrollTop = 0; // a long pop-up (the word list) always opens at its top
   const focusTarget = $('#modal-actions .primary') || $('#modal-actions button');
   if (focusTarget) focusTarget.focus({ preventScroll: true }); // focusing the button must not scroll the pop-up down to it
 }
 
 function closeModal() {
+  if ($('#modal-overlay').hidden) return;
   $('#modal-overlay').hidden = true;
+  updateInert();
+  const opener = modalState.opener;
+  modalState.opener = null;
+  if (opener && opener.isConnected && !opener.disabled) opener.focus({ preventScroll: true });
 }
 
 function openCredits() {
@@ -1980,6 +1994,7 @@ function openTree() {
   overlay.hidden = false;
   void overlay.offsetWidth; // let the browser draw the closed position first, so the slide-in plays
   overlay.classList.add('is-open');
+  updateInert();
   $('#tree-close').focus();
 }
 
@@ -1987,6 +2002,7 @@ function closeTree() {
   const overlay = $('#tree-overlay');
   if (overlay.hidden) return;
   overlay.classList.remove('is-open');
+  updateInert();
   clearTimeout(treeCloseTimer);
   treeCloseTimer = setTimeout(() => { overlay.hidden = true; }, CONFIG.TREE_CLOSE_MS); // a timer, so it also hides with reduced motion
   $('#tree-btn').focus(); // back to the button that opened it (a click doesn't focus buttons in every browser)

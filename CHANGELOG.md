@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Made SmartBoard mode work
+### Fixed keyboard focus behind pop-ups
+While a pop-up or the menu tree is open, the keyboard can no longer reach the page behind it. Before, someone using the Tab key could answer a question behind the "Time out" pop-up and be charged the extra-time penalty for it. Focus now also returns to the button that opened the pop-up.
+
+### Made SmartBoard mode work (`c5db62d`)
 The SmartBoard switch in Settings now does something and is remembered: with it on, Fill in the Blanks lets you tap a word and then tap the blank instead of typing. Scoring is the same as typed Fill, and the switch is locked while a quiz is on screen.
 
 ### Added a main menu button (`13eebdf`)
