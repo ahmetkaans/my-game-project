@@ -15,7 +15,7 @@ The game is called **My Game Project**. Texts the owner has not named are still 
 
 - The game works on **phones and computers**.
 - Works **offline**, too: without internet, the game uses your device's own font instead of Inter.
-- Your theme and sound choices are remembered in that browser.
+- Your settings (theme, sound and the same-duration switch) are remembered in that browser. Open them with the **gear button** in the top corner.
 
 **Coming later: a website.** The plan is to publish the game on a website, so anyone can play it from a link on a computer or a phone, with nothing to download (see "Roadmap").
 
@@ -39,7 +39,7 @@ Level (A1 A2 B1 B2 C1)
 - Results screen: Back (→ difficulty), Retry (same settings), Main menu (→ level).
 - Breadcrumb (`.breadcrumb` in each screen) is built from `state.nav` up to the screen's depth (`SCREEN_DEPTH`).
 - **Credits**: footer link on every screen except the quiz screen (results included). Opens a modal listing `CREDITS` (Ahmet Kaan Sarılarlı, Enes Miraç Ateş).
-- **Top bar** (`#topbar`): theme and mute buttons, also hidden on the quiz screen.
+- **Top bar** (`#topbar`): the **Settings** (gear) button, hidden on the quiz screen. It opens the Settings pop-up (`openSettings()`, a dismissible `openModal`): Theme (Auto / Light / Dark), Sound and the same-duration switch, each with a short explanation, and a "Work in Progress" note. Credits stays in the footer.
 - **Level accent**: `showScreen()` sets `document.body.dataset.level` to the chosen level on every screen except the level screen (where it is removed → neutral accent). CSS maps it to `--accent`.
 
 ## Configuration
@@ -82,7 +82,7 @@ All tunable numbers are in the `CONFIG` object at the top of the script:
 ## State
 
 ```js
-state.nav  = { level, category, topic /* index */, type, difficulty, sameDuration }
+state.nav  = { level, category, topic /* index */, type, difficulty, sameDuration }   // sameDuration is remembered: localStorage "lg-same-duration"
 state.quiz = {
   questions, index,
   score,          // raw running score, can go negative mid-quiz
@@ -127,8 +127,9 @@ record = { status: 'correct'|'partial'|'incorrect'|'skipped'|'unanswered', userA
 
 ## Theme, sound and confetti
 
-- **Theme** (`initTheme`, `applyTheme`): cycles `auto → light → dark`. `auto` removes `html[data-theme]` so CSS follows `prefers-color-scheme`. Saved in `localStorage["lg-theme"]`; an inline script in `<head>` applies it before first paint.
-- **Sound** (`initSound`, `getAudio`, `playNote`, `playSound(name)`): Web Audio API, notes defined in `SOUNDS` (`correct`, `partial`, `wrong`, `tick`). The `AudioContext` is created/resumed on the first `pointerdown`/`keydown` (browser autoplay rules). On by default; mute saved in `localStorage["lg-muted"]` (`'1'` = muted). `submitAnswer()` plays `correct` / `partial` / `wrong`.
+- **Theme** (`setTheme`, `initTheme`; chosen in Settings with the Auto / Light / Dark buttons): `auto` removes `html[data-theme]` so CSS follows `prefers-color-scheme`. Saved in `localStorage["lg-theme"]`; an inline script in `<head>` applies it before first paint.
+- **Sound** (`initSound`, `getAudio`, `playNote`, `playSound(name)`): Web Audio API, notes defined in `SOUNDS` (`correct`, `partial`, `wrong`, `tick`). The `AudioContext` is created/resumed on the first `pointerdown`/`keydown` (browser autoplay rules). On by default; the Sound switch in Settings (`setMuted`) saves the choice in `localStorage["lg-muted"]` (`'1'` = muted). `submitAnswer()` plays `correct` / `partial` / `wrong`.
+- **Same duration** (`setSameDuration`): the switch exists on the Difficulty screen and in Settings, and both always show `state.nav.sameDuration`. `setSameDuration(value)` updates the state, `localStorage["lg-same-duration"]` (`'1'` = on), both switches and the seconds on the difficulty buttons. `initMenus()` loads the saved value before the first render. Settings is not available during a quiz, so the time of a running quiz never changes.
 - **Storage**: `loadPref` / `savePref` wrap `localStorage` in try/catch; if storage is blocked (private mode, `data:` previews) the game still works and simply doesn't remember.
 - **Correct animation**: `submitAnswer()` adds `.pop` to every `.is-correct` element in the question when the answer is correct.
 - **Confetti** (`launchConfetti`, `stopConfetti`): `<canvas>` overlay drawn with `requestAnimationFrame` in the five level colors (read from CSS `--lvl-*`). Triggered at the end of `showResults()` when the final score ≥ `CONFETTI_MIN_SCORE` (80), or ≥ `CONFETTI_MIN_MATCH_SCORE` (75) for Matching. Removed after `CONFETTI_MS` or by `showScreen()`.
@@ -582,13 +583,8 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
 6. **Reset button for calculation:** clears everything in the calculation except the history.
 7. **"Next exercise" button** on every results screen, so the student can go straight on to the next exercise.
 8. **Credits:** add Claude to the Credits page, next to the other names.
-9. **Settings button.** Everything that is a setting moves into one Settings menu:
-   - Dark / light mode (now the theme button).
-   - Mute (now the mute button).
-   - **Duration switch.** It stays on the Difficulty screen as well. The Settings copy is an addition, and both are synced across all pages and games.
+9. **Settings button.** Everything that is a setting moves into one Settings menu. **Built (2026-11-01):** a pop-up opened by the gear button in the top corner (hidden on the quiz screen) with Theme (Auto / Light / Dark), Sound, the same-duration switch (also still on the Difficulty screen, synced and remembered) and a "Work in Progress" note, each with a short explanation. **Still to do:**
    - **SmartBoard mode.** Writing is hard on a smart board, so this setting replaces every activity that needs writing (today only typed Fill in the Blanks) with the easier **tap-tap method** that Matching already uses (`renderMatch`: tap one item, then tap where it goes; tapping a placed item undoes it): the student taps a word in the bank and it goes into the blank straight away; tapping the placed word takes it back out; then Check. Scoring has only correct or incorrect, because tapping has no "misspelled" case (decided by the owner, 2026-11-01). A short explanation of what it does is shown with the setting. (The earlier version of Fill in the Blanks was drag-and-drop, not tap-tap, and is gone from the code; the tap-tap code is reused from Matching.)
-   - A **work in progress** statement.
-   - Every setting has its own short explanation, clear enough but not long, and the menu must look good on phones and computers.
 10. **Lesson-file maker (a separate project).** A second HTML file, made by turning this game's `index.html` into a smaller copy with the same design and logic, for **one theme, one grammar or one vocabulary exercise**, to use in a lesson. The single-file rule (AGENTS.md rule 2) stays as it is for `index.html`; the new file is a whole separate thing. With it come a small **README2.md** and **DESIGN2.md**, written as guides for people or LLMs to read before changing individual lesson files.
 11. **Website** (owner's plan, 2026-11-01): publish the game online so anyone can play it from a link, on a computer or a phone, without downloading. Open questions: where to host it (for example GitHub Pages, which is free and works with this repository as it is, or the owner's own domain), the web address, and when (now, or after more content is ready). Saved progress (theme, sound, and later history and performance) is stored per website, so moving to another address later starts it fresh. Once it is online, put the link in the GitHub "About" section ("Website") and in "How to play".
 
@@ -599,7 +595,7 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
 - **Resets (5, 6):** where the buttons are; a confirmation pop-up before clearing ("Are you sure?"), since a reset can't be undone.
 - **Next exercise (7):** what "next" means: the next difficulty of the same quiz (Easy → Medium → Hard → Very Hard, following the expected progression), the next question type of the same topic, or the next topic; what happens after the last one; whether it skips quizzes that are still lorem.
 - **Credits (8):** the Claude line is just the name "Claude" together with the other names; the owner confirms the final order. DESIGN.md lists the fixed names and must be updated when it is built.
-- **Settings (9):** where the Settings button sits and whether it also opens during a quiz (today the top bar is hidden on the quiz screen on purpose); the texts of every setting, its explanation and the work-in-progress statement need the owner's approval; whether the duration switch and SmartBoard mode are remembered (like the theme and mute choices) or reset on every visit; whether the results note that SmartBoard mode was on.
+- **Settings (9):** the pop-up, its place (top corner, not on the quiz screen) and the remembered duration switch are decided and built; the texts are in DESIGN.md. Still open: whether the results note that SmartBoard mode was on (when SmartBoard mode is built).
 - **Lesson-file maker (10):** its file name and where it lives in the repository; which parts of the game it keeps (probably no level / category menus) and how the theme's questions get into it; how it is kept in step with `index.html` when the design or logic changes (AGENTS.md rule 11 will need to say what covers it).
-- **Storage (3–6):** everything is saved in the browser (`localStorage`), like the theme and mute settings. So it belongs to one device and one browser, and clearing the browser's data deletes it. Ask whether that is enough, or whether students will need it on several devices (that would need accounts and a server, which goes against the single-file rule).
+- **Storage (3–6):** everything is saved in the browser (`localStorage`), like the Settings choices (theme, sound, same duration). So it belongs to one device and one browser, and clearing the browser's data deletes it. Ask whether that is enough, or whether students will need it on several devices (that would need accounts and a server, which goes against the single-file rule).
 - **Design (all):** new screens or pop-ups and their texts need the owner's approved names (DESIGN.md).

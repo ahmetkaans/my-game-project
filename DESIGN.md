@@ -10,6 +10,13 @@ Student-facing text approved in real short English (not lorem): "Words in this g
 
 Game name: **My Game Project** (level screen title and browser tab). Credits: **Ahmet Kaan Sarılarlı**, **Enes Miraç Ateş**.
 
+Settings pop-up texts (approved with the plan, 2026-11-01; "Work in Progress" is the owner's own text):
+- Title: "Settings"; button: "Close".
+- Theme (Auto / Light / Dark): "Choose light or dark colors. Auto follows your device."
+- Sound: "Play sounds for correct and wrong answers and for the timer."
+- Same duration per question across all difficulty settings (the fixed name, as on the Difficulty screen): "Every question gets 60 seconds, whatever the difficulty." (the number comes from `CONFIG.SAME_DURATION_SECONDS`)
+- Note at the bottom: "Work in Progress".
+
 Screen and pop-up texts approved by the owner:
 - Level screen subtitle: "Choose your level."
 - Screen titles: "What do you want to practice?" (category), "Choose a topic", "Choose a question type", "Choose a difficulty", "Your results".
@@ -61,7 +68,7 @@ Each level's color is the accent (`--accent`) on **every screen inside that leve
 ## Light and dark mode
 
 - Follows the device setting by default (`prefers-color-scheme`).
-- Theme button (top-right) cycles **Auto → Light → Dark → Auto**. The choice is remembered in `localStorage` (`lg-theme`); a tiny script in `<head>` applies it before the first paint to avoid a flash.
+- Theme is chosen in **Settings** with three buttons, **Auto / Light / Dark** (a segmented control). The choice is remembered in `localStorage` (`lg-theme`); a tiny script in `<head>` applies it before the first paint to avoid a flash.
 - Tokens are defined on `:root` (light), redefined under `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }` and under `:root[data-theme="dark"]`. Only token values change between modes; layout, spacing and motion stay the same so the calm feel is identical.
 
 ## Typography
@@ -89,11 +96,11 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Partly right**: one soft sine note (D5), between the chime and the low tone.
 - **Wrong**: gentle low triangle tone gliding down (A3 → F3).
 - **Tick**: very quiet short sine blip once per second in the last 5 seconds of the normal timer and of the extra time.
-- Sound is **on by default**. The mute button (top-right) remembers the choice in `localStorage` (`lg-muted`).
+- Sound is **on by default**. The Sound switch in **Settings** remembers the choice in `localStorage` (`lg-muted`).
 
 ## Controls placement
 
-- Top bar (`.topbar`, right-aligned): **theme** and **mute** round icon buttons (inline SVG icons). Shown on every screen **except the quiz screen**, to keep the quiz focused.
+- Top bar (`.topbar`, right-aligned): one **Settings** round icon button (a gear, inline SVG). Shown on every screen **except the quiz screen**, to keep the quiz focused. It opens the Settings pop-up (Theme, Sound, Same duration, "Work in Progress"). The Same duration switch also stays on the Difficulty screen, always showing the same value.
 - Back button: top-left text button on every screen except the level screen.
 - Footer: Credits link on every screen except the quiz screen.
 
@@ -102,7 +109,8 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Menu button** (`.menu-btn`): white card button in a grid; optional `<small>` sub-label (seconds on difficulty buttons).
 - **Level button** (`.level-btn`): bigger, tinted in its own level color.
 - **Primary button** (`button.primary`): accent background; Next, Check, Retry, main modal action.
-- **Icon button** (`.icon-btn`): 44px round, theme and mute.
+- **Icon button** (`.icon-btn`): 44px round, the Settings gear.
+- **Settings pop-up** (`.settings`, `.setting`, `.setting-head`, `.setting-help`, `.segmented`, `.settings-note`): a dismissible modal (Escape or a click outside closes it; one **Close** button). One bordered row per setting: its name and control on one line (a **switch** on the right, or a three-button **segmented control** for Theme, selected button in the accent color), then a short muted explanation (0.9rem) underneath. At the bottom, a small muted centered "Work in Progress". Tap targets are at least 44px; rows and explanations wrap on phones.
 - **Switch** (`.switch-row` / `.switch`): card row with a toggle in the accent color.
 - **Quiz header**: progress, running score, timer text (`.quiz-meta`) and a rounded timer bar (`.timer-bar`, states `.is-low`, `.is-extension`).
 - **Question card** (`#quiz-question.card`): options are full-width 56px buttons; True/False are side by side.
