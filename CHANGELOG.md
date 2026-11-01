@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Added a Turkish language switch for the menus (first half)
+### Turkish now covers the quiz, the feedback and the results
+With the Turkish switch on, the quiz screen (question number, score, timer, buttons), the answer feedback and the whole results screen are in Turkish too. Scores use a comma in Turkish (12,5 instead of 12.5). If you change the language while looking at the results, the page switches at once. Questions, answer options and the True / False buttons stay in English.
+
+### Added a Turkish language switch for the menus (first half) (`8f4af6c`)
 Settings now has a Language switch, English by default, with a sliding English / Türkçe pill. In Turkish, the menus, buttons, level names, the menu tree, Settings and the pop-ups (like Quit and Time out) are shown in Turkish, and the choice is remembered. Questions and their answer options always stay in English, and the quiz screen and results will follow in the next step.
 
 ### Finished "Numbers and Amounts": True or False and Matching (`12b7eb1`)

@@ -829,15 +829,15 @@
   <!-- Screen: results -->
   <section id="screen-results" class="screen" hidden>
     <button class="back-btn" data-back="difficulty" data-i18n="backArrow">&larr; Back</button>
-    <h1>Your results</h1>
+    <h1 data-i18n="resultsTitle">Your results</h1>
     <p class="breadcrumb"></p>
     <div class="card results-hero">
       <p class="results-score" id="results-score"></p>
       <ul class="results-summary" id="results-summary"></ul>
       <div class="actions">
-        <button class="primary" id="results-next">Next exercise</button>
-        <button id="results-retry">Retry</button>
-        <button id="results-home">Main menu</button>
+        <button class="primary" id="results-next" data-i18n="nextExercise">Next exercise</button>
+        <button id="results-retry" data-i18n="retry">Retry</button>
+        <button id="results-home" data-i18n="mainMenu">Main menu</button>
       </div>
     </div>
     <ol class="results-list" id="results-list"></ol>
@@ -1472,6 +1472,22 @@ const I18N = {
     treeTitle: 'Where you are',
     'step.level': 'Level', 'step.category': 'Category', 'step.topic': 'Topic', 'step.type': 'Question type', 'step.difficulty': 'Difficulty',
     notChosen: 'Not chosen yet', youAreHere: 'You are here',
+
+    questionOf: 'Question {n} / {total}', score: 'Score', scoreNotGraded: 'Score: not graded yet',
+    time: 'Time', extraTime: 'Extra time', next: 'Next', check: 'Check',
+    typeInstruction: 'Type the missing word.', tapInstruction: 'Tap a word to put it in the blank.',
+    yourAnswer: 'Your answer', theBlank: 'The blank',
+    'feedback.correct': 'Correct!', 'feedback.almost': 'Almost!', 'feedback.partial': 'Partly correct.', 'feedback.incorrect': 'Incorrect.',
+    answer: 'Answer', correctAnswer: 'Correct answer', explanation: 'Explanation', points: 'Points', result: 'Result', note: 'Note',
+    spellingWarning: 'Check your spelling: "{answer}", not "{typed}".',
+    pairsCorrect: '{n} of {total} pairs are correct.',
+    resultsTitle: 'Your results', nextExercise: 'Next exercise',
+    'count.correct': 'Correct', 'count.partial': 'Partly correct', 'count.misspelled': 'Misspelled',
+    'count.incorrect': 'Incorrect', 'count.skipped': 'Skipped', 'count.unanswered': 'Not answered',
+    'status.correct': 'Correct', 'status.partial': 'Partly correct', 'status.misspelled': 'Misspelled',
+    'status.incorrect': 'Incorrect', 'status.skipped': 'Skipped (0)', 'status.unanswered': 'Not answered',
+    'status.timedOut': 'Time ran out — game over',
+    used: 'used', notGraded: 'not graded', questionNumber: 'Q{n}.',
   },
   tr: {
     back: 'Geri', backArrow: '← Geri', close: 'Kapat',
@@ -1515,6 +1531,22 @@ const I18N = {
     treeTitle: 'Bulunduğun yer',
     'step.level': 'Seviye', 'step.category': 'Kategori', 'step.topic': 'Konu', 'step.type': 'Soru türü', 'step.difficulty': 'Zorluk',
     notChosen: 'Henüz seçilmedi', youAreHere: 'Buradasın',
+
+    questionOf: 'Soru {n} / {total}', score: 'Puan', scoreNotGraded: 'Puan: henüz puanlanmıyor',
+    time: 'Süre', extraTime: 'Ek süre', next: 'Sonraki', check: 'Kontrol et',
+    typeInstruction: 'Eksik kelimeyi yaz.', tapInstruction: 'Boşluğa koymak için bir kelimeye dokun.',
+    yourAnswer: 'Cevabın', theBlank: 'Boşluk',
+    'feedback.correct': 'Doğru!', 'feedback.almost': 'Neredeyse!', 'feedback.partial': 'Kısmen doğru.', 'feedback.incorrect': 'Yanlış.',
+    answer: 'Cevap', correctAnswer: 'Doğru cevap', explanation: 'Açıklama', points: 'Puan', result: 'Sonuç', note: 'Not',
+    spellingWarning: 'Yazımını kontrol et: "{answer}" olmalı, "{typed}" değil.',
+    pairsCorrect: '{total} çiftten {n} tanesi doğru.',
+    resultsTitle: 'Sonuçların', nextExercise: 'Sonraki alıştırma',
+    'count.correct': 'Doğru sayısı', 'count.partial': 'Kısmen doğru sayısı', 'count.misspelled': 'Yazım hatası sayısı',
+    'count.incorrect': 'Yanlış sayısı', 'count.skipped': 'Atlanan sayısı', 'count.unanswered': 'Cevaplanmayan sayısı',
+    'status.correct': 'Doğru', 'status.partial': 'Kısmen doğru', 'status.misspelled': 'Yazım hatalı',
+    'status.incorrect': 'Yanlış', 'status.skipped': 'Atlandı (0)', 'status.unanswered': 'Cevaplanmadı',
+    'status.timedOut': 'Süre bitti — oyun bitti',
+    used: 'kullanıldı', notGraded: 'puanlanmıyor', questionNumber: 'Soru {n}.',
   },
 };
 
@@ -1650,9 +1682,21 @@ function el(tag, attrs = {}, children = []) {
 }
 
 // Scores are kept exact (e.g. 3 × 33.33…); round away float noise, show at most 2 decimals (6.25, 33.33).
+// Display only: in Turkish the decimal sign is a comma (6,25). Stored numbers always keep the dot.
 function fmt(n) {
   const r = Math.round(n * 1e6) / 1e6;
-  return String(Number(r.toFixed(2)));
+  const text = String(Number(r.toFixed(2)));
+  return state.lang === 'tr' ? text.replace('.', ',') : text;
+}
+
+// English content (a question, an answer, an explanation) inside a Turkish line says so with lang="en".
+function englishText(text) {
+  return el('span', { lang: 'en', text });
+}
+
+// A record's note is stored as { key, params } (not as a sentence), so it can be shown in either language later.
+function noteText(note) {
+  return t(note.key, note.params);
 }
 
 function clampScore(n) {
@@ -1752,6 +1796,8 @@ function setLanguage(lang, save = true) {
   refreshBreadcrumb();
   // Settings is the only pop-up that can be open now: its texts change in place, so the toggle keeps its slide and its focus.
   if (modalState.kind === 'settings' && !$('#modal-overlay').hidden) translateSettings();
+  // The results screen is built from the quiz record: build it again in the new language.
+  if (state.screen === 'results' && state.quiz) renderResultsContent();
 }
 
 /* =========================================================================
@@ -2527,7 +2573,7 @@ function startQuiz() {
     records: questions.map(() => ({
       status: 'unanswered',                     // correct | partial | incorrect | skipped | unanswered
       userAnswer: null,
-      note: null,                               // partial: "Check your spelling…" / "2 of 4 pairs"
+      note: null,                               // partial: { key, params } of a text (spellingWarning / pairsCorrect), shown by noteText()
       points: 0,                                // points from answering
       penalty: 0,                               // points lost to the time extension
       extensionUsed: false,
@@ -2606,7 +2652,7 @@ function renderQuestion() {
   const q = currentQuestion();
   quiz.answered = false;
   quiz.ui = {};
-  $('#quiz-progress').textContent = `Question ${quiz.index + 1} / ${quiz.questions.length}`;
+  $('#quiz-progress').textContent = t('questionOf', { n: quiz.index + 1, total: quiz.questions.length });
   updateScoreDisplay();
   $('#quiz-feedback').hidden = true;
   $('#quiz-next').hidden = true;
@@ -2618,12 +2664,12 @@ function renderQuestion() {
 
 function updateScoreDisplay() {
   const quiz = state.quiz;
-  $('#quiz-score').textContent = quiz.graded ? `Score: ${fmt(quiz.score)}` : 'Score: not graded yet';
+  $('#quiz-score').textContent = quiz.graded ? `${t('score')}: ${fmt(quiz.score)}` : t('scoreNotGraded');
 }
 
 /*
  * outcome: 'correct' | 'partial' | 'incorrect'. points: what the answer earns (renderers compute it,
- * see questionPoints()). note: shown for partial answers (spelling warning, pairs count).
+ * see questionPoints()). note: { key, params } of a text, shown for partial answers (spelling warning, pairs count).
  */
 function submitAnswer(outcome, userAnswer, points, note = null) {
   const quiz = state.quiz;
@@ -2650,21 +2696,23 @@ function submitAnswer(outcome, userAnswer, points, note = null) {
 
   const fb = $('#quiz-feedback');
   fb.className = `feedback ${{ correct: 'ok', partial: 'partial', incorrect: 'bad' }[outcome]}`;
-  const heading = { correct: 'Correct!', partial: q.type === 'fill' ? 'Almost!' : 'Partly correct.', incorrect: 'Incorrect.' }[outcome];
+  const heading = t({ correct: 'feedback.correct', partial: q.type === 'fill' ? 'feedback.almost' : 'feedback.partial', incorrect: 'feedback.incorrect' }[outcome]);
   const lines = [el('p', {}, [el('strong', { text: heading })])];
-  if (note) lines.push(el('p', { text: note }));
+  if (note) lines.push(el('p', { text: noteText(note) }));
+  // The answer and the explanation are English content: they carry lang="en" inside the (maybe Turkish) line.
+  const labelled = (key, value) => el('p', {}, [`${t(key)}: `, englishText(value)]);
   if (outcome === 'correct') {
-    lines.push(el('p', { text: `Answer: ${correctAnswerText(q)}` }));
+    lines.push(labelled('answer', correctAnswerText(q)));
   } else {
-    lines.push(el('p', { text: `Correct answer: ${correctAnswerText(q)}` }));
-    lines.push(el('p', { text: `Explanation: ${q.explanation}` }));
+    lines.push(labelled('correctAnswer', correctAnswerText(q)));
+    lines.push(labelled('explanation', q.explanation));
   }
-  if (quiz.graded) lines.push(el('p', { class: 'points', text: `Points: ${points > 0 ? '+' : ''}${fmt(points)}` }));
+  if (quiz.graded) lines.push(el('p', { class: 'points', text: `${t('points')}: ${points > 0 ? '+' : ''}${fmt(points)}` }));
   fb.replaceChildren(...lines);
   fb.hidden = false;
 
   const next = $('#quiz-next');
-  next.textContent = quiz.index === quiz.questions.length - 1 ? 'See results' : 'Next';
+  next.textContent = t(quiz.index === quiz.questions.length - 1 ? 'seeResults' : 'next');
   next.hidden = false;
   next.focus();
 }
@@ -2759,15 +2807,15 @@ function tick() {
 }
 
 function renderTimer() {
-  const t = state.quiz.timer;
-  const ratio = t.totalMs ? t.remainingMs / t.totalMs : 0;
+  const timer = state.quiz.timer; // not named `t`: that is the text function
+  const ratio = timer.totalMs ? timer.remainingMs / timer.totalMs : 0;
   const text = $('#quiz-timer-text');
-  text.textContent = `${t.extension ? 'Extra time' : 'Time'}: ${Math.ceil(t.remainingMs / 1000)}s`;
-  text.classList.toggle('is-extension', t.extension);
+  text.textContent = `${t(timer.extension ? 'extraTime' : 'time')}: ${t('secondsShort', { n: Math.ceil(timer.remainingMs / 1000) })}`;
+  text.classList.toggle('is-extension', timer.extension);
   $('#quiz-timer-fill').style.width = `${ratio * 100}%`;
   const bar = $('#quiz-timer-bar');
-  bar.classList.toggle('is-extension', t.extension);
-  bar.classList.toggle('is-low', !t.extension && ratio < CONFIG.TIMER_LOW_RATIO);
+  bar.classList.toggle('is-extension', timer.extension);
+  bar.classList.toggle('is-low', !timer.extension && ratio < CONFIG.TIMER_LOW_RATIO);
 }
 
 function onTimeUp() {
@@ -2874,9 +2922,9 @@ function renderFill(q, area) {
     autocapitalize: 'off',
     spellcheck: 'false',
     enterkeyhint: 'done',
-    'aria-label': 'Your answer',
+    'aria-label': t('yourAnswer'),
   });
-  const check = el('button', { class: 'primary check-btn', text: 'Check', disabled: true });
+  const check = el('button', { class: 'primary check-btn', text: t('check'), disabled: true });
   const submit = () => {
     const typed = input.value.trim();
     if (!typed || state.quiz.answered) return;
@@ -2887,7 +2935,7 @@ function renderFill(q, area) {
     } else if (result === 'misspelled') {
       input.classList.add('is-partial');
       submitAnswer('partial', typed, CONFIG.POINTS_CORRECT * CONFIG.FILL_MISSPELLED_SHARE,
-        `Check your spelling: "${q.answer}", not "${typed}".`);
+        { key: 'spellingWarning', params: { answer: q.answer, typed } });
     } else {
       input.classList.add('is-wrong');
       submitAnswer('incorrect', typed, -CONFIG.POINTS_INCORRECT);
@@ -2897,7 +2945,7 @@ function renderFill(q, area) {
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
   check.addEventListener('click', submit);
   area.append(
-    el('p', { class: 'instructions', text: 'Type the missing word.' }),
+    el('p', { class: 'instructions', text: t('typeInstruction') }),
     bank,
     el('p', { class: 'prompt fill-sentence' }, [fillBefore(q.before), input, fillAfter(q.after)]),
     check,
@@ -2919,13 +2967,13 @@ function renderFillTap(q, area) {
     });
     return chip;
   });
-  const slot = el('button', { class: 'blank-slot', type: 'button', 'aria-label': 'The blank' });
+  const slot = el('button', { class: 'blank-slot', type: 'button', 'aria-label': t('theBlank') });
   slot.addEventListener('click', () => {
     if (state.quiz.answered) return;
     ui.placed = null;                                 // tapping the word in the blank takes it out
     refresh();
   });
-  const check = el('button', { class: 'primary check-btn', text: 'Check', disabled: true });
+  const check = el('button', { class: 'primary check-btn', text: t('check'), disabled: true });
   const refresh = () => {
     chips.forEach((chip, i) => chip.classList.toggle('is-used', ui.placed === i));
     slot.textContent = ui.placed === null ? '' : q.bank[ui.placed];
@@ -2944,7 +2992,7 @@ function renderFillTap(q, area) {
     }
   });
   area.append(
-    el('p', { class: 'instructions', text: 'Tap a word to put it in the blank.' }),
+    el('p', { class: 'instructions', text: t('tapInstruction') }),
     el('div', { class: 'word-bank' }, chips),
     el('p', { class: 'prompt fill-sentence' }, [fillBefore(q.before), slot, fillAfter(q.after)]),
     check,
@@ -3003,7 +3051,7 @@ function renderMatch(q, area) {
     rightCol.append(btn);
   });
 
-  ui.check = el('button', { class: 'primary check-btn', text: 'Check', disabled: true });
+  ui.check = el('button', { class: 'primary check-btn', text: t('check'), disabled: true });
   ui.check.addEventListener('click', () => {
     if (state.quiz.answered) return;
     let correctPairs = 0;
@@ -3018,7 +3066,7 @@ function renderMatch(q, area) {
     // Partial points: the quiz is worth SCORE_MAX in total; each correct pair earns its share. No penalty.
     const points = (CONFIG.SCORE_MAX / state.quiz.questions.length) * (correctPairs / q.pairs.length);
     const outcome = correctPairs === q.pairs.length ? 'correct' : correctPairs > 0 ? 'partial' : 'incorrect';
-    const note = outcome === 'partial' ? `${correctPairs} of ${q.pairs.length} pairs are correct.` : null;
+    const note = outcome === 'partial' ? { key: 'pairsCorrect', params: { n: correctPairs, total: q.pairs.length } } : null;
     submitAnswer(outcome, userAnswer, points, note);
   });
 
@@ -3037,16 +3085,17 @@ const RENDERERS = { mc: renderMC, tf: renderTF, fill: renderFill, match: renderM
  * RESULTS
  * ========================================================================= */
 function statusLabel(rec, graded, type) {
-  const pts = (n) => (graded ? ` (${n > 0 ? '+' : ''}${fmt(n)})` : ' (not graded)');
-  if (rec.status === 'correct') return `Correct${pts(rec.points)}`;
-  if (rec.status === 'partial') return `${type === 'fill' ? 'Misspelled' : 'Partly correct'}${pts(rec.points)}`;
-  if (rec.status === 'incorrect') return `Incorrect${pts(rec.points)}`;
-  if (rec.status === 'skipped') return 'Skipped (0)';
-  return rec.timedOut ? 'Time ran out — game over' : 'Not answered';
+  const pts = (n) => (graded ? ` (${n > 0 ? '+' : ''}${fmt(n)})` : ` (${t('notGraded')})`);
+  if (rec.status === 'correct') return `${t('status.correct')}${pts(rec.points)}`;
+  if (rec.status === 'partial') return `${t(type === 'fill' ? 'status.misspelled' : 'status.partial')}${pts(rec.points)}`;
+  if (rec.status === 'incorrect') return `${t('status.incorrect')}${pts(rec.points)}`;
+  if (rec.status === 'skipped') return t('status.skipped');
+  return t(rec.timedOut ? 'status.timedOut' : 'status.unanswered');
 }
 
-function showResults() {
-  stopTimer();
+// Builds everything on the results screen from state.quiz. Runs again when the language changes on this screen
+// (no timer, screen change or confetti involved).
+function renderResultsContent() {
   const quiz = state.quiz;
   const counts = { correct: 0, partial: 0, incorrect: 0, skipped: 0, unanswered: 0 };
   quiz.records.forEach((r) => { counts[r.status]++; });
@@ -3055,35 +3104,42 @@ function showResults() {
 
   $('#results-score').replaceChildren(...(quiz.graded
     ? [el('span', { class: 'score-num', text: fmt(finalScore) }), el('span', { class: 'score-max', text: ` / ${CONFIG.SCORE_MAX}` })]
-    : [el('span', { class: 'score-na', text: 'Score: not graded yet' })]));
+    : [el('span', { class: 'score-na', text: t('scoreNotGraded') })]));
   $('#results-summary').replaceChildren(
-    el('li', { text: `Correct: ${counts.correct}` }),
-    ...(counts.partial ? [el('li', { text: `${type === 'fill' ? 'Misspelled' : 'Partly correct'}: ${counts.partial}` })] : []),
-    el('li', { text: `Incorrect: ${counts.incorrect}` }),
-    el('li', { text: `Skipped: ${counts.skipped}` }),
-    el('li', { text: `Not answered: ${counts.unanswered}` }),
+    el('li', { text: `${t('count.correct')}: ${counts.correct}` }),
+    ...(counts.partial ? [el('li', { text: `${t(type === 'fill' ? 'count.misspelled' : 'count.partial')}: ${counts.partial}` })] : []),
+    el('li', { text: `${t('count.incorrect')}: ${counts.incorrect}` }),
+    el('li', { text: `${t('count.skipped')}: ${counts.skipped}` }),
+    el('li', { text: `${t('count.unanswered')}: ${counts.unanswered}` }),
   );
 
   $('#results-list').replaceChildren(...quiz.questions.map((q, i) => {
     const rec = quiz.records[i];
     const row = (label, value) => el('p', {}, [el('span', { class: 'label', text: `${label}: ` }), value]);
     const children = [
-      el('p', {}, [el('strong', { text: `Q${i + 1}. ${questionText(q)}` })]),
-      row('Your answer', rec.userAnswer ?? '—'),
-      row('Correct answer', correctAnswerText(q)),
-      row('Result', statusLabel(rec, quiz.graded, q.type)),
+      el('p', {}, [el('strong', {}, [`${t('questionNumber', { n: i + 1 })} `, englishText(questionText(q))])]),
+      row(t('yourAnswer'), englishText(rec.userAnswer ?? '—')),
+      row(t('correctAnswer'), englishText(correctAnswerText(q))),
+      row(t('result'), statusLabel(rec, quiz.graded, q.type)),
     ];
-    if (rec.note) children.push(row('Note', rec.note));
+    if (rec.note) children.push(row(t('note'), noteText(rec.note)));
     if (rec.extensionUsed) {
-      children.push(row('Extra time', quiz.graded ? `used (${fmt(rec.penalty)})` : 'used'));
+      children.push(row(t('extraTime'), quiz.graded ? `${t('used')} (${fmt(rec.penalty)})` : t('used')));
     }
-    children.push(row('Explanation', q.explanation));
+    children.push(row(t('explanation'), englishText(q.explanation)));
     return el('li', { class: `st-${rec.status}` }, children);
   }));
 
   $('#results-next').hidden = !getNextExercise(state.nav);   // hidden after the very last quiz
+}
+
+function showResults() {
+  stopTimer();
+  const quiz = state.quiz;
+  renderResultsContent();
   showScreen('results');
-  const minScore = type === 'match' ? CONFIG.CONFETTI_MIN_MATCH_SCORE : CONFIG.CONFETTI_MIN_SCORE;
+  const finalScore = clampScore(quiz.score);
+  const minScore = state.nav.type === 'match' ? CONFIG.CONFETTI_MIN_MATCH_SCORE : CONFIG.CONFETTI_MIN_SCORE;
   if (quiz.graded && finalScore >= minScore) launchConfetti();
 }
 

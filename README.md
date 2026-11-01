@@ -104,7 +104,7 @@ state.quiz = {
   ui,             // renderer-specific state for the current question
 }
 record = { status: 'correct'|'partial'|'incorrect'|'skipped'|'unanswered', userAnswer, note, points, penalty, extensionUsed, timedOut }
-// partial = misspelled Fill answer, or a Matching question with 1–3 correct pairs; note = the spelling warning / "2 of 4 pairs are correct."
+// partial = misspelled Fill answer, or a Matching question with 1–3 correct pairs; note = { key, params } of a text (spellingWarning "Check your spelling…" / pairsCorrect "2 of 4 pairs are correct."), turned into a sentence by noteText() in the chosen language
 ```
 
 ## Scoring algorithm
@@ -117,7 +117,7 @@ record = { status: 'correct'|'partial'|'incorrect'|'skipped'|'unanswered', userA
   - **No penalty:** wrong pairs take no points away (not −6): one mistake usually breaks two pairs at once, and with only 2–4 questions a penalty would swing the score too much.
 - **Time extension:** `−10` in every question type.
 - Renderers compute the points and call `submitAnswer(outcome, userAnswer, points, note)`; `choicePoints()` gives +12.5 / −6.
-- The score is kept exact (3 × 33.33… = 100); `fmt()` removes float noise and shows at most 2 decimals (6.25, 33.33).
+- The score is kept exact (3 × 33.33… = 100); `fmt()` removes float noise and shows at most 2 decimals (6.25, 33.33; in Turkish with a comma, 6,25 and 33,33, display only).
 - The running score is **not** clamped during the quiz (it may be shown as negative).
 - Final score = `clamp(score, 0, 100)` — `clampScore()` in `showResults()` only.
 - `UNGRADED_TYPES` is empty now; a type listed there would give and take no points and show "not graded".
@@ -137,47 +137,31 @@ record = { status: 'correct'|'partial'|'incorrect'|'skipped'|'unanswered', userA
 
 ## Language (English / Turkish)
 
-Owner's request (2026-11-01), built in two rounds. **Round 1 is built; round 2 is not.** Nothing is committed yet when this was written.
+Owner's request (2026-11-01), built in two rounds. **Both rounds are built.** Round 1 is committed (`8f4af6c`); round 2 was written after it and is committed when the owner asks.
 
 **What is translated** (owner's decisions): menu elements, buttons, pop-ups, Settings, the quiz screen, answer feedback and the results screen, and the fixed names (Multiple Choice, Easy, level names, …). **Never translated, not ever:** questions and their options, bank words and Matching words; the True / False **answer buttons** (the type *name* "True or False" is translated); topic names; the game name "My Game Project"; level codes (A1 … C1); people's names. Later, separate steps (not started): the meanings in the "Words in this game" pop-up, then the answer explanations.
 
 **How it works** (all in `index.html`):
 - `I18N = { en: {…}, tr: {…} }` holds every text, one key per text (`'type.mc'`, `'timeOutBodyPts'`, …). **Both languages must have every key** (English is the fallback; a key missing everywhere logs `Missing text: key` to the console and shows the key). `{name}` in a text is filled from the params: `t('endTitle', { here })`. `t(key, params)` returns the text in `state.lang`. Keep the key names free of `'A1|vocabulary':`-style strings, because `check_questions.ps1` finds topic names by searching the file for them.
 - **Only the *label* texts moved out of `CONFIG`:** `CONFIG.CATEGORIES`, `TYPES` and `DIFFICULTIES` now hold ids (and `seconds`) only; their names are `t('category.vocabulary')`, `t('type.mc')`, `t('difficulty.easy')`. `LEVEL_GROUPS` holds `id` + `levels`; the headings and level names are `t('levelGroup.A')`, `t('levelName.A1')`. The old `CONFIG.LEVEL_NAMES` and the `THEME_LABELS` object are gone. Numbers stay in `CONFIG` (AGENTS.md rule 5).
-- `state.lang` is `'en'` (default) or `'tr'`, saved in `localStorage["lg-lang"]`. `initLanguage()` reads it; `setLanguage(lang)` saves it and refreshes everything on screen: `applyStaticTexts()` (HTML elements marked `data-i18n="key"` get their text, `data-i18n-label="key"` sets the tooltip and screen reader name), `renderMenus()` (level / category / type buttons), `renderDifficultyButtons()`, `refreshBreadcrumb()` and, when Settings is open, `translateSettings()`.
+- `state.lang` is `'en'` (default) or `'tr'`, saved in `localStorage["lg-lang"]`. `initLanguage()` reads it; `setLanguage(lang)` saves it and refreshes everything on screen: `applyStaticTexts()` (HTML elements marked `data-i18n="key"` get their text, `data-i18n-label="key"` sets the tooltip and screen reader name), `renderMenus()` (level / category / type buttons), `renderDifficultyButtons()`, `refreshBreadcrumb()`, when Settings is open `translateSettings()`, and when the results screen is showing `renderResultsContent()`.
 - **`<html lang>` follows the language**, so Turkish capital letters work (`İ`, `ı` in the uppercase group headings). English content carries its own `lang="en"`: the question area (`#quiz-question`), the topic buttons (`renderButtons` item `lang`) and the word list. Add `lang="en"` to any new place that shows English content in a Turkish page.
-- **To add a text:** add its key to **both** languages in `I18N`; use `t('key')` in code, or `data-i18n="key"` on the HTML element. A pop-up text is built when the pop-up opens, so it needs no refresh (Settings is the only pop-up that can be open while the language changes). **Never join sentences from pieces in code** (Turkish word order differs): use one text with `{placeholders}`. Do not use a local variable called `t` in a function that also calls `t()` (`getNextExercise`, `tick`, `renderTimer` and `startTimer` still have a local `t`; rename it when those functions get texts).
+- **To add a text:** add its key to **both** languages in `I18N`; use `t('key')` in code, or `data-i18n="key"` on the HTML element. A pop-up text is built when the pop-up opens, so it needs no refresh (Settings is the only pop-up that can be open while the language changes). **Never join sentences from pieces in code** (Turkish word order differs): use one text with `{placeholders}`. Do not use a local variable called `t` in a function that also calls `t()` (a local `t` hides the function; several timer functions and `getNextExercise` still have one, but they never call `t()`; rename it if they ever need a text).
 - **Language toggle** (`languageToggle()`; DESIGN.md "Language toggle"): `role="switch"` on a `div` (not a button, so the page's button styles never touch it); a tap on a half chooses that side, Left / Right choose a side, Space / Enter switch; `refreshSettings()` sets `aria-checked` (`true` = Türkçe) and `aria-label` ("Language: English"). The names "English" and "Türkçe" always show in their own language (`LANG_NAMES`).
 
 **Round 1 (built):** the toggle and `I18N`; the level, category, topic, type and difficulty screens; the Back buttons, Credits link, top bar tooltips; the Main menu, End of category, Credits, Words in this game (title, Start, back arrow tooltip), Quit, Time out and Game over pop-ups; Settings; the menu tree.
 
-**Round 2 (to do):** the quiz screen (`Question 3 / 8`, `Score`, `Time`, `Extra time`, `Next`, `See results`, `Check`, the Fill instructions, the screen reader labels "Your answer" / "The blank"), the answer feedback (`Correct!`, `Almost!`, `Answer:`, `Explanation:` label, `Points:`, the spelling warning, "N of 4 pairs are correct"), and the results screen (title, Next exercise / Retry / Main menu, the counts as "Doğru sayısı" … , the result cards, `Q1.` → "Soru 1."). Numbers get a **comma in Turkish** (12,5; 6,25): only `fmt()`'s *display* changes, never the stored numbers (the future history and export must keep dots). The `Score` label in the quiz header is the short "Puan". The approved Turkish wording of round 1 is in `I18N.tr`. The **approved wording of round 2** (owner, 2026-11-01; add these to `I18N` when building round 2; the owner chose "sen", "alıştırma" for quiz, "seviye" for level, and "tanesi") is:
+**Round 2 (built, 2026-11-01):** the quiz screen (`questionOf`, `score`, `time` / `extraTime`, `next`, `check`, the Fill instructions, the screen reader labels `yourAnswer` / `theBlank`), the answer feedback (`feedback.*`, the labels `answer` / `correctAnswer` / `explanation` / `points`, `spellingWarning`, `pairsCorrect`) and the results screen (title, Next exercise / Retry / Main menu, the counts `count.*` such as "Doğru sayısı", the result cards, `Q1.` → "Soru 1.", statuses `status.*`). How it differs from round 1:
+- **Numbers get a comma in Turkish** (12,5; 6,25; 33,33): `fmt()` changes only the *display*. Stored numbers, `CONFIG` and the future history / export keep dots.
+- **A record's note is a text key, not a sentence:** `rec.note` is `{ key, params }` (`spellingWarning` with `{ answer, typed }`, `pairsCorrect` with `{ n, total }`), shown with `noteText(note)`, so it can be shown in either language later.
+- **The results screen is built by `renderResultsContent()`** (from `state.quiz`), which `showResults()` calls and `setLanguage()` calls again when the language changes on the results screen (no timer, screen change or confetti). The top bar and Settings are available there, so the language can change there.
+- **English content inside a Turkish line** (the question text, the correct answer, the student's answer, the explanation) is wrapped by `englishText()` in `<span lang="en">`. The True / False answer text stays "True" / "False" ("Doğru cevap: True"), like the buttons (owner's choice, 2026-11-01).
+- The quiz header label is the short "Puan"; the results hero shows only the number.
+- `renderTimer()` uses `timer` as its local name, because `t` is the text function. `getNextExercise`, `startTimer`, `tick` and the other timer functions still have a local `t` but never call `t()`.
 
-| English | Turkish |
-|---|---|
-| Question 3 / 8 | Soru 3 / 8 |
-| Score: 25 / Score: not graded yet (quiz header and results) | Puan: 25 / Puan: henüz puanlanmıyor |
-| Time: 40s / Extra time: 8s | Süre: 40 sn / Ek süre: 8 sn |
-| Next / See results / Check | Sonraki / Sonuçları gör / Kontrol et |
-| Type the missing word. | Eksik kelimeyi yaz. |
-| Tap a word to put it in the blank. | Boşluğa koymak için bir kelimeye dokun. |
-| Your answer / The blank (screen reader labels) | Cevabın / Boşluk |
-| Correct! / Almost! / Partly correct. / Incorrect. | Doğru! / Neredeyse! / Kısmen doğru. / Yanlış. |
-| Answer: / Correct answer: / Explanation: / Points: | Cevap: / Doğru cevap: / Açıklama: / Puan: |
-| Check your spelling: "coffee", not "cofee". | Yazımını kontrol et: "coffee" olmalı, "cofee" değil. |
-| 2 of 4 pairs are correct. (the 4 is `CONFIG.MATCH_PAIRS`) | 4 çiftten 2 tanesi doğru. |
-| Your results | Sonuçların |
-| Next exercise / Retry / Main menu | Sonraki alıştırma / Tekrar dene / Ana menü |
-| Correct / Partly correct / Misspelled / Incorrect / Skipped / Not answered (the counts) | Doğru sayısı / Kısmen doğru sayısı / Yazım hatası sayısı / Yanlış sayısı / Atlanan sayısı / Cevaplanmayan sayısı |
-| Q1. (start of each result card) | Soru 1. |
-| Your answer / Correct answer / Result / Note / Extra time / Explanation (card labels) | Cevabın / Doğru cevap / Sonuç / Not / Ek süre / Açıklama |
-| Correct / Incorrect / Partly correct / Misspelled (card result) | Doğru / Yanlış / Kısmen doğru / Yazım hatalı |
-| Skipped (0) / Not answered / Time ran out — game over | Atlandı (0) / Cevaplanmadı / Süre bitti — oyun bitti |
-| used (−10) / (not graded) | kullanıldı (−10) / (puanlanmıyor) |
+Still English in Turkish mode, by design: questions, options, bank and Matching words, the True / False buttons, topic names, the word meanings in the "Words in this game" pop-up, and the answer explanations (the last two are separate, later steps).
 
-Until round 2 is built, a Turkish player sees English on the quiz and results screens.
-
-**Testing** (done for round 1, 2026-11-01): every screen and pop-up read in both languages with a script; saved choice after a reload; keyboard (Left, Right, Space, Enter); phone width (375px, no sideways scroll, toggle beside "Dil" and "Language"); light and dark; a full quiz in both languages with no console errors. "Reduce motion" is covered by the page's global rule (`*, *::before, *::after { animation: none !important; transition: none !important; }`), which includes the toggle's slide; it was read, not emulated.
+**Testing** (round 1 and round 2, 2026-11-01): every screen and pop-up read in both languages with a script; Multiple Choice, True or False, typed Fill (correct, "Almost!", wrong), SmartBoard tap Fill and Matching (partly correct) played in Turkish; Time out (extra time used, −10), Game over and the results with every status; switching the language on the results screen; the "not graded" texts (set `CONFIG.UNGRADED_TYPES = ['fill']` in the console, it is not reachable in the game); comma and dot numbers; saved choice after a reload; keyboard (Left, Right, Space, Enter); phone width (375px, no sideways scroll; quiz header, results, Settings); light and dark; no console errors; `check_questions.ps1` unchanged (0 errors, 16 warnings). "Reduce motion" is covered by the page's global rule (`*, *::before, *::after { animation: none !important; transition: none !important; }`), which includes the toggle's slide; it was read, not emulated.
 
 ## Theme, sound and confetti
 
@@ -675,7 +659,7 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
    - **Offline use after the switch: an installable web app (PWA).** Possible on Cloudflare Pages and GitHub Pages (both give https). It needs a manifest, a service worker that saves the game, and app icons. When a new version is published, the saved copy must refresh (version number), or students keep an old one. On iPhone it is installed with Share > Add to Home Screen and has had more limits than on Android, so test on a real device. A browser's "Save page" can save a broken copy of a multi-file game, which is another reason to offer the install button instead. Not built, not planned yet.
    - **Keep the names clean for adblockers:** avoid class names and file names with `ad(s)`, `banner`, `sponsor`, `tracker` or `popup`. Words inside question text are never blocked. The only outside request is the Inter font; if a strict privacy tool blocks it, the game falls back to a normal font.
 12. **Menu tree** (owner's request, 2026-11-01). **Built (2026-11-01)**, see "Screen flow": a button next to Settings opens a panel with the student's path through the menu; each chosen step is clickable.
-13. **Turkish language switch** (owner's request, 2026-11-01): a toggle in Settings, English by default, that shows menus, buttons, pop-ups, feedback and results in Turkish. Questions and their options are never translated. **Round 1 built (2026-11-01)**, round 2 (quiz screen, feedback, results) not built; see "Language (English / Turkish)". After that, as separate steps: the meanings in the "Words in this game" pop-up, then the answer explanations (Turkish kept in its own block per quiz key, so the later file split just moves it; add a check-script warning for an explanation without Turkish). Open: whether a Turkish explanation replaces or sits under the English one; whether the results note the language.
+13. **Turkish language switch** (owner's request, 2026-11-01): a toggle in Settings, English by default, that shows menus, buttons, pop-ups, feedback and results in Turkish. Questions and their options are never translated. **Both rounds built (2026-11-01)**: menus, pop-ups, Settings, quiz screen, feedback and results; see "Language (English / Turkish)". After that, as separate steps: the meanings in the "Words in this game" pop-up, then the answer explanations (Turkish kept in its own block per quiz key, so the later file split just moves it; add a check-script warning for an explanation without Turkish). Open: whether a Turkish explanation replaces or sits under the English one; whether the results note the language.
 
 ### Open questions (ask the owner before building)
 
