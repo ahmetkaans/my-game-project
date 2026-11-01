@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Added this changelog
+### Added the changelog rule to the working rules
+The working rules for the helper assistant now say that every commit must add an entry to the changelog. This way the list stays complete even when someone only edits the documents and never opens the README./
+
+### Added this changelog (`d144895`)
 A list of every change, written in simple language, so friends and visitors can follow what was built and when. From now on, each commit adds a new entry to it.
 
 ### Fixed the word list pop-up and added a back arrow (`002e159`)
