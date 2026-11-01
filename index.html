@@ -1561,6 +1561,9 @@ function t(key, params) {
   return params ? text.replace(/\{(\w+)\}/g, (match, name) => (name in params ? params[name] : match)) : text;
 }
 
+/* =========================================================================
+ * TOPICS AND DATA (topic names, credits, the JSON blocks, lorem words, icons)
+ * ========================================================================= */
 // Placeholder topic names, used for every level/category without its own list.
 const DEFAULT_TOPICS = [
   'Lorem Ipsum', 'Dolor Sit', 'Amet Consectetur', 'Adipiscing Elit', 'Sed Eiusmod',
@@ -2249,6 +2252,9 @@ function openNextExercise() {
   });
 }
 
+/* =========================================================================
+ * MENU BUTTONS (topic, level, category and question type buttons; the menus' start-up)
+ * ========================================================================= */
 // Topics depend on level + category, so they are rendered each time a category is chosen.
 function renderTopicButtons() {
   renderButtons($('#topic-buttons'), getTopics(state.nav).map((name, i) => ({ id: i, label: name, lang: 'en' })), (item) => {
@@ -2360,7 +2366,7 @@ function openCredits() {
 }
 
 /* =========================================================================
- * SETTINGS  (pop-up: theme, sound, same duration; remembered in localStorage)
+ * SETTINGS  (pop-up: language, theme, sound, same duration, SmartBoard mode; each remembered in localStorage)
  * ========================================================================= */
 let settingsUi = null; // controls of the open Settings pop-up, kept in step by refreshSettings()
 

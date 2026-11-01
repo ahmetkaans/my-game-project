@@ -2,9 +2,14 @@
 
 What changed in My Game Project, in plain language. The newest change is at the top. Every commit adds one entry here: its date, a short title and two or three sentences about what was added or changed. The code in brackets is the commit's ID on GitHub, so you can open that exact version.
 
+## 2026-11-02
+
+### Added a file map so the notes are quicker and cheaper to use
+The README now starts with a map that says where everything is and what to read for each kind of task, so a helper no longer has to read the whole file first. A new working rule keeps the map up to date, and a private checker also looks for out-of-date names in the notes. In a test with six helpers, the answers were just as correct and used about 40% fewer tokens. A few old lines in the notes were corrected, and the testing rule now lists all five saved settings.
+
 ## 2026-11-01
 
-### Turkish now covers the quiz, the feedback and the results
+### Turkish now covers the quiz, the feedback and the results (`ea4d67c`)
 With the Turkish switch on, the quiz screen (question number, score, timer, buttons), the answer feedback and the whole results screen are in Turkish too. Scores use a comma in Turkish (12,5 instead of 12.5). If you change the language while looking at the results, the page switches at once. Questions, answer options and the True / False buttons stay in English.
 
 ### Added a Turkish language switch for the menus (first half) (`8f4af6c`)

@@ -5,6 +5,180 @@ A language-learning quiz game in a single file: [index.html](index.html). No bui
 
 The game is called **My Game Project**. Texts the owner has not named are still lorem ipsum (mostly questions and the topic names of other levels); the approved screen and pop-up texts are listed in DESIGN.md. The visual design ("clean study app", level colors, dark mode, motion, sound) is documented in [DESIGN.md](DESIGN.md). Agents must read [AGENTS.md](AGENTS.md) first. What changed and when is listed in [CHANGELOG.md](CHANGELOG.md).
 
+## File map
+
+**Read AGENTS.md first, then this map.** It says where things are and what to read for a task, so nobody has to read whole files. **No line numbers are stored here** (they change with every edit).
+- **Code (`index.html`): read a window.** Search for the anchor (any search tool: `grep -n`, the Grep tool), then read about 60 lines around the hit (the Read tool with `offset` and `limit`, or `sed -n`). How to search: a script **banner** as `^ \* NAME` (for example `^ \* TIMER`; the bare word also appears in many other places), a **function** as `^function name(`, a **CSS anchor** as `/\* anchor`, an **id** as `id="name"`, a **JSON key** as the key itself. Search every anchor of your task's row in **one** call (for example `grep -n -E "^ \* (TIMER|TEXTS)"`) and read the routed doc sections in parallel calls.
+- **Docs (README.md, DESIGN.md): read the whole section the map points to.** Find it with `^## Heading` (for example `^## Screen flow`); it runs to the next `## ` heading.
+- **Current line ranges** of every banner and `##` heading: `powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_filemap.ps1 -Lines`. The same script, run without `-Lines`, checks that this map matches the files (see F).
+
+**Do not read whole:** `index.html` (about 3,100 lines); the JSON blocks `question-bank` (about 55,000 characters) and `glossary` (about 8,000): search a key, for example `A1|vocabulary|1|mc|easy`, and read around it; the README parts "Question content method" and "Content (questions)" unless you work on questions; the private word lists in `.gitignore/` (10,000 to 40,000 characters each).
+**Always read:** this map. **Before you change something, also read** README "Confirmed decisions" and the "Change together" row (E) for your task; for a plain question about how things work you may skip those two. **When unsure, read more, not less.**
+
+### A. Start here: the task, then what to read
+
+| Task | Anchors in index.html | Docs to read (README / DESIGN) |
+|---|---|---|
+| Change a visible text, or a Turkish text | `TEXTS`, `LANGUAGE` | README Language (English / Turkish); DESIGN Status |
+| Change a number (time, points, thresholds) | `CONFIG` | README Configuration |
+| Add or change a setting | `SETTINGS`, `MENU BUTTONS` (`initMenus` loads some saved settings), `TEXTS`, `LANGUAGE`, `THEME`, `SOUND` | README Theme, sound and confetti ("To add a setting"), Language (English / Turkish); DESIGN Components |
+| Change a screen, menu, level or navigation | `NAVIGATION / MENUS`, `MENU BUTTONS`, `NEXT EXERCISE`, `MENU TREE` | README Screen flow; DESIGN Controls placement |
+| Change a pop-up | `MODAL` (the engine), `TEXTS` (its texts), and the banner that opens it: `NEXT EXERCISE` (main menu, end of category), `QUIZ FLOW` (words, quit), `TIMER` (time out, game over), `SETTINGS` | README Screen flow; DESIGN Components |
+| Change a question type, answer checking or scoring | `QUESTIONS`, `RENDERERS`, `QUIZ FLOW`, `CONFIG` (`POINTS_CORRECT`, `POINTS_INCORRECT`, `SPELL_EXACT_MAX_LENGTH`, `SPELL_SHORT_MAX_LENGTH`, `SPELL_MAX_EDITS_SHORT`, `SPELL_MAX_EDITS_LONG`) | README Question types (with "Typed Fill in the Blanks"), Scoring algorithm, Answer feedback |
+| Change the timer or the time-out | `TIMER`, `TEXTS` (its pop-up texts), `CONFIG` (`EXTENSION_SECONDS`, `EXTENSION_PENALTY`) | README Timer and time-out algorithm |
+| Change the results screen | `RESULTS` | README Answer feedback, Screen flow |
+| Change the look (colors, spacing, motion) | CSS anchors (B) | DESIGN (the matching sections) |
+| Write or review questions or glossary meanings | `question-bank`, `glossary` (search keys) | README Content (questions), Question content method (it holds "Workflow: draft → review → write" and the Review checklist; AGENTS.md rule 9) |
+| Add a vocabulary theme | `TOPICS AND DATA`, `question-bank` | README Content (questions), "Next theme, step by step" |
+| Plan something new, or check what is decided or still open | none | README Roadmap (with its "Open questions"), Question content method ("Open questions"), Confirmed decisions; AGENTS.md rule 4 |
+| Commit | none | AGENTS.md rule 7, README Changelog, CHANGELOG.md |
+
+### B. index.html, in file order
+
+The `<head>` script applies the saved theme before the first paint. The `<style>` block holds all CSS. The `<body>` holds the screens. Then come the two JSON blocks and one `<script>`.
+
+**Script banners** (each is the first uppercase words of a `/* ===` comment in the `<script>`; a function belongs to the nearest banner above it):
+
+| Banner | Holds | Functions | Constants |
+|---|---|---|---|
+| `CONFIG` | every tunable number, level groups, categories, types, difficulties | - | CONFIG |
+| `TEXTS` | the English and Turkish texts and the text function | t | LANGS, LANG_NAMES, I18N |
+| `TOPICS AND DATA` | topic names, credits, JSON block loading, lorem words, icons | getTopics, loadJsonBlock | DEFAULT_TOPICS, TOPICS_BY_SECTION, CREDITS, QUESTION_BANK, GLOSSARY, LOREM_WORDS, ICONS |
+| `STATE` | the state object | - | state |
+| `HELPERS` | element builder, number format, storage, seeded random | el, fmt, englishText, noteText, clampScore, findById, loadPref, savePref, prefersReducedMotion, hashString, mulberry32, makeLorem | - |
+| `LANGUAGE` | saved language, static texts, switching language | initLanguage, applyStaticTexts, setLanguage | - |
+| `THEME` | Auto, Light, Dark | setTheme, initTheme | THEMES, currentTheme |
+| `SOUND` | Web Audio sounds and mute | getAudio, playNote, playSound, setMuted, initSound | sound, SOUNDS |
+| `CONFETTI` | results confetti | launchConfetti, stopConfetti | confetti |
+| `QUESTIONS` | quiz key, getting and shuffling questions, lorem questions, Fill checking | quizKey, getQuestions, generateLoremQuestions, prepareQuiz, balancedPositions, editDistance, normalizeAnswer, judgeFill, questionText, correctAnswerText | - |
+| `NAVIGATION / MENUS` | screens, path line, button builder, difficulty, same duration | breadcrumbParts, refreshBreadcrumb, showScreen, renderButtons, getQuestionSeconds, setSameDuration, renderDifficultyButtons | SCREEN_DEPTH |
+| `NEXT EXERCISE` | order of the next quiz, main menu pop-up, end-of-category pop-up | getNextExercise, levelCategoryLabel, openHomeConfirm, goHome, goToNextExercise, openNextExercise | - |
+| `MENU BUTTONS` | topic, level, category and type buttons; menu start-up | renderTopicButtons, renderMenus, initMenus | - |
+| `MODAL` | pop-up engine, inert page behind it, Credits | updateInert, openModal, closeModal, openCredits | modalState |
+| `SETTINGS` | Settings pop-up and the Language toggle | refreshSettings, setSmartBoard, settingText, settingSwitch, languageToggle, translateSettings, openSettings | settingsUi |
+| `MENU TREE` | menu tree panel; also initModal (the pop-up's listeners) | renderTree, openTree, closeTree, initTree, initModal | TREE_STEPS, treeCloseTimer |
+| `QUIZ FLOW` | start a quiz, word pre-view pop-up, one question, answer, quit | startQuiz, quizTargetWords, glossarySenses, openWordPreview, currentQuestion, currentRecord, renderQuestion, updateScoreDisplay, submitAnswer, goNext, skipQuestion, requestQuit | - |
+| `TIMER` | timer, time-out pop-up, extra time, game over | startTimer, resumeTimer, pauseTimer, stopTimer, tick, renderTimer, onTimeUp, useExtension, gameOver | - |
+| `RENDERERS` | one renderer per question type | renderChoiceButtons, choicePoints, submitChoice, renderMC, renderTF, fillBefore, fillAfter, renderFill, renderFillTap, renderMatch | RENDERERS |
+| `RESULTS` | the results screen | statusLabel, renderResultsContent, showResults | - |
+| `INIT` | start-up order | - | - |
+
+**HTML ids** (screens and big blocks):
+
+| Id | What it is |
+|---|---|
+| `topbar` | top bar: Main menu, menu tree and Settings buttons |
+| `screen-level` | level screen (root) |
+| `screen-category` | Vocabulary / Grammar screen |
+| `screen-topic` | topic screen |
+| `screen-type` | question type screen |
+| `screen-difficulty` | difficulty screen and the same-duration switch |
+| `screen-quiz` | the quiz (header, timer bar, question, feedback, Next) |
+| `screen-results` | results (score, counts, buttons, one card per question) |
+| `credits-footer` | footer with the Credits link |
+| `tree-overlay` | menu tree panel |
+| `modal-overlay` | the one pop-up used by every dialog |
+| `question-bank` | JSON: real questions by quiz key (large: search a key, do not read it whole) |
+| `glossary` | JSON: word meanings for the word pre-view pop-up (search a word) |
+
+**CSS anchors** (each is the start of a `/* ... */` comment in the `<style>` block; the look itself is described in DESIGN.md):
+
+| CSS anchor | Covers |
+|---|---|
+| `Design language` | color tokens, light and dark values |
+| `The level accent` | accent colors per level |
+| `Top bar` | top bar and icon buttons |
+| `Buttons` | normal and primary buttons |
+| `Menu grids` | level, category, topic, type and difficulty buttons |
+| `The quiz suggested` | the "Next" mark on the difficulty screen |
+| `Switch` | switch rows |
+| `Quiz header` | progress, score, timer bar |
+| `Fill in the blanks` | word bank, instructions |
+| `Typed blank` | the typed blank |
+| `SmartBoard mode` | tappable bank words and blank |
+| `Matching` | two-column matching |
+| `Results` | results hero and cards |
+| `Footer / credits` | footer link |
+| `Modal` | pop-up |
+| `Settings pop-up` | Settings rows, segmented control |
+| `Language toggle` | the sliding English / Türkçe pill |
+| `Menu tree` | menu tree drawer and sheet |
+
+### C. Docs: which section when
+
+| README section | Read when |
+|---|---|
+| `File map` | always, first |
+| `How to play` | the player-facing instructions change |
+| `Screen flow` | any screen, pop-up, menu, tree or navigation change |
+| `Configuration` | any number in CONFIG, and the topic lists |
+| `State` | the state or a quiz record changes |
+| `Scoring algorithm` | points, penalties, score limits |
+| `Timer and time-out algorithm` | timer, extra time, game over |
+| `Language (English / Turkish)` | any text, the language switch, Turkish wording |
+| `Theme, sound and confetti` | Settings internals, theme, sound, saved settings, confetti |
+| `Answer feedback` | feedback box, partly correct answers, result cards |
+| `Question types` | stored question shapes, typed and SmartBoard Fill, Matching, shuffling |
+| `Content (questions)` | question bank, glossary, check script, A1 word lists, organized word files |
+| `Question content method` | planning, writing and reviewing questions (it ends with the Review checklist) |
+| `Confirmed decisions` | before you change something (not needed for a plain question) |
+| `Testing` | before handing over |
+| `Changelog` | when committing |
+| `Roadmap` | planning, owner's ideas, history design, the file split |
+
+| DESIGN section | Read when |
+|---|---|
+| `Status` | any visible text, fixed names, approved texts, Turkish names |
+| `Style: "clean study app"` | layout and general look |
+| `Level colors` | level colors |
+| `Other colors` | answer, timer and surface colors |
+| `Light and dark mode` | theme work |
+| `Typography` | fonts |
+| `Motion` | animations |
+| `Sound` | sounds |
+| `Controls placement` | top bar, Back button, footer |
+| `Components` | any button, switch, pop-up, toggle or card |
+| `Open design work` | planning design |
+
+Sub-sections (`###`) you may need, inside the sections above (the map check does not list them, so check the name when you search): under `Question types`: "Typed Fill in the Blanks", "SmartBoard Fill in the Blanks", "Matching"; under `Content (questions)`: "Check script", "A1 word lists", "Building an organized word file for a level"; under `Question content method`: "Target-word plans", "Writing the questions", "Next theme, step by step", "Theme notes", "Workflow: draft → review → write", "Review checklist", "Open questions (ask the owner; do not decide)"; under `Roadmap`: "Open questions (ask the owner before building)", "Draft design: history, overall calculation, resets, recommendations", "Later, not planned yet: splitting the file".
+
+### D. Other files
+
+| File | What and when |
+|---|---|
+| `AGENTS.md` | the working rules; read first, every session |
+| `CHANGELOG.md` | plain-language log; read only to add the entry for a commit |
+| `.gitignore/tools/check_questions.ps1` | question check, run after any question change (README Check script) |
+| `.gitignore/tools/check_filemap.ps1` | file map check, which also looks for stale function and constant names in the docs; run after any structural change or doc edit (F) |
+| `.gitignore/tools/serve.ps1` | private test server for saved settings (README Testing) |
+| `.gitignore/ORG_A1_WORDS.md` | A1 word lists, about 40,000 characters: read only the theme or topic you need |
+| `.gitignore/PLAN_A1_VOCABULARY.md` | target-word plans, about 7,000 characters |
+| `.gitignore/A1_WORDS.md` | the original A1 list, never changed, almost never read |
+| `.gitignore/GRAMMAR_LIST.md` | CEFR grammar points per level and the Grammar topics (not described elsewhere) |
+
+### E. Change together (AGENTS.md rule 11 as a lookup)
+
+| If you change | Also check and change |
+|---|---|
+| A visible text | `I18N` in both languages; `data-i18n` in the HTML; README Language; DESIGN Status when it is a fixed or approved text |
+| A number | CONFIG; the README Configuration table; any README text that quotes it |
+| A setting | `openSettings` (a row made with `settingSwitch`, its input in `settingsUi`, its row in the list), a setter and its `lg-` storage key, `refreshSettings`, loading the saved value at start-up (step 5 of "To add a setting"), the `I18N` texts in both languages, the `SETTINGS` banner comment, and this map when a function is new; README: Theme, sound and confetti (Settings internals and the storage line), How to play, Screen flow (top bar), Testing, Roadmap item 9, Open questions (Storage, Settings); DESIGN: Status (Settings texts), Controls placement; the AGENTS.md rule 6 list, but **ask the owner first** (AGENTS.md changes only when asked) |
+| A level | `CONFIG.LEVELS`, `LEVEL_GROUPS`, `levelName.X` in both languages, a `--lvl-X` color and `body[data-level]` CSS; DESIGN Level colors; the check script lists |
+| A vocabulary theme | `TOPICS_BY_SECTION`, `question-bank` keys, `glossary`, the plan file, DESIGN names list; run the question check |
+| The shape of a question | README Question types, the renderers, `generateLoremQuestions`, the check script |
+| A screen | its HTML section, `SCREEN_DEPTH`, `showScreen`, the menu tree steps; README Screen flow |
+| A function, banner, id or doc heading name | this map (rule 12), then run the map check |
+
+### F. Keeping the map true (AGENTS.md rule 12)
+
+In the same change, update this map whenever you **add, remove, rename or move** a script banner, a function, a listed constant, a listed HTML id or JSON block, a CSS anchor, a `##` heading of README.md or DESIGN.md, or a file listed in D, and whenever what this map says lives where is no longer true. Then run:
+
+```bash
+powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_filemap.ps1
+```
+
+It must end with `OK`. It reports an **error** when the map names something that does not exist, when something exists but is not in the map (every top-level function, script banner, `screen-` section, JSON block, and `##` heading is checked), or when a function is listed under the wrong banner. It reports a **warning** for a CSS anchor that is not found or a private file that is absent. **Stale names in the docs:** it also reports an **error** when a function name written in backticks with round brackets right after it, or an UPPER_CASE name written alone in backticks, in README.md, DESIGN.md or AGENTS.md does not exist in `index.html` (a renamed or removed name; the first real catch was the old question bank loader, which the README still named after it was renamed). CSS words that look like calls (`rgba`, `scale` …) and names the docs mention on purpose as removed (`THEME_LABELS`) are in two lists at the top of the script, `$DOC_ALLOWED_CALLS` and `$DOC_REMOVED_NAMES`: add to them when the check gives a false alarm. If the map and the files disagree, fix the one that is wrong and tell the owner. **What the check does not do:** it does not check the "Holds" and "Read when" descriptions, the names inside tables A and E, the `###` sub-sections, names written another way (for example `CONFIG.LEVELS`, or without backticks) or whether every CSS anchor is listed, so read those with a critical eye and fix any that are wrong. The script is private (it lives in `.gitignore/tools/`, which is never uploaded): on a copy without that folder the check cannot run, so compare by hand and tell the owner. Table syntax the script relies on: the first cell of a row in a table is the thing to find, written in backticks; function and constant cells are plain names separated by commas; do not put a `|` inside a cell.
+
 ## How to play
 
 **You only need one file: [`index.html`](index.html).** Nothing to install, no account.
@@ -130,6 +304,7 @@ record = { status: 'correct'|'partial'|'incorrect'|'skipped'|'unanswered', userA
 - The timer stops when the question is answered and is paused while the quit modal is open. The time-out/game-over modals open with the timer already stopped.
 - Time reaches 0 (`onTimeUp()`):
   1. First time on this question → **Time out** modal: `+10 seconds (−10 points)` or `Skip question`.
+     - The numbers come from `CONFIG` (`EXTENSION_SECONDS`, `EXTENSION_PENALTY`); `tick()` calls `onTimeUp()` each time the time reaches 0. The texts are in `I18N`, both languages: Time out `timeOutTitle`, body `timeOutBodyPts` (graded quiz) or `timeOutBody` (not graded), buttons `plusSecondsPts` / `plusSeconds` and `skipQuestion`; Game over `gameOverTitle`, `gameOverBody`, `retry`, `seeResults`.
      - Extension (`useExtension()`): penalty applied (if graded), timer restarts at 10 s in "extension" mode (striped orange bar, "Extra time" label). Only once per question.
      - Skip (`skipQuestion()`): record = skipped, go straight to the next question (or results if last).
   2. Extension also reaches 0 → `gameOver()`: the quiz ends. **Game over** modal: `Retry` (same level/category/topic/type/difficulty/switch) or `See results`. The current question is marked `timedOut`, it and all later questions are "Not answered".
@@ -137,7 +312,7 @@ record = { status: 'correct'|'partial'|'incorrect'|'skipped'|'unanswered', userA
 
 ## Language (English / Turkish)
 
-Owner's request (2026-11-01), built in two rounds. **Both rounds are built.** Round 1 is committed (`8f4af6c`); round 2 was written after it and is committed when the owner asks.
+Owner's request (2026-11-01), built in two rounds. **Both rounds are built.** Round 1 is committed (`8f4af6c`) and round 2 is committed (`ea4d67c`).
 
 **What is translated** (owner's decisions): menu elements, buttons, pop-ups, Settings, the quiz screen, answer feedback and the results screen, and the fixed names (Multiple Choice, Easy, level names, …). **Never translated, not ever:** questions and their options, bank words and Matching words; the True / False **answer buttons** (the type *name* "True or False" is translated); topic names; the game name "My Game Project"; level codes (A1 … C1); people's names. Later, separate steps (not started): the meanings in the "Words in this game" pop-up, then the answer explanations.
 
@@ -168,7 +343,7 @@ Still English in Turkish mode, by design: questions, options, bank and Matching 
 - **Theme** (`setTheme`, `initTheme`; chosen in Settings with the Auto / Light / Dark buttons): `auto` removes `html[data-theme]` so CSS follows `prefers-color-scheme`. Saved in `localStorage["lg-theme"]`; an inline script in `<head>` applies it before first paint.
 - **Sound** (`initSound`, `getAudio`, `playNote`, `playSound(name)`): Web Audio API, notes defined in `SOUNDS` (`correct`, `partial`, `wrong`, `tick`). The `AudioContext` is created/resumed on the first `pointerdown`/`keydown` (browser autoplay rules). On by default; the Sound switch in Settings (`setMuted`) saves the choice in `localStorage["lg-muted"]` (`'1'` = muted). `submitAnswer()` plays `correct` / `partial` / `wrong`.
 - **Same duration** (`setSameDuration`): the switch exists on the Difficulty screen and in Settings, and both always show `state.nav.sameDuration`. `setSameDuration(value)` updates the state, `localStorage["lg-same-duration"]` (`'1'` = on), both switches and the seconds on the difficulty buttons. `initMenus()` loads the saved value before the first render. Settings is not available during a quiz, so the time of a running quiz never changes.
-- **Settings pop-up internals** (`openSettings()`, `settingSwitch()`, `settingText()`, `languageToggle()`, `translateSettings()`, `refreshSettings()`, `settingsUi`): `openSettings()` builds the rows and keeps references to the open controls in `settingsUi`; every text in it is made with `settingText()`, which also remembers `[node, key, params]` in `settingsUi.texts`, so `translateSettings()` can set all of them again in place when the language changes (the pop-up is not rebuilt, so the Language toggle keeps its focus and its slide plays). Every setter (`setTheme`, `setMuted`, `setSameDuration`) ends with `refreshSettings()`, which sets the open controls from the real values (the selected theme button, the Sound switch = not muted, the duration switch), so a change made anywhere shows everywhere. **To add a setting:** add a row in `openSettings()` (a switch with `settingSwitch(id, name, help, onChange)`), a setter that saves to `localStorage` and calls `refreshSettings()`, and one line in `refreshSettings()`. The SmartBoard row follows the same pattern: `setSmartBoard()` saves `lg-smartboard` and `refreshSettings()` sets its switch from `state.smartBoard`; while `state.screen === "quiz"` the switch is disabled and a note "You can change this between quizzes." is shown (the top bar is hidden on the quiz screen anyway, so this is a safety guard).
+- **Settings pop-up internals** (`openSettings()`, `settingSwitch()`, `settingText()`, `languageToggle()`, `translateSettings()`, `refreshSettings()`, `settingsUi`): `openSettings()` builds the rows and keeps references to the open controls in `settingsUi`; every text in it is made with `settingText()`, which also remembers `[node, key, params]` in `settingsUi.texts`, so `translateSettings()` can set all of them again in place when the language changes (the pop-up is not rebuilt, so the Language toggle keeps its focus and its slide plays). Every setter (`setTheme`, `setMuted`, `setSameDuration`) ends with `refreshSettings()`, which sets the open controls from the real values (the selected theme button, the Sound switch = not muted, the duration switch), so a change made anywhere shows everywhere. **To add a setting:** (1) add its name text and help text to **both** languages of `I18N`; (2) in `openSettings()` add a row made with `settingSwitch(texts, id, nameKey, helpKey, helpParams, onChange)`, put its input into the `settingsUi` object and its row into the `.settings` list; (3) write a setter like `setSmartBoard()` that sets `state`, saves to `localStorage` under a new `lg-` key when `save` is true, and ends with `refreshSettings()`; (4) add one line to `refreshSettings()`; (5) load the saved value when the page starts (same duration and SmartBoard mode do it in `initMenus()`, theme in `initTheme()`, language in `initLanguage()`, sound where the `sound` object is created); (6) update every list of settings (see the file map, E). The SmartBoard row follows the same pattern: `setSmartBoard()` saves `lg-smartboard` and `refreshSettings()` sets its switch from `state.smartBoard`; while `state.screen === "quiz"` the switch is disabled and a note "You can change this between quizzes." is shown (the top bar is hidden on the quiz screen anyway, so this is a safety guard).
 - **Storage**: `loadPref` / `savePref` wrap `localStorage` in try/catch; if storage is blocked (private mode, `data:` previews) the game still works and simply doesn't remember.
 - **Correct animation**: `submitAnswer()` adds `.pop` to every `.is-correct` element in the question when the answer is correct.
 - **Confetti** (`launchConfetti`, `stopConfetti`): `<canvas>` overlay drawn with `requestAnimationFrame` in the five level colors (read from CSS `--lvl-*`). Triggered at the end of `showResults()` when the final score ≥ `CONFETTI_MIN_SCORE` (80), or ≥ `CONFETTI_MIN_MATCH_SCORE` (75) for Matching. Removed after `CONFETTI_MS` or by `showScreen()`.
@@ -230,7 +405,7 @@ When `state.smartBoard` is on, `renderQuestion()` uses `renderFillTap()` instead
 
 **Written so far:** A1 Vocabulary, Greetings and Feelings (pilot theme, plan approved 2026-10-31): all 16 quizzes (4 question types × 4 difficulties), with glossary entries for all 34 words of the theme. **Numbers and Amounts** (topic index 1; plan approved 2026-11-01): all 16 quizzes are written (Multiple Choice, Fill in the Blanks and True or False with 8 questions each, Matching with 2 questions; 104 questions, owner-reviewed). Its glossary has meanings for all 41 words (digits are used in the meanings of number words, approved by the owner 2026-11-01). Matching meanings mix real situations, digits in a real place (page 15, room 18), order ("the number after 89") and three sums for the big numbers (sixteen, thousand, million), which the owner approved on 2026-11-01 because the A1 list has no real-life word for them. Everything else is still lorem.
 
-- **Question bank:** a JSON block in `index.html`, `<script type="application/json" id="question-bank">`, before the main script. `loadQuestionBank()` parses it once at startup (invalid JSON → console warning and lorem questions). It is JSON (not a JS object) so the check script can read it.
+- **Question bank:** a JSON block in `index.html`, `<script type="application/json" id="question-bank">`, before the main script. `loadJsonBlock('question-bank')` (stored in the constant `QUESTION_BANK`) parses it once at startup (invalid JSON → console warning and lorem questions). It is JSON (not a JS object) so the check script can read it.
 - **Glossary:** a second JSON block, `<script type="application/json" id="glossary">`, parsed by the same `loadJsonBlock()`. Shape: `{ "A1": { "banana": { "type": "noun", "meaning": "a long yellow fruit" }, "drink": [ { "type": "noun", "meaning": "…" }, { "type": "verb", "meaning": "…" } ] } }`, keys in lower case. **One entry per tested word per level**, written once and reused in every quiz, so a word always has the same meanings. An entry is one sense (object) or, when the word has several word types at that level, a list with **one sense per word type**.
 - **Which type a quiz uses:** when a tested word has more than one word type in the glossary, its question says which one it uses: `targetType` on Multiple Choice / Fill in the Blanks / True or False questions, `type` on a Matching pair (e.g. `{ "left": "drink", "right": "…", "type": "verb" }`). The pop-up underlines that type.
 - **Key:** `level|category|topicIndex|type|difficulty` (e.g. `A1|vocabulary|0|mc|easy`); difficulty ids: `easy`, `medium`, `hard`, `veryhard`. Each difficulty has its own questions.
@@ -624,11 +799,12 @@ All built and tested with lorem questions (see the sections above for how each w
 ## Testing
 
 AGENTS.md rule 6 lists what to check before handing over. Practical notes from building the Settings menu, Next exercise and the menu tree:
-- **Saved settings need a real web address.** A preview of the file (a `data:` address, or a file shown as a snapshot) blocks `localStorage`, so theme, sound and same-duration cannot be tested there. Start the private test server with `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve.ps1` (it serves only `index.html` at `http://localhost:8765/`), open that address, and stop the server when done (Ctrl+C, or end its PowerShell process). Clear the test storage afterwards (`localStorage.clear()` in the console). The server never serves a cached page, so a reload always shows the latest `index.html`. If it says the port is busy, an old server is still running: stop it (below) or start another with `-Port 8766` (then open that port). If it was started hidden (for example by an assistant), stop it with `Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*serve.ps1*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`. The tool is private (in `.gitignore/tools/`) and only for testing; players never need it.
+- **Saved settings need a real web address.** A preview of the file (a `data:` address, or a file shown as a snapshot) blocks `localStorage`, so language, theme, sound, same-duration and SmartBoard mode cannot be tested there. Start the private test server with `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve.ps1` (it serves only `index.html` at `http://localhost:8765/`), open that address, and stop the server when done (Ctrl+C, or end its PowerShell process). Clear the test storage afterwards (`localStorage.clear()` in the console). The server never serves a cached page, so a reload always shows the latest `index.html`. If it says the port is busy, an old server is still running: stop it (below) or start another with `-Port 8766` (then open that port). If it was started hidden (for example by an assistant), stop it with `Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*serve.ps1*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`. The tool is private (in `.gitignore/tools/`) and only for testing; players never need it.
 - **Phone width:** use a 375px wide view (the preview's Mobile size) and reset it to desktop afterwards. Changing the size can reload the page, so set the state again.
 - **Animations in previews:** the preview can run slower than a real browser, and a screenshot may catch a pop-up in the middle of its slide, so take a second screenshot before judging the final look. How smooth an animation feels can only be judged on a real device.
 - **Reaching any screen quickly:** in the browser console, set `state.nav` and call `startQuiz()` or `showResults()`; the order of Next exercise can be tested with `getNextExercise(nav)` (all 1,856 quizzes are visited once, in order).
 - Run the question check (`check_questions.ps1`) after any change; the expected result is 0 errors and 16 warnings (see "Check script").
+- Run the file map check (`check_filemap.ps1`) after any structural change (a banner, function, id, doc heading or file added, removed, renamed or moved); the expected result is 0 errors and 0 warnings (see "File map", F). It also reports function and constant names written in the docs that no longer exist in the code, so run it after editing docs that name code too. Its `-Lines` option prints the current line ranges.
 
 ## Changelog
 
@@ -660,6 +836,11 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
    - **Keep the names clean for adblockers:** avoid class names and file names with `ad(s)`, `banner`, `sponsor`, `tracker` or `popup`. Words inside question text are never blocked. The only outside request is the Inter font; if a strict privacy tool blocks it, the game falls back to a normal font.
 12. **Menu tree** (owner's request, 2026-11-01). **Built (2026-11-01)**, see "Screen flow": a button next to Settings opens a panel with the student's path through the menu; each chosen step is clickable.
 13. **Turkish language switch** (owner's request, 2026-11-01): a toggle in Settings, English by default, that shows menus, buttons, pop-ups, feedback and results in Turkish. Questions and their options are never translated. **Both rounds built (2026-11-01)**: menus, pop-ups, Settings, quiz screen, feedback and results; see "Language (English / Turkish)". After that, as separate steps: the meanings in the "Words in this game" pop-up, then the answer explanations (Turkish kept in its own block per quiz key, so the later file split just moves it; add a check-script warning for an explanation without Turkish). Open: whether a Turkish explanation replaces or sits under the English one; whether the results note the language.
+14. **Helper agents and a file map** (owner's request, 2026-11-01; **not built, a plan only**). Why: the conversation fills up (about 40% of the window after the Turkish work); the README alone is about 40k tokens, and big reads of `index.html` and screenshots add to it. Plan, in order:
+    - **a) File map in this README** (owner liked the idea). **Built (2026-11-02)**: see "File map" at the top; the private script `.gitignore/tools/check_filemap.ps1` checks it in both directions (AGENTS.md rule 12 makes keeping it true a rule; AGENTS.md's reading line now says "read the map first, then the sections it points to"). The original idea: a short table of which function, CSS block or JSON block lives where in `index.html` (and, after the split, which file), so a task can read only the lines it needs instead of broad chunks. Keep it in step with the code (AGENTS.md rule 11); the later file split reuses it.
+    - **b) Use helper agents for bulk, read-only jobs** (only when the owner asks, as always; a helper starts without our conversation, so the brief must be complete): (1) **review a whole theme's questions against the "Review checklist"**, as a second pair of eyes that did not write them, still followed by the owner's go-ahead (rule 9); (2) **scan `index.html` for leftover untranslated or hard-coded text** after a language or design change; (3) **broad searches across the files** before a big change. A helper returns a short report; the main conversation checks any finding before acting on it.
+    - **Not for helpers:** small edits, writing or translating text, and anything that depends on the owner's decisions or exact wording; those stay in the main conversation. A helper never commits or changes files unless the owner says so.
+    - **Other savings** (no change needed to rules): start a fresh session at natural breaks (the README, DESIGN.md and the notes carry the state); test with console scripts that read every text instead of screenshots; show only what changed when asking for approval. An idea still to decide with the owner: split this README into a short overview plus topic files (question method and checklist, Language, and so on), which needs new wording in AGENTS.md rule "read README.md and DESIGN.md in full" (AGENTS.md changes only when the owner asks).
 
 ### Open questions (ask the owner before building)
 
