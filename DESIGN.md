@@ -15,7 +15,7 @@ Settings pop-up texts (approved with the plan, 2026-11-01; "Work in Progress" is
 - Theme (Auto / Light / Dark): "Choose light or dark colors. Auto follows your device."
 - Sound: "Play sounds for correct and wrong answers and for the timer."
 - Same duration per question across all difficulty settings (the fixed name, as on the Difficulty screen): "Every question gets 60 seconds, whatever the difficulty." (the number comes from `CONFIG.SAME_DURATION_SECONDS`)
-- SmartBoard mode (a visual preview only, nothing is wired to it yet): "Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word to put it in the blank instead. Its code hasn't been written yet." The last sentence is temporary and is removed when the mode is built.
+- SmartBoard mode: "Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word and then tap the blank to put it there instead." While a quiz is on screen the switch is locked and shows "You can change this between quizzes." Instruction text on a tap Fill question: "Tap a word, then tap the blank."
 - Note at the bottom: "Work in Progress".
 
 Next exercise texts (approved with the plan, 2026-11-01):
@@ -131,6 +131,7 @@ Generated with the Web Audio API inside `index.html` (no audio files):
 - **Question card** (`#quiz-question.card`): options are full-width 56px buttons; True/False are side by side.
 - **Feedback box** (`.feedback.ok` / `.feedback.bad`): green or red tint.
 - **Word bank + typed blank** (`.word-bank`, `.chip`, `.blank-input`): dashed accent-tinted bank with pill chips (display only) above the sentence; the blank is a text input inside the sentence with a light accent tint and an accent underline, fixed width (9.5em, never hints at the word's length), focus ring in the accent color. After Check it turns green (correct), red (wrong) or level-color tint (misspelled).
+- **SmartBoard Fill** (`.chip` buttons, `.blank-slot`): the bank words are tappable pills (a selected one gets an accent outline and tint, a placed one is faded with a dashed border); the blank is a tappable box with the same size and accent underline as the typed blank, highlighted while a word is selected; it turns green or red after Check. No new animation.
 - **Partly right** (misspelled Fill answer, Matching question with 1–3 correct pairs): uses the **level color**, never green or red. Feedback box `.feedback.partial` (accent-soft background, accent heading "Almost!" / "Partly correct."), result card `st-partial` (accent left border).
 - **Matching** (`.match-columns`, `.match-item`): two columns. On phones the word column is only as wide as its longest word (words never break in the middle), the meanings get the rest of the width, and the pair number badge sits on the box's top-right corner, so long meanings don't wrap into tall, narrow boxes. From 600px: equal columns, badge inside the box on the right; selected item gets accent outline + tint; paired items share a round number badge.
 - **Modal** (`.modal-overlay`, `.modal`): card with soft shadow over a dimmed page (no blur, for smooth animation; the dim fades in over 0.2s, then the card rises). It always opens scrolled to its top; the main button is focused without scrolling the card.

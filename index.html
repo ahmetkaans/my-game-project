@@ -401,6 +401,30 @@
   .blank-input:disabled { opacity: 1; }
   .blank-input.is-partial { background: var(--accent-soft) !important; border-color: var(--accent) !important; }
 
+  /* SmartBoard mode: tappable bank words and a tappable blank (no typing) */
+  button.chip { cursor: pointer; font: inherit; font-weight: 500; color: var(--fg); }
+  .chip.is-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+  .chip.is-used { opacity: 0.4; border-style: dashed; }
+  .blank-slot {
+    display: inline-block;
+    width: 9.5em;
+    max-width: 100%;
+    min-height: 46px;
+    padding: 4px 10px;
+    vertical-align: middle;
+    font: inherit;
+    font-weight: 500;
+    text-align: center;
+    color: var(--fg);
+    background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+  }
+  .blank-slot.is-target { background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-line); }
+  .blank-slot:disabled { opacity: 1; }
+
   /* Matching */
   /* Phones: the word column is only as wide as its longest word (words never break), the meanings get
      the rest, and the pair badge sits on the top-right corner, so no text space is kept free for it.
@@ -1214,6 +1238,7 @@ const ICONS = {
 const state = {
   nav: { level: null, category: null, topic: null, type: null, difficulty: null, sameDuration: false },
   quiz: null, // created by startQuiz()
+  smartBoard: false, // SmartBoard mode (Settings): Fill in the Blanks uses taps instead of typing; remembered ('lg-smartboard')
   screen: 'level', // the screen being shown (set by showScreen)
   nextHint: null, // { difficulty }: the quiz "Next exercise" suggests; marked on the Difficulty screen, cleared on any other screen
 };
@@ -1788,6 +1813,7 @@ function initMenus() {
   const sw = $('#same-duration-switch');
   setSameDuration(loadPref('lg-same-duration', '0') === '1', false);
   sw.addEventListener('change', () => setSameDuration(sw.checked));
+  setSmartBoard(loadPref('lg-smartboard', '0') === '1', false);
 
   const settingsBtn = $('#settings-btn');
   settingsBtn.innerHTML = ICONS.settings;
@@ -1851,6 +1877,17 @@ function refreshSettings() {
   settingsUi.themeButtons.forEach((btn, i) => btn.setAttribute('aria-pressed', String(THEMES[i] === currentTheme)));
   settingsUi.soundSwitch.checked = !sound.muted;
   settingsUi.durationSwitch.checked = state.nav.sameDuration;
+  settingsUi.smartBoardSwitch.checked = state.smartBoard;
+  // A quiz always runs in one mode: the switch is locked while a quiz is on screen.
+  const locked = state.screen === 'quiz';
+  settingsUi.smartBoardSwitch.disabled = locked;
+  settingsUi.smartBoardLock.hidden = !locked;
+}
+
+function setSmartBoard(value, save = true) {
+  state.smartBoard = value;
+  if (save) savePref('lg-smartboard', value ? '1' : '0');
+  refreshSettings();
 }
 
 function settingSwitch(id, name, help, onChange) {
@@ -1882,11 +1919,13 @@ function openSettings() {
     'Play sounds for correct and wrong answers and for the timer.', (on) => setMuted(!on));
   const durationRow = settingSwitch('setting-duration', 'Same duration per question across all difficulty settings',
     `Every question gets ${CONFIG.SAME_DURATION_SECONDS} seconds, whatever the difficulty.`, (on) => setSameDuration(on));
-  // SmartBoard mode: visual preview only. The switch moves, but nothing is wired to it, saved or remembered yet.
   const smartBoardRow = settingSwitch('setting-smartboard', 'SmartBoard mode',
-    'Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word to put it in the blank instead. Its code hasn\'t been written yet.',
-    () => {});
-  settingsUi = { themeButtons, soundSwitch: soundRow.input, durationSwitch: durationRow.input };
+    'Typing is hard on a smart board. When this is on, activities that ask you to type, like Fill in the Blanks, let you tap a word and then tap the blank to put it there instead.',
+    (on) => setSmartBoard(on));
+  const smartBoardLock = el('p', { class: 'setting-help', text: 'You can change this between quizzes.' });
+  smartBoardRow.row.append(smartBoardLock);
+  settingsUi = { themeButtons, soundSwitch: soundRow.input, durationSwitch: durationRow.input,
+    smartBoardSwitch: smartBoardRow.input, smartBoardLock };
   refreshSettings();
   openModal({
     title: 'Settings',
@@ -2077,7 +2116,7 @@ function renderQuestion() {
   $('#quiz-next').hidden = true;
   const area = $('#quiz-question');
   area.replaceChildren();
-  RENDERERS[q.type](q, area);
+  (q.type === 'fill' && state.smartBoard ? renderFillTap : RENDERERS[q.type])(q, area);
   startTimer(getQuestionSeconds(), false);
 }
 
@@ -2373,6 +2412,59 @@ function renderFill(q, area) {
   );
   state.quiz.ui = { input, check };
   input.focus({ preventScroll: true });
+}
+
+// SmartBoard mode: the same question, answered with taps. Tap a bank word, then tap the blank to put it there;
+// tap the placed word (or the blank) to take it back. No "misspelled" case: the word is right or wrong.
+function renderFillTap(q, area) {
+  const ui = { selected: null, placed: null }; // indexes into q.bank
+  const chips = q.bank.map((word, i) => {
+    const chip = el('button', { class: 'chip', type: 'button', text: word });
+    chip.addEventListener('click', () => {
+      if (state.quiz.answered) return;
+      if (ui.placed === i) ui.placed = null;          // tapping a placed word takes it back
+      else ui.selected = ui.selected === i ? null : i;
+      refresh();
+    });
+    return chip;
+  });
+  const slot = el('button', { class: 'blank-slot', type: 'button', 'aria-label': 'The blank' });
+  slot.addEventListener('click', () => {
+    if (state.quiz.answered) return;
+    if (ui.selected !== null) { ui.placed = ui.selected; ui.selected = null; }
+    else ui.placed = null;
+    refresh();
+  });
+  const check = el('button', { class: 'primary check-btn', text: 'Check', disabled: true });
+  const refresh = () => {
+    chips.forEach((chip, i) => {
+      chip.classList.toggle('is-selected', ui.selected === i);
+      chip.classList.toggle('is-used', ui.placed === i);
+    });
+    slot.textContent = ui.placed === null ? '' : q.bank[ui.placed];
+    slot.classList.toggle('is-filled', ui.placed !== null);
+    slot.classList.toggle('is-target', ui.selected !== null);
+    check.disabled = ui.placed === null;
+  };
+  check.addEventListener('click', () => {
+    if (ui.placed === null || state.quiz.answered) return;
+    const word = q.bank[ui.placed];
+    if (normalizeAnswer(word) === normalizeAnswer(q.answer)) {
+      slot.classList.add('is-correct');
+      submitAnswer('correct', word, CONFIG.POINTS_CORRECT);
+    } else {
+      slot.classList.add('is-wrong');
+      submitAnswer('incorrect', word, -CONFIG.POINTS_INCORRECT);
+    }
+  });
+  area.append(
+    el('p', { class: 'instructions', text: 'Tap a word, then tap the blank.' }),
+    el('div', { class: 'word-bank' }, chips),
+    el('p', { class: 'prompt fill-sentence' }, [fillBefore(q.before), slot, fillAfter(q.after)]),
+    check,
+  );
+  state.quiz.ui = ui;
+  refresh();
 }
 
 function renderMatch(q, area) {

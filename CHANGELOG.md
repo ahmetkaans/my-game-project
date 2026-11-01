@@ -4,10 +4,13 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Added a main menu button
+### Made SmartBoard mode work
+The SmartBoard switch in Settings now does something and is remembered: with it on, Fill in the Blanks lets you tap a word and then tap the blank instead of typing. Scoring is the same as typed Fill, and the switch is locked while a quiz is on screen.
+
+### Added a main menu button (`13eebdf`)
 A house button next to the menu tree takes you back to the level screen after a "Go to the main menu?" question with Yes and No buttons. It is hidden on the level screen itself.
 
-### Grouped the levels and added their names
+### Grouped the levels and added their names (`13eebdf`)
 The main menu now splits the levels into three groups with headings (A - Basic user, B - Independent user, C - Proficient user), and each level button shows its name under the code: Beginner, Elementary, Intermediate, Upper Intermediate and Advanced.
 
 ### Filled gaps in the project notes (`a45a14d`)
