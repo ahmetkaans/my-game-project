@@ -1087,6 +1087,102 @@
     { "type": "fill", "before": "Eighty,", "after": ", one hundred.", "answer": "ninety", "bank": ["ninety", "nineteen", "forty", "seventy"], "explanation": "The numbers go up by tens: eighty, ninety, one hundred." },
     { "type": "fill", "before": "The old tree is 100 years old. It is one", "after": "years old.", "answer": "hundred", "bank": ["hundred", "thousand", "million", "seventy"], "explanation": "The number 100 is \"one hundred\". One thousand is much more than that." },
     { "type": "fill", "before": "The city has 1,000,000 people. It has a", "after": "people.", "answer": "million", "bank": ["million", "hundred", "thousand", "ninety"], "explanation": "The number 1,000,000 is \"one million\". A million is much more than a thousand." }
+  ],
+  "A1|vocabulary|1|tf|easy": [
+    { "type": "tf", "prompt": "A weekend has two days.", "answer": true, "target": "two", "explanation": "A weekend is Saturday and Sunday. That is two days." },
+    { "type": "tf", "prompt": "We say \"three\" for the number 4.", "answer": false, "target": "three", "explanation": "The number 3 is \"three\". The number 4 is \"four\"." },
+    { "type": "tf", "prompt": "Four is bigger than 5.", "answer": false, "target": "four", "explanation": "Five comes after four, so four is smaller than 5." },
+    { "type": "tf", "prompt": "The number before 7 is \"six\".", "answer": true, "target": "six", "explanation": "The numbers go: five, six, seven. Six comes before seven." },
+    { "type": "tf", "prompt": "Seven is more than 6.", "answer": true, "target": "seven", "explanation": "Seven comes after six, so it is more than 6." },
+    { "type": "tf", "prompt": "Eight comes before 7.", "answer": false, "target": "eight", "explanation": "The numbers go: seven, eight. Eight comes after seven." },
+    { "type": "tf", "prompt": "The number 9 is \"nine\".", "answer": true, "target": "nine", "explanation": "We write 9 and we say \"nine\"." },
+    { "type": "tf", "prompt": "A baby is ten years old.", "answer": false, "target": "ten", "explanation": "A baby is very young. A child of ten years is not a baby." }
+  ],
+  "A1|vocabulary|1|tf|medium": [
+    { "type": "tf", "prompt": "January is the fifth month of the year.", "answer": false, "target": "fifth", "explanation": "January is the first month, not the fifth." },
+    { "type": "tf", "prompt": "We write 1st and we say \"first\".", "answer": true, "target": "first", "targetType": "number", "explanation": "The number 1 is \"one\", and 1st is \"first\"." },
+    { "type": "tf", "prompt": "In a line, the person after the first one is second.", "answer": true, "target": "second", "targetType": "number", "explanation": "The first person is first. The next person is second." },
+    { "type": "tf", "prompt": "In a line of three people, Tom is fourth.", "answer": false, "target": "fourth", "explanation": "A line of three people has a first, a second and a third person. There is no fourth." },
+    { "type": "tf", "prompt": "\"Number\" means a kind of fruit.", "answer": false, "target": "number", "explanation": "A number is something like 7 or 15 that tells how many. It is not a fruit." },
+    { "type": "tf", "prompt": "Half of 10 is 5.", "answer": true, "target": "half", "targetType": "noun", "explanation": "Five and five is ten, so 5 is half of 10." },
+    { "type": "tf", "prompt": "A quarter is one of two parts that look the same.", "answer": false, "target": "quarter", "explanation": "A quarter is one of four parts that look the same. One of two parts is a half." },
+    { "type": "tf", "prompt": "A meter is shorter than a mile.", "answer": true, "target": "meter", "explanation": "A mile is a long way. A meter is much shorter." }
+  ],
+  "A1|vocabulary|1|tf|hard": [
+    { "type": "tf", "prompt": "The number after 10 is \"eleven\".", "answer": true, "target": "eleven", "explanation": "The numbers go: ten, eleven, twelve." },
+    { "type": "tf", "prompt": "Twelve is more than 11.", "answer": true, "target": "twelve", "explanation": "Twelve comes after eleven, so it is more than 11." },
+    { "type": "tf", "prompt": "We say \"fourteen\" for the number 40.", "answer": false, "target": "fourteen", "explanation": "The number 14 is \"fourteen\" and the number 40 is \"forty\"." },
+    { "type": "tf", "prompt": "Sixteen ends with \"-teen\".", "answer": true, "target": "sixteen", "explanation": "The numbers 13 to 19 end with \"-teen\": sixteen, seventeen, eighteen." },
+    { "type": "tf", "prompt": "We write \"seventeen\" as 71.", "answer": false, "target": "seventeen", "explanation": "Seventeen is 17. The number 71 is \"seventy-one\"." },
+    { "type": "tf", "prompt": "Eighteen is smaller than 17.", "answer": false, "target": "eighteen", "explanation": "Seventeen comes before eighteen, so eighteen is more than 17." },
+    { "type": "tf", "prompt": "Nineteen comes before 20.", "answer": true, "target": "nineteen", "explanation": "The numbers go: nineteen, twenty. Nineteen comes before twenty." },
+    { "type": "tf", "prompt": "Twenty ends with \"-teen\".", "answer": false, "target": "twenty", "explanation": "Twenty ends with \"-ty\". Only the numbers 13 to 19 end with \"-teen\"." }
+  ],
+  "A1|vocabulary|1|tf|veryhard": [
+    { "type": "tf", "prompt": "The word \"forty\" has a \"u\".", "answer": false, "target": "forty", "explanation": "Forty has no \"u\". The word \"fourteen\" has a \"u\"." },
+    { "type": "tf", "prompt": "Fifty ends with \"-teen\".", "answer": false, "target": "fifty", "explanation": "Fifty ends with \"-ty\". Fifteen ends with \"-teen\"." },
+    { "type": "tf", "prompt": "The numbers go by tens: 60, seventy, 80.", "answer": true, "target": "seventy", "explanation": "We say 70 \"seventy\". It comes after 60 and before 80." },
+    { "type": "tf", "prompt": "Eighty is smaller than 70.", "answer": false, "target": "eighty", "explanation": "Seventy comes before eighty, so eighty is more than 70." },
+    { "type": "tf", "prompt": "Ninety ends with \"-ty\".", "answer": true, "target": "ninety", "explanation": "Ninety ends with \"-ty\". Nineteen ends with \"-teen\"." },
+    { "type": "tf", "prompt": "A hundred is more than 90.", "answer": true, "target": "hundred", "explanation": "Ninety comes before a hundred, so a hundred is more than 90." },
+    { "type": "tf", "prompt": "We say \"one thousand\" for the number 100.", "answer": false, "target": "thousand", "explanation": "The number 100 is \"one hundred\". The number 1,000 is \"one thousand\"." },
+    { "type": "tf", "prompt": "The number 1,000,000 is \"one million\".", "answer": true, "target": "million", "explanation": "We say 1,000,000 \"one million\". It is a very big number." }
+  ],
+  "A1|vocabulary|1|match|easy": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "one", "right": "the number of heads people have", "type": "number" },
+      { "left": "two", "right": "the number of eyes people have" },
+      { "left": "four", "right": "the number of spring, summer, fall and winter" },
+      { "left": "nine", "right": "the number before 10" }
+    ], "explanation": "People have one head and two eyes. Spring, summer, fall and winter are four, and nine comes before ten." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "five", "right": "the number of school days from Monday to Friday" },
+      { "left": "six", "right": "the number before 7" },
+      { "left": "eight", "right": "the number after 7" },
+      { "left": "ten", "right": "the number after 9" }
+    ], "explanation": "Monday, Tuesday, Wednesday, Thursday and Friday are five days. Six comes before seven, and eight comes after seven. Ten comes after nine." }
+  ],
+  "A1|vocabulary|1|match|medium": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "second", "right": "the place of the letter B in A, B, C", "type": "number" },
+      { "left": "half", "right": "the part of a class of 20 students that is 10 students", "type": "noun" },
+      { "left": "pair", "right": "two people who do something together, like two friends" },
+      { "left": "mile", "right": "how we say how far a person runs, like 3 of them in the park" }
+    ], "explanation": "B is the second letter. Ten of twenty students is half of the class. Two friends who do something together are a pair, and people can run a mile or more." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "third", "right": "the place of the letter C in A, B, C" },
+      { "left": "fifth", "right": "the place of the letter E in A, B, C, D, E" },
+      { "left": "quarter", "right": "the part of an hour that is 15 minutes" },
+      { "left": "meter", "right": "how long a room is: a room can be 4 of them long" }
+    ], "explanation": "C is the third letter and E is the fifth letter. Fifteen minutes is a quarter of an hour. A meter is a short way, so a room can be 4 meters long." }
+  ],
+  "A1|vocabulary|1|match|hard": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "twelve", "right": "the number of hours in half a day" },
+      { "left": "fifteen", "right": "the number on page 15 of a book" },
+      { "left": "seventeen", "right": "the number before 18" },
+      { "left": "twenty", "right": "the number after 19" }
+    ], "explanation": "A day has twenty-four hours, so half a day is twelve hours. Page 15 has the number fifteen. Seventeen comes before 18, and twenty comes after 19." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "thirteen", "right": "one more than 12" },
+      { "left": "sixteen", "right": "8 and 8 together" },
+      { "left": "eighteen", "right": "the number on a hotel door: room 18" },
+      { "left": "nineteen", "right": "the number before 20" }
+    ], "explanation": "Thirteen is one more than 12. Eight and eight together are sixteen. Room 18 is room eighteen, and nineteen comes before 20." }
+  ],
+  "A1|vocabulary|1|match|veryhard": [
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "thirty", "right": "the number of days in April" },
+      { "left": "seventy", "right": "the number after 69" },
+      { "left": "hundred", "right": "the most points you can get on a test: 100" },
+      { "left": "million", "right": "500,000 and 500,000 together" }
+    ], "explanation": "April has thirty days. Seventy comes after 69. The most points you can get on a test is a hundred, and 500,000 and 500,000 together are a million." },
+    { "type": "match", "prompt": "Match each word with its meaning.", "pairs": [
+      { "left": "sixty", "right": "the number after 59" },
+      { "left": "eighty", "right": "the price of a coat that costs $80" },
+      { "left": "ninety", "right": "the number after 89" },
+      { "left": "thousand", "right": "500 and 500 together" }
+    ], "explanation": "Sixty comes after 59, and ninety comes after 89. A coat that costs $80 costs eighty dollars. 500 and 500 together are a thousand." }
   ]
 }
 </script>

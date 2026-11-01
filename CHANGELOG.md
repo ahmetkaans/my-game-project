@@ -4,13 +4,16 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-01
 
-### Wrote the Multiple Choice and Fill in the Blanks questions for "Numbers and Amounts"
+### Finished "Numbers and Amounts": True or False and Matching
+The second theme is now complete: all 16 quizzes have real questions (104 in total). The True or False and Matching questions mix real-life situations, number order, word endings (like "-teen" and "-ty") and a few sums for the biggest numbers. Matching meanings use new situations, such as letters of the alphabet, half a day and the days in April.
+
+### Wrote the Multiple Choice and Fill in the Blanks questions for "Numbers and Amounts" (`5783251`)
 The second theme now has real questions: all four difficulties of Multiple Choice and Fill in the Blanks (64 questions), with short meanings in the word pop-up for all 41 words. Many questions use real-life numbers, such as bus numbers, prices, times and ages, and some are written as small dialogues. The notes now also hold two new rules for writing questions: every word should be tested about equally often, and no wrong answer should appear too often in one quiz.
 
-### Made very short answers stricter in Fill in the Blanks
+### Made very short answers stricter in Fill in the Blanks (`5783251`)
 Answers of one to three letters, like "hi", "one" or "six", must now be typed exactly. Before, one wrong letter earned half points, which could reward a different real word, like "he" for "hey". Longer answers keep the old, forgiving rule.
 
-### Made SmartBoard Fill in the Blanks one tap
+### Made SmartBoard Fill in the Blanks one tap (`5783251`)
 In SmartBoard mode, tapping a word now puts it straight into the blank. Tapping the word in the blank takes it out. Before, you had to tap the word first and then tap the only blank.
 
 ### Fixed keyboard focus behind pop-ups (`d43415c`)
