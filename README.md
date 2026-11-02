@@ -28,7 +28,7 @@ The game is called **My Game Project**. Texts the owner has not named are still 
 | Change the timer or the time-out | `TIMER`, `TEXTS` (its pop-up texts), `CONFIG` (`EXTENSION_SECONDS`, `EXTENSION_PENALTY`) | README Timer and time-out algorithm |
 | Change the results screen | `RESULTS` | README Answer feedback, Screen flow |
 | Change the look (colors, spacing, motion) | CSS anchors (B) | DESIGN (the matching sections) |
-| Write or review questions or glossary meanings (a change task: also read "Confirmed decisions" and row E) | `question-bank`, `glossary` (search keys), the check script (its commands: `-Draft`, `-Worksheet`), and the private files `.gitignore/PLAN_<LEVEL>_<CATEGORY>.md` (the theme's approved plan) and `.gitignore/ORG_<LEVEL>_WORDS.md` (only that theme's lines) | README Content (questions), Question content method (it holds "Workflow: draft → review → write" and the Review checklist; AGENTS.md rule 9) |
+| Write or review questions or glossary meanings (a change task: also read "Confirmed decisions" and row E) | `question-bank`, `glossary` (search keys), the check script (its commands: `-Draft`, `-Worksheet`), and the private files `.gitignore/plans/PLAN_<LEVEL>_<CATEGORY>.md` (the theme's approved plan) and `.gitignore/words/ORG_<LEVEL>_WORDS.md` (only that theme's lines) | README Content (questions), Question content method (it holds "Workflow: draft → review → write" and the Review checklist; AGENTS.md rule 9) |
 | Add a vocabulary theme | `TOPICS AND DATA`, `question-bank` | README Content (questions), "Next theme, step by step" |
 | Plan something new, or check what is decided or still open | none | README Roadmap (with its "Open questions"), Question content method ("Open questions"), Confirmed decisions; AGENTS.md rule 4 |
 | Commit | none | AGENTS.md rule 7, README Changelog, CHANGELOG.md |
@@ -153,10 +153,13 @@ Sub-sections (`###`) you may need, inside the sections above (the map check does
 | `.gitignore/drafts/` | question drafts and glossary drafts while a theme is in progress; private, never committed |
 | `.gitignore/tools/check_filemap.ps1` | file map check, which also looks for stale function and constant names in the docs; run after any structural change or doc edit (F) |
 | `.gitignore/tools/serve.ps1` | private test server for saved settings (README Testing) |
-| `.gitignore/ORG_A1_WORDS.md` | A1 word lists, about 40,000 characters: read only the theme or topic you need |
-| `.gitignore/PLAN_A1_VOCABULARY.md` | target-word plans, about 7,000 characters |
-| `.gitignore/A1_WORDS.md` | the original A1 list, never changed, almost never read |
-| `.gitignore/GRAMMAR_LIST.md` | CEFR grammar points per level and the Grammar topics (not described elsewhere) |
+| `.gitignore/tools/serve_test.ps1` | private test server for any folder (also a split one); adds the play-through test to the page when the address ends in `?playtest` (README Testing) |
+| `.gitignore/tools/playthrough.js` | the play-through test: plays every question type, the timer, pop-ups, language and settings through the real screens (README Testing); run by `serve_test.ps1`, never part of the game |
+| `.gitignore/tools/dryrun_split.ps1` | dry run of the folder split into a scratch folder, with the text proofs (private plan: `.gitignore/drafts/FOLDER_SPLIT_PLAN.md`) |
+| `.gitignore/words/ORG_A1_WORDS.md` | A1 word lists, about 40,000 characters: read only the theme or topic you need |
+| `.gitignore/plans/PLAN_A1_VOCABULARY.md` | target-word plans, about 7,000 characters |
+| `.gitignore/words/A1_WORDS.md` | the original A1 list, never changed, almost never read |
+| `.gitignore/words/GRAMMAR_LIST.md` | CEFR grammar points per level and the Grammar topics (not described elsewhere) |
 
 ### E. Change together (AGENTS.md rule 11 as a lookup)
 
@@ -431,7 +434,7 @@ Run them from the project folder. Every command starts with `powershell -Executi
 - `-Checks`: prints the numbered checks, and for each section of the Review checklist what the script helps with and what only a reader can do. The script is the single source of this list.
 - `-ShowLevel A1`: shows how `ORG_A1_WORDS.md` is read (see "Building an organized word file for a level").
 - `-BankFile sample.json` and `-GlossaryFile glossary.json`: **replace** the real data. Use them only to test the script itself (or a sample bank for a new level); for drafts use `-Draft`.
-- `-PlanDir` and `-WordsDir`: where the plan files and the word files are (default: the private `.gitignore/` folder).
+- `-PlanDir` and `-WordsDir`: where the plan files and the word files are (default: the private `.gitignore/plans/` and `.gitignore/words/` drawers).
 
 **Exit code:** 0 = no errors, 1 = errors found. Warnings never change it.
 
@@ -456,7 +459,7 @@ Run them from the project folder. Every command starts with `powershell -Executi
 
 #### Writing questions with it (the tools inside "Workflow: draft → review → write")
 
-1. **Read a small working set**, not the whole README and word list. Writing questions is a **change task**, so also read "Confirmed decisions" and the "Change together" row of the map. Then: the theme's section of the approved plan (`.gitignore/PLAN_<LEVEL>_<CATEGORY>.md`, for example `PLAN_A1_VOCABULARY.md`), its lines in `ORG_<LEVEL>_WORDS.md` (words, "goes well with", word types), the glossary entries that already exist (`-Worksheet -Only '<theme key>'` prints them for written quizzes), and the rules you need from "Question content method".
+1. **Read a small working set**, not the whole README and word list. Writing questions is a **change task**, so also read "Confirmed decisions" and the "Change together" row of the map. Then: the theme's section of the approved plan (`.gitignore/plans/PLAN_<LEVEL>_<CATEGORY>.md`, for example `PLAN_A1_VOCABULARY.md`), its lines in `ORG_<LEVEL>_WORDS.md` (words, "goes well with", word types), the glossary entries that already exist (`-Worksheet -Only '<theme key>'` prints them for written quizzes), and the rules you need from "Question content method".
 2. **Write the draft in a draft file** in the private folder `.gitignore/drafts/` (for example `A1_vocabulary_2_mc.json`), in the same shape as the bank: `{ "A1|vocabulary|2|mc|easy": [ ...8 questions... ], ... }`. New glossary meanings go in a second file (`{ "A1": { "word": ... } }`). Drafts are never committed, and nothing goes into `index.html` yet.
 3. **Check the draft:** `-Draft <file> -DraftGlossary <file>`. Fix every error, read every warning. Repeat until clean.
 4. **Show the owner a readable draft** (not JSON): each question, its options, the answer, the explanation and any new meanings. Remind the owner to ask for the review.
@@ -497,8 +500,8 @@ Rules for editing the file: keep it pure ASCII (Windows PowerShell 5.1 misreads 
 
 Both files are in the private `.gitignore/` folder, which is never uploaded to GitHub (see AGENTS.md rule 8). For A1 questions, read **only `ORG_A1_WORDS.md`**.
 
-- **`.gitignore/A1_WORDS.md`**: the original list of every word considered A1 (901 entries), from a trusted source, with its A1 word types and its higher-level uses. **Never change this file.** `A1_WORDS.md` should be read only when you work on creating a file in the same format as `ORG_A1_WORDS.md` (for example for another level), just to understand how the original word file is turned into a useful file for AI, or when the owner asks you to. Everything in it is already in `ORG_A1_WORDS.md`.
-- **`.gitignore/ORG_A1_WORDS.md`**: the file to use for all A1 work. It holds the full A1 list with word types ("A1 word types (full list)" at the end) and splits the words into three categories, each word in exactly one category (but possibly in several vocabulary themes or grammar topics inside it):
+- **`.gitignore/words/A1_WORDS.md`**: the original list of every word considered A1 (901 entries), from a trusted source, with its A1 word types and its higher-level uses. **Never change this file.** `A1_WORDS.md` should be read only when you work on creating a file in the same format as `ORG_A1_WORDS.md` (for example for another level), just to understand how the original word file is turned into a useful file for AI, or when the owner asks you to. Everything in it is already in `ORG_A1_WORDS.md`.
+- **`.gitignore/words/ORG_A1_WORDS.md`**: the file to use for all A1 work. It holds the full A1 list with word types ("A1 word types (full list)" at the end) and splits the words into three categories, each word in exactly one category (but possibly in several vocabulary themes or grammar topics inside it):
   1. **Vocabulary**: words tested for their meaning, grouped into 15 vocabulary themes of about 32–68 words each, in the same order as the game's A1 Vocabulary themes (`TOPICS_BY_SECTION['A1|vocabulary']`).
   2. **Grammar**: words tested for their grammar function, grouped by grammar topic (the game's 21 A1 grammar topics in order, plus other A1 grammar points that are not game topics yet).
   3. **Both**: words especially needed to build meaningful sentences (be, have, do, go, like, want, very, common everyday nouns, …).
@@ -628,7 +631,7 @@ A Matching question has 4 words, and **a word appears only once in a Matching qu
 
 A **target-word plan** is a planning sheet for one vocabulary theme, written **before** any of its questions: it decides which words each quiz tests, like a teacher's scheme of work for a unit. Questions are written only after the owner approves the theme's plan.
 
-**File.** One file per level and category in the private `.gitignore/` folder (e.g. `.gitignore/PLAN_A1_VOCABULARY.md`), never uploaded. It has one section per vocabulary theme, in the game's order. Plans are added theme by theme; a theme without a section has no plan yet.
+**File.** One file per level and category in the private `.gitignore/` folder (e.g. `.gitignore/plans/PLAN_A1_VOCABULARY.md`), never uploaded. It has one section per vocabulary theme, in the game's order. Plans are added theme by theme; a theme without a section has no plan yet.
 
 **Format of one theme's section:**
 
@@ -694,8 +697,8 @@ Frequency source: <name and link of the trusted list, or "Claude's judgment">
 
 ### Next theme, step by step
 
-1. **Read** AGENTS.md and the File map, then the sections it points to for question work (especially "Question content method" and the "Review checklist"); DESIGN.md only if visible text changes. Read the theme's **Words** and **Goes well with** lines and the word types of its words in `.gitignore/ORG_A1_WORDS.md` (only that theme's lines).
-2. **Target-word plan** ("How to make a plan"): draft it, show it to the owner, change it on request, then save it in `.gitignore/PLAN_A1_VOCABULARY.md` with "Status: approved by the owner (date)". Copy the format of the Greetings and Feelings section there. If the theme has a note in "Theme notes", copy it into the plan as a `Notes:` line.
+1. **Read** AGENTS.md and the File map, then the sections it points to for question work (especially "Question content method" and the "Review checklist"); DESIGN.md only if visible text changes. Read the theme's **Words** and **Goes well with** lines and the word types of its words in `.gitignore/words/ORG_A1_WORDS.md` (only that theme's lines).
+2. **Target-word plan** ("How to make a plan"): draft it, show it to the owner, change it on request, then save it in `.gitignore/plans/PLAN_A1_VOCABULARY.md` with "Status: approved by the owner (date)". Copy the format of the Greetings and Feelings section there. If the theme has a note in "Theme notes", copy it into the plan as a `Notes:` line.
 3. **One question type at a time** (Multiple Choice, then Fill in the Blanks, True or False, Matching), each with all 4 difficulties, following "Workflow: draft → review → write": draft file in `.gitignore/drafts/` and the script on it → a readable draft in the chat → remind the owner to ask for a review → review with the worksheet and the checklist (quote evidence) → write only on the owner's go-ahead.
 4. **Glossary:** add a meaning for every new tested word (all its word types at the level); reuse existing entries (see "Glossary meanings").
 5. **Quiz key:** `A1|vocabulary|<topic index>|<mc|fill|tf|match>|<easy|medium|hard|veryhard>`; the topic index is the theme's position in `TOPICS_BY_SECTION['A1|vocabulary']`, starting at 0.
@@ -863,6 +866,8 @@ All built and tested with lorem questions (see the sections above for how each w
 
 AGENTS.md rule 6 lists what to check before handing over. Practical notes from building the Settings menu, Next exercise and the menu tree:
 - **Saved settings need a real web address.** A preview of the file (a `data:` address, or a file shown as a snapshot) blocks `localStorage`, so language, theme, sound, same-duration and SmartBoard mode cannot be tested there. Start the private test server with `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve.ps1` (it serves only `index.html` at `http://localhost:8765/`), open that address, and stop the server when done (Ctrl+C, or end its PowerShell process). Clear the test storage afterwards (`localStorage.clear()` in the console). The server never serves a cached page, so a reload always shows the latest `index.html`. If it says the port is busy, an old server is still running: stop it (below) or start another with `-Port 8766` (then open that port). If it was started hidden (for example by an assistant), stop it with `Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*serve.ps1*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`. The tool is private (in `.gitignore/tools/`) and only for testing; players never need it.
+- **Play-through test** (built 2026-11-02, step 0 of the folder split plan): `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve_test.ps1` serves the project folder (or another one with `-Root <folder>`) at `http://localhost:8766/` and, when the address ends in `?playtest`, adds the test (`.gitignore/tools/playthrough.js`) to the page; the files on disk are never changed. About 6 seconds after the page loads, `window.__playtest.summary` holds the result; the expected result today is **300 passed, 0 failed**, with no errors in the browser console. It plays Multiple Choice, True or False, typed and tapped Fill in the Blanks and Matching (right, wrong and misspelled answers) on real and placeholder quizzes, and checks the scores, the timer, time-out, extra time, game over, Quit, Next exercise, the language and theme switches, same duration, Settings, Credits, the menu tree and the menu buttons. It uses only the game's global names, so it must work the same after the folder is split; run it before and after every split step. The test was checked on 2026-11-02 by breaking two things on purpose (a score and the extra-time penalty): it reported 10 failures. Stop the server like the first note above, with `'*serve_test.ps1*'` in the filter.
+- **Checking a work folder** (the folder of the split branch, for example `.gitignore/split-work/`): point the tools at it. `check_filemap.ps1 -Html <work>\index.html -Readme <work>\README.md -Design <work>\DESIGN.md -Agents <work>\AGENTS.md` (the private files are still looked for in the main folder), `check_questions.ps1 -Html <work>\index.html`, and `serve_test.ps1 -Root <work>`. The self-tests (`test_check_questions.ps1`) always run from the main folder, because the private tools live only there. A shorter option is added when the folder layout changes.
 - **Phone width:** use a 375px wide view (the preview's Mobile size) and reset it to desktop afterwards. Changing the size can reload the page, so set the state again.
 - **Animations in previews:** the preview can run slower than a real browser, and a screenshot may catch a pop-up in the middle of its slide, so take a second screenshot before judging the final look. How smooth an animation feels can only be judged on a real device.
 - **Reaching any screen quickly:** in the browser console, set `state.nav` and call `startQuiz()` or `showResults()`; the order of Next exercise can be tested with `getNextExercise(nav)` (all 1,856 quizzes are visited once, in order).

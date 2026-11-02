@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### Helper agents dropped from the plan, and a small saving in the notes
+### First safe steps toward splitting the game into several files
+Nothing in the game itself changed. A test that plays the whole game by itself was added (about 300 checks, covering every question type, the timer, pop-ups, language and settings), and a practice run of the split showed that cutting the page into 27 smaller files loses nothing: the joined files are exactly the old text. The private notes folder was also tidied into four drawers (tools, drafts, word lists, plans).
+
+### Helper agents dropped from the plan, and a small saving in the notes (`3b03dc8`)
 The notes no longer suggest using helper agents or a second AI reviewer, because they used too much of the owner's working space. Questions are reviewed in the main conversation by reading, with a quote for every hard item. The file map also now says to read only the first 12 lines of this changelog when adding an entry.
 
 ### New tools to write and review questions more safely (`9536b30`)
