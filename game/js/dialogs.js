@@ -1,6 +1,6 @@
 /* js/dialogs.js - the pop-up engine, the inert page behind it, the "not finished yet" question, Credits
    Provides: updateInert, openModal, closeModal, openUnfinishedConfirm, openCredits, modalState
-   Needs: el, $, t, CREDITS */
+   Needs: el, $, t, CREDITS, walkerModalClosed */
 'use strict';
 /* =========================================================================
  * MODAL
@@ -43,6 +43,7 @@ function closeModal() {
   const opener = modalState.opener;
   modalState.opener = null;
   if (opener && opener.isConnected && !opener.disabled) opener.focus({ preventScroll: true });
+  walkerModalClosed(); // Trick or Treat turned on in Settings: the walker's few seconds start now
 }
 
 // Asks before entering a part that has no real questions yet (a grayed-out menu button, or Next exercise leading there).

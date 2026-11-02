@@ -2,9 +2,17 @@
 
 What changed in My Game Project, in plain language. The newest change is at the top. Every commit adds one entry here: its date, a short title and two or three sentences about what was added or changed. The code in brackets is the commit's ID on GitHub, so you can open that exact version.
 
+## 2026-11-03
+
+### A black and orange Halloween theme, "Trick or Treat", with a walking scene
+Settings has a new switch, Trick or Treat (Şeker mi şaka mı in Turkish), that turns the whole game into a Halloween look: pure black, one pumpkin orange, thin orange lines and a small ghost in the top corner. While it is on, Auto, Light and Dark are grayed out with a note, and the choice is remembered. A few seconds after the game opens (after Settings closes, when the switch was turned on there), a hooded figure with a lantern walks across the bottom once, dragging a skeleton on a rope, stops to look back, tugs the rope now and then and leaves. It lives behind everything, so changing menus never cuts it, and if a quiz starts while it is still on screen it sinks into a glowing hole in the ground and the quiz starts after it. It only runs once per visit and not with "reduce motion". Everything is drawn in code, so the game still opens by double-click from the folder and works the same on a website.
+
+### Clearer working notes
+The README now explains the private tools and the git leftovers (the `split` branch and the `before-split` tag), has a Website check list so every change works both from the folder and on a website, and describes the idea of a compact single-file lesson maker. The rules for the helper assistant now say that a question or a "yes" to one item is never a go-ahead for the other items, and that every change must work both on a website and from the folder.
+
 ## 2026-11-02
 
-### Menu buttons that lead to unfinished parts are grayed out and ask first
+### Menu buttons that lead to unfinished parts are grayed out and ask first (`0eb20f1`)
 A button whose part has no real questions yet (A2 to C1, A1 Grammar and the A1 vocabulary themes that are still placeholders) is now softer and carries a small "Not finished" tag, but keeps its level color and still works. Clicking it asks "The part you want to go to is not finished yet. Do you still want to go there?" with Go back or Go there, in English and Turkish. Only the first such button on a path is gray, Next exercise asks too when it leads from a finished theme into an unfinished one, and the gray disappears by itself as soon as a part gets real questions.
 
 ### The game is now split into several tidy files, and a folder for what players need (`e8121f8`)

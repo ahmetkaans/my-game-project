@@ -3,12 +3,13 @@
              renderQuestion, updateScoreDisplay, submitAnswer, goNext, skipQuestion, requestQuit
    Needs: CONFIG, el, fmt, englishText, noteText, hashString, mulberry32, makeLorem, state, $, playSound, t, GLOSSARY,
           quizKey, getQuestions, prepareQuiz, correctAnswerText, showScreen, getQuestionSeconds, openModal,
-          closeModal, startTimer, resumeTimer, pauseTimer, stopTimer, renderFillTap, RENDERERS, showResults */
+          closeModal, startTimer, resumeTimer, pauseTimer, stopTimer, renderFillTap, RENDERERS, showResults, sinkWalker */
 'use strict';
 /* =========================================================================
  * QUIZ FLOW
  * ========================================================================= */
 function startQuiz() {
+  if (sinkWalker(startQuiz)) return; // Trick or Treat: a walker still on screen sinks into the ground first, then the quiz starts
   stopTimer();
   closeModal();
   const questions = prepareQuiz(getQuestions(state.nav), quizKey(state.nav));

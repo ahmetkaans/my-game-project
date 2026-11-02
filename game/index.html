@@ -10,6 +10,8 @@
   try {
     var savedTheme = localStorage.getItem('lg-theme');
     if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
+    // Trick or Treat (the Halloween theme): applied before first paint too (see js/theme.js).
+    document.documentElement.dataset.halloween = localStorage.getItem('lg-halloween') === '1' ? 'on' : 'off';
   } catch (e) { /* storage unavailable: follow the device */ }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,10 +22,12 @@
 <link rel="stylesheet" href="css/quiz.css">
 <link rel="stylesheet" href="css/results.css">
 <link rel="stylesheet" href="css/dialogs.css">
+<link rel="stylesheet" href="css/halloween.css">
 </head>
 <body>
 
 <header class="topbar" id="topbar">
+  <span class="topbar-ghost" aria-hidden="true"><svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 27 V14 C7 8.5 11 5 16 5 C21 5 25 8.5 25 14 V27 L21.5 24 L18.5 27 L16 24.5 L13.5 27 L10.5 24 Z"/><circle cx="12.5" cy="14" r="1.6" fill="currentColor"/><circle cx="19.5" cy="14" r="1.6" fill="currentColor"/><path d="M13.5 19 Q16 21 18.5 19"/></svg></span>
   <button class="icon-btn" id="home-btn" type="button" title="Main menu" aria-label="Main menu" data-i18n-label="mainMenu"></button>
   <button class="icon-btn" id="tree-btn" type="button" title="Menu tree" aria-label="Menu tree" data-i18n-label="menuTree"></button>
   <button class="icon-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings" data-i18n-label="settings"></button>
@@ -115,6 +119,8 @@
   <button class="link-btn" id="credits-btn" data-i18n="credits">Credits</button>
 </footer>
 
+<div class="walker" id="walker" aria-hidden="true" hidden></div>
+
 <div class="tree-overlay" id="tree-overlay" hidden>
   <aside class="tree-panel" role="dialog" aria-modal="true" aria-labelledby="tree-title">
     <div class="tree-head">
@@ -149,6 +155,7 @@
 <script src="js/theme.js"></script>
 <script src="js/sound.js"></script>
 <script src="js/confetti.js"></script>
+<script src="js/halloween-walker.js"></script>
 <script src="js/questions.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/next-exercise.js"></script>

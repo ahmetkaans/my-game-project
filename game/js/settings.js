@@ -2,10 +2,10 @@
    Provides: refreshSettings, setSmartBoard, settingText, settingSwitch, languageToggle, translateSettings,
              openSettings, settingsUi
    Needs: CONFIG, el, savePref, state, $, setLanguage, setMuted, sound, t, LANGS, LANG_NAMES, setTheme, THEMES,
-          currentTheme, ICONS, setSameDuration, openModal, closeModal */
+          currentTheme, halloweenOn, setHalloween, ICONS, setSameDuration, openModal, closeModal */
 'use strict';
 /* =========================================================================
- * SETTINGS  (pop-up: language, theme, sound, same duration, SmartBoard mode; each remembered in localStorage)
+ * SETTINGS  (pop-up: language, theme, Trick or Treat, sound, same duration, SmartBoard mode; each remembered in localStorage)
  * ========================================================================= */
 let settingsUi = null; // controls of the open Settings pop-up, kept in step by refreshSettings()
 
@@ -15,7 +15,14 @@ function refreshSettings() {
   settingsUi.languageToggle.setAttribute('aria-checked', String(isTurkish));
   settingsUi.languageToggle.setAttribute('aria-label', `${t('languageName')}: ${LANG_NAMES[state.lang]}`);
   settingsUi.languageToggle.querySelectorAll('.lang-lbl').forEach((lbl, i) => lbl.classList.toggle('is-on', LANGS[i] === state.lang));
-  settingsUi.themeButtons.forEach((btn, i) => btn.setAttribute('aria-pressed', String(THEMES[i] === currentTheme)));
+  settingsUi.themeButtons.forEach((btn, i) => {
+    btn.setAttribute('aria-pressed', String(THEMES[i] === currentTheme));
+    btn.disabled = halloweenOn; // the Halloween theme is on: Auto / Light / Dark are grayed out
+  });
+  const themeHelpKey = halloweenOn ? 'halloweenThemeNote' : 'themeHelp';
+  settingsUi.texts.forEach((entry) => { if (entry[0] === settingsUi.themeHelp) entry[1] = themeHelpKey; });
+  settingsUi.themeHelp.textContent = t(themeHelpKey);
+  settingsUi.halloweenSwitch.checked = halloweenOn;
   settingsUi.soundSwitch.checked = !sound.muted;
   settingsUi.durationSwitch.checked = state.nav.sameDuration;
   settingsUi.smartBoardSwitch.checked = state.smartBoard;
@@ -97,24 +104,26 @@ function openSettings() {
     btn.addEventListener('click', () => setTheme(theme));
     return btn;
   });
+  const themeHelp = settingText(texts, 'p', { class: 'setting-help', id: 'setting-theme-help' }, 'themeHelp');
   const themeRow = el('div', { class: 'setting' }, [
     el('div', { class: 'setting-head' }, [settingText(texts, 'span', { class: 'setting-name', id: 'setting-theme-name' }, 'themeName')]),
     el('div', { class: 'segmented', role: 'group', 'aria-labelledby': 'setting-theme-name', 'aria-describedby': 'setting-theme-help' }, themeButtons),
-    settingText(texts, 'p', { class: 'setting-help', id: 'setting-theme-help' }, 'themeHelp'),
+    themeHelp,
   ]);
+  const halloweenRow = settingSwitch(texts, 'setting-halloween', 'halloweenName', 'halloweenHelp', null, (on) => setHalloween(on));
   const soundRow = settingSwitch(texts, 'setting-sound', 'soundName', 'soundHelp', null, (on) => setMuted(!on));
   const durationRow = settingSwitch(texts, 'setting-duration', 'sameDuration', 'durationHelp',
     { n: CONFIG.SAME_DURATION_SECONDS }, (on) => setSameDuration(on));
   const smartBoardRow = settingSwitch(texts, 'setting-smartboard', 'smartBoardName', 'smartBoardHelp', null, (on) => setSmartBoard(on));
   const smartBoardLock = settingText(texts, 'p', { class: 'setting-help' }, 'smartBoardLock');
   smartBoardRow.row.append(smartBoardLock);
-  settingsUi = { texts, languageToggle: languageControl, themeButtons, soundSwitch: soundRow.input,
+  settingsUi = { texts, languageToggle: languageControl, themeButtons, themeHelp, halloweenSwitch: halloweenRow.input, soundSwitch: soundRow.input,
     durationSwitch: durationRow.input, smartBoardSwitch: smartBoardRow.input, smartBoardLock };
   refreshSettings();
   openModal({
     title: t('settings'),
     body: el('div', {}, [
-      el('div', { class: 'settings' }, [languageRow, themeRow, soundRow.row, durationRow.row, smartBoardRow.row]),
+      el('div', { class: 'settings' }, [languageRow, themeRow, halloweenRow.row, soundRow.row, durationRow.row, smartBoardRow.row]),
       settingText(texts, 'p', { class: 'settings-note' }, 'workInProgress'),
     ]),
     buttons: [{ label: t('close'), primary: true, onClick: closeModal }],

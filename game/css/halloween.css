@@ -1,0 +1,67 @@
+
+  /* Halloween theme (Trick or Treat in Settings): html[data-halloween="on"] is set by js/theme.js and by the script in the
+     page's <head>. It replaces Auto / Light / Dark while it is on: AMOLED black, one pumpkin orange, thin orange lines.
+     Only token values change; layout, spacing and motion stay the same. The selector ends in :root so it beats the dark theme. */
+  html[data-halloween="on"]:root {
+    --lvl-A1: #FF8A1F;
+    --lvl-A2: #FF9A3C;
+    --lvl-B1: #FF7A00;
+    --lvl-B2: #FFA94D;
+    --lvl-C1: #FFB347;
+    --neutral-accent: #FF8A1F;
+    --bg: #000000;
+    --surface: #000000;
+    --fg: #F2F2F2;
+    --muted: #B8B8B8;
+    --border: #5A3A14;
+    --ok: #4ADE80;
+    --bad: #F87171;
+    --extra: #FF6A00;
+    --on-accent: #000000;
+    --knob: #F2F2F2;
+    --shadow: none;
+    --shadow-lg: none;
+    --overlay: rgba(0, 0, 0, 0.82);
+    --tint: 0%;
+    --soft: 14%;
+    color-scheme: dark;
+  }
+
+  /* Halloween screens: thin orange lines on black. Cards, menu buttons, level buttons, pop-ups and the top bar buttons get an
+     orange outline; the buttons whose part is not finished keep a dashed amber one. */
+  html[data-halloween="on"] .menu-btn,
+  html[data-halloween="on"] .card,
+  html[data-halloween="on"] .modal,
+  html[data-halloween="on"] .icon-btn { border-color: var(--accent); }
+  html[data-halloween="on"] .level-btn { border-color: var(--chip); }
+  html[data-halloween="on"] .menu-btn.is-unfinished,
+  html[data-halloween="on"] .level-btn.is-unfinished {
+    border: 1px dashed #5A3A14;
+    background: var(--surface);
+    color: #8A8A8A;
+  }
+  html[data-halloween="on"] .level-btn.is-unfinished small { color: #C98A3C; }
+  html[data-halloween="on"] .unfinished-tag { border-color: #5A3A14; color: #C98A3C; }
+  html[data-halloween="on"] .tree-panel { border-color: var(--accent); }
+
+  /* The ghost in the top bar's left corner (only in the Halloween theme) */
+  .topbar-ghost { display: none; margin-right: auto; align-self: center; color: var(--accent); }
+  html[data-halloween="on"] .topbar-ghost { display: inline-flex; }
+
+  /* In Settings, Auto / Light / Dark are grayed out while Halloween is on */
+  .segmented button:disabled,
+  .segmented button[aria-pressed="true"]:disabled { background: transparent; color: var(--muted); font-weight: 400; opacity: 0.5; }
+
+  /* Halloween walker (js/halloween-walker.js): a strip along the bottom, behind everything, never tappable.
+     Its ground line sits just above the Credits link. */
+  .walker {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 72px;
+    height: 110px;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .walker svg { display: block; width: 100%; height: 100%; }

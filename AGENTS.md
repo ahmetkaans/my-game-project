@@ -4,7 +4,7 @@ Before doing anything with the game files (`game/index.html` and the files next 
 
 ## Rules
 
-1. **Ask first.** Before writing code for a new feature or change, ask the owner about every important decision and wait for the answers.
+1. **Ask first.** Before changing any file (code, notes, documents, rules, tools), ask the owner about every important decision and wait for the answers. An answer covers only the item it was given for: a question, a request to explain, or a "yes" to one item is not a go-ahead for the other items. When unsure whether something was approved, ask.
 2. **Plain files, no build step.** The game is plain files in `game/`: `index.html`, `css/`, `js/` and `data/`. No build step, no tools that must run before the game opens, no audio or image files. It must open by double-click from the folder, offline. The only external resource is the Inter font from Google Fonts. File names are lowercase. Private material lives only in `.gitignore/`.
 3. **Placeholder content.** Any text the owner has not explicitly named stays lorem ipsum. The list of names fixed by the owner is in DESIGN.md.
 4. **Don't decide open questions.** Do not invent rules for things that are still undecided (for example, the spelling rule for very short answers or the grammar content method). Follow the notes in README.md ("Open questions" and the Roadmap's open questions) and ask the owner.
@@ -14,7 +14,8 @@ Before doing anything with the game files (`game/index.html` and the files next 
    - works at phone width;
    - check both light and dark mode;
    - works with "reduce motion" turned on;
-   - test remembered settings (language, theme, sound, same duration, SmartBoard mode) in a normal browser, because previews served as `data:` URLs block `localStorage`.
+   - test remembered settings (language, theme, sound, same duration, SmartBoard mode) in a normal browser, because previews served as `data:` URLs block `localStorage`;
+   - works both as a website and by double-click from the folder, offline (README.md, "Testing", "Website check").
 7. **Git.** Commit only when asked, with a meaningful message. Do not push unless asked. **Every commit adds an entry to `CHANGELOG.md`** (see README.md, "Changelog").
 8. **Private `.gitignore/` folder.** The files in the `.gitignore/` folder must never be uploaded to GitHub: never `git add`, commit or push them. The folder is excluded locally through `.git/info/exclude` (a folder named `.gitignore` cannot work as an ignore file). It has five drawers: `tools/` (check scripts, test server, play-through test), `drafts/` (drafts and plans in progress), `words/` (word lists), `plans/` (theme plans) and `archive/` (the old single-file version of the game, kept just in case: never changed, never needed for a task). For A1 work, read `words/ORG_A1_WORDS.md`. `words/A1_WORDS.md` should be read only when you work on creating a file in the same format as `ORG_A1_WORDS.md` (for example for another level), just to understand how the original word file is turned into a useful file for AI, or when the owner asks you to.
 9. **Draft, validate, review, then write.** Don't add questions (or explanations, glossary meanings or target-word plans) to the files right after you write them. Write the draft in a draft file in `.gitignore/drafts/`, run the check script on it (README.md, "Check script") and fix what it reports. Show the owner a readable draft and remind the owner to ask you to review it against the "Review checklist" in README.md. The review is done by reading, item by item, with a quote as evidence for every hard item; a script result is evidence, never approval. Change the files only after that review and the owner's go-ahead. The steps are in README.md, "Workflow: draft → review → write".
