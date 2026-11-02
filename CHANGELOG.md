@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### The questions and word meanings move out of the page into their own files (work in progress, not yet in the main version)
+### The first part of the game code moves into its own files (work in progress, not yet in the main version)
+The third step of the split, made on the separate working copy. The numbers, the English and Turkish texts, the topic names, the helper tools, the language switch, the theme, the sounds and the confetti now live in eight small files in `game/js/`, each starting with a short note that says what it provides and what it needs from the other files. Nothing changed for a player: the joined files are exactly the old code text, the whole-game test still passes, and the screens look the same in light, dark and Turkish.
+
+### The questions and word meanings move out of the page into their own files (work in progress, not yet in the main version) (`4c8d9b5`)
 The second step of the split, made on the separate working copy. The real questions now live in one small file per theme (`game/data/questions/`), and the word meanings in one file per level (`game/data/glossary/`), instead of two huge blocks inside the page, which is now about 500 lines shorter. Nothing changed for a player: the files read back give exactly the old questions and meanings, the whole-game test still passes, and the question checker gives the same report as before.
 
 ### The game page moves into a game folder and its look gets its own files (work in progress, not yet in the main version) (`c69e036`)

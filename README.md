@@ -8,12 +8,12 @@ The game is called **My Game Project**. Texts the owner has not named are still 
 ## File map
 
 **Read AGENTS.md first, then this map.** It says where things are and what to read for a task, so nobody has to read whole files. **No line numbers are stored here** (they change with every edit).
-- **Where the files are (folder split, step 3):** the page is `game/index.html`, the CSS is in `game/css/` (5 files), and the questions and word meanings are in `game/data/` (4 files, see the Data file table in B). The code is still inside the page. In this README, `index.html` means `game/index.html`. The tools find the files by themselves.
+- **Where the files are (folder split, step 4a):** the page is `game/index.html`, the CSS is in `game/css/` (5 files), and the questions and word meanings are in `game/data/` (4 files, see the Data file table in B). The code is in `game/js/` (8 files: config, texts, topics, core, language, theme, sound, confetti) and, for the sections from QUESTIONS to INIT, still inside the page (see the Banner table in B). In this README, `index.html` means `game/index.html`. The tools find the files by themselves.
 - **Code (`index.html`): read a window.** Search for the anchor (any search tool: `grep -n`, the Grep tool), then read about 60 lines around the hit (the Read tool with `offset` and `limit`, or `sed -n`). How to search: a script **banner** as `^ \* NAME` (for example `^ \* TIMER`; the bare word also appears in many other places), a **function** as `^function name(`, a **CSS anchor** as `/\* anchor`, an **id** as `id="name"`, a **JSON key** as the key itself. Search every anchor of your task's row in **one** call (for example `grep -n -E "^ \* (TIMER|TEXTS)"`) and read the routed doc sections in parallel calls.
 - **Docs (README.md, DESIGN.md): read the whole section the map points to.** Find it with `^## Heading` (for example `^## Screen flow`); it runs to the next `## ` heading.
 - **Current line ranges** of every banner and `##` heading: `powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_filemap.ps1 -Lines`. The same script, run without `-Lines`, checks that this map matches the files (see F).
 
-**Do not read whole:** `index.html` (about 2,400 lines); the CSS files in `game/css/` are 40 to 240 lines each and may be read whole; the data files in `game/data/` (each of the two theme files of `data/questions/` is about 28,000 characters, the glossary `data/glossary/a1.js` about 8,000): search a key, for example `A1|vocabulary|1|mc|easy`, and read around it; the README parts "Question content method" and "Content (questions)" unless you work on questions; the private word lists in `.gitignore/` (10,000 to 40,000 characters each).
+**Do not read whole:** `index.html` (about 1,360 lines; the code files of `game/js/` are 24 to 145 lines each); the CSS files in `game/css/` are 40 to 240 lines each and may be read whole; the data files in `game/data/` (each of the two theme files of `data/questions/` is about 28,000 characters, the glossary `data/glossary/a1.js` about 8,000): search a key, for example `A1|vocabulary|1|mc|easy`, and read around it; the README parts "Question content method" and "Content (questions)" unless you work on questions; the private word lists in `.gitignore/` (10,000 to 40,000 characters each).
 **Always read:** this map. **Before you change something, also read** README "Confirmed decisions" and the "Change together" row (E) for your task; for a plain question about how things work you may skip those two. **When unsure, read more, not less.**
 
 ### A. Start here: the task, then what to read
@@ -38,31 +38,31 @@ The game is called **My Game Project**. Texts the owner has not named are still 
 
 The `<head>` script applies the saved theme before the first paint, and the page links the five CSS files of `game/css/` (colors, layout, quiz, results, dialogs). The `<body>` holds the screens. Then come the script tags of the data files (`game/data/`, see the Data file table) and one `<script>`.
 
-**Script banners** (each is the first uppercase words of a `/* ===` comment in the `<script>`; a function belongs to the nearest banner above it):
+**Script banners** (each is the first uppercase words of a `/* ===` comment; a function belongs to the nearest banner above it). The first nine sections are in `game/js/` (8 files, in load order; each file starts with a header that lists what it provides and what it needs, and the map check fails when a header is wrong); the rest is still the main `<script>` of the page. The last column is the file:
 
-| Banner | Holds | Functions | Constants |
-|---|---|---|---|
-| `CONFIG` | every tunable number, level groups, categories, types, difficulties | - | CONFIG |
-| `TEXTS` | the English and Turkish texts and the text function | t | LANGS, LANG_NAMES, I18N |
-| `TOPICS AND DATA` | topic names, credits, the two lists the data files fill, lorem words, icons | getTopics | DEFAULT_TOPICS, TOPICS_BY_SECTION, CREDITS, QUESTION_BANK, GLOSSARY, LOREM_WORDS, ICONS |
-| `STATE` | the state object | - | state |
-| `HELPERS` | element builder, number format, storage, seeded random | el, fmt, englishText, noteText, clampScore, findById, loadPref, savePref, prefersReducedMotion, hashString, mulberry32, makeLorem | - |
-| `LANGUAGE` | saved language, static texts, switching language | initLanguage, applyStaticTexts, setLanguage | - |
-| `THEME` | Auto, Light, Dark | setTheme, initTheme | THEMES, currentTheme |
-| `SOUND` | Web Audio sounds and mute | getAudio, playNote, playSound, setMuted, initSound | sound, SOUNDS |
-| `CONFETTI` | results confetti | launchConfetti, stopConfetti | confetti |
-| `QUESTIONS` | quiz key, getting and shuffling questions, lorem questions, Fill checking | quizKey, getQuestions, generateLoremQuestions, prepareQuiz, balancedPositions, editDistance, normalizeAnswer, judgeFill, questionText, correctAnswerText | - |
-| `NAVIGATION / MENUS` | screens, path line, button builder, difficulty, same duration | breadcrumbParts, refreshBreadcrumb, showScreen, renderButtons, getQuestionSeconds, setSameDuration, renderDifficultyButtons | SCREEN_DEPTH |
-| `NEXT EXERCISE` | order of the next quiz, main menu pop-up, end-of-category pop-up | getNextExercise, levelCategoryLabel, openHomeConfirm, goHome, goToNextExercise, openNextExercise | - |
-| `MENU BUTTONS` | topic, level, category and type buttons; menu start-up | renderTopicButtons, renderMenus, initMenus | - |
-| `MODAL` | pop-up engine, inert page behind it, Credits | updateInert, openModal, closeModal, openCredits | modalState |
-| `SETTINGS` | Settings pop-up and the Language toggle | refreshSettings, setSmartBoard, settingText, settingSwitch, languageToggle, translateSettings, openSettings | settingsUi |
-| `MENU TREE` | menu tree panel; also initModal (the pop-up's listeners) | renderTree, openTree, closeTree, initTree, initModal | TREE_STEPS, treeCloseTimer |
-| `QUIZ FLOW` | start a quiz, word pre-view pop-up, one question, answer, quit | startQuiz, quizTargetWords, glossarySenses, openWordPreview, currentQuestion, currentRecord, renderQuestion, updateScoreDisplay, submitAnswer, goNext, skipQuestion, requestQuit | - |
-| `TIMER` | timer, time-out pop-up, extra time, game over | startTimer, resumeTimer, pauseTimer, stopTimer, tick, renderTimer, onTimeUp, useExtension, gameOver | - |
-| `RENDERERS` | one renderer per question type | renderChoiceButtons, choicePoints, submitChoice, renderMC, renderTF, fillBefore, fillAfter, renderFill, renderFillTap, renderMatch | RENDERERS |
-| `RESULTS` | the results screen | statusLabel, renderResultsContent, showResults | - |
-| `INIT` | start-up order | - | - |
+| Banner | Holds | Functions | Constants | File |
+|---|---|---|---|---|
+| `CONFIG` | every tunable number, level groups, categories, types, difficulties | - | CONFIG | `js/config.js` |
+| `TEXTS` | the English and Turkish texts and the text function | t | LANGS, LANG_NAMES, I18N | `js/texts.js` |
+| `TOPICS AND DATA` | topic names, credits, the two lists the data files fill, lorem words, icons | getTopics | DEFAULT_TOPICS, TOPICS_BY_SECTION, CREDITS, QUESTION_BANK, GLOSSARY, LOREM_WORDS, ICONS | `js/topics.js` |
+| `STATE` | the state object | - | state | `js/core.js` |
+| `HELPERS` | element builder, number format, storage, seeded random | el, fmt, englishText, noteText, clampScore, findById, loadPref, savePref, prefersReducedMotion, hashString, mulberry32, makeLorem | - | `js/core.js` |
+| `LANGUAGE` | saved language, static texts, switching language | initLanguage, applyStaticTexts, setLanguage | - | `js/language.js` |
+| `THEME` | Auto, Light, Dark | setTheme, initTheme | THEMES, currentTheme | `js/theme.js` |
+| `SOUND` | Web Audio sounds and mute | getAudio, playNote, playSound, setMuted, initSound | sound, SOUNDS | `js/sound.js` |
+| `CONFETTI` | results confetti | launchConfetti, stopConfetti | confetti | `js/confetti.js` |
+| `QUESTIONS` | quiz key, getting and shuffling questions, lorem questions, Fill checking | quizKey, getQuestions, generateLoremQuestions, prepareQuiz, balancedPositions, editDistance, normalizeAnswer, judgeFill, questionText, correctAnswerText | - | `index.html` |
+| `NAVIGATION / MENUS` | screens, path line, button builder, difficulty, same duration | breadcrumbParts, refreshBreadcrumb, showScreen, renderButtons, getQuestionSeconds, setSameDuration, renderDifficultyButtons | SCREEN_DEPTH | `index.html` |
+| `NEXT EXERCISE` | order of the next quiz, main menu pop-up, end-of-category pop-up | getNextExercise, levelCategoryLabel, openHomeConfirm, goHome, goToNextExercise, openNextExercise | - | `index.html` |
+| `MENU BUTTONS` | topic, level, category and type buttons; menu start-up | renderTopicButtons, renderMenus, initMenus | - | `index.html` |
+| `MODAL` | pop-up engine, inert page behind it, Credits | updateInert, openModal, closeModal, openCredits | modalState | `index.html` |
+| `SETTINGS` | Settings pop-up and the Language toggle | refreshSettings, setSmartBoard, settingText, settingSwitch, languageToggle, translateSettings, openSettings | settingsUi | `index.html` |
+| `MENU TREE` | menu tree panel; also initModal (the pop-up's listeners) | renderTree, openTree, closeTree, initTree, initModal | TREE_STEPS, treeCloseTimer | `index.html` |
+| `QUIZ FLOW` | start a quiz, word pre-view pop-up, one question, answer, quit | startQuiz, quizTargetWords, glossarySenses, openWordPreview, currentQuestion, currentRecord, renderQuestion, updateScoreDisplay, submitAnswer, goNext, skipQuestion, requestQuit | - | `index.html` |
+| `TIMER` | timer, time-out pop-up, extra time, game over | startTimer, resumeTimer, pauseTimer, stopTimer, tick, renderTimer, onTimeUp, useExtension, gameOver | - | `index.html` |
+| `RENDERERS` | one renderer per question type | renderChoiceButtons, choicePoints, submitChoice, renderMC, renderTF, fillBefore, fillAfter, renderFill, renderFillTap, renderMatch | RENDERERS | `index.html` |
+| `RESULTS` | the results screen | statusLabel, renderResultsContent, showResults | - | `index.html` |
+| `INIT` | start-up order | - | - | `index.html` |
 
 **HTML ids** (screens and big blocks):
 
@@ -164,7 +164,7 @@ Sub-sections (`###`) you may need, inside the sections above (the map check does
 | `.gitignore/tools/serve_test.ps1` | private test server for any folder (also a split one); adds the play-through test to the page when the address ends in `?playtest` (README Testing) |
 | `.gitignore/tools/playthrough.js` | the play-through test: plays every question type, the timer, pop-ups, language and settings through the real screens (README Testing); run by `serve_test.ps1`, never part of the game |
 | `.gitignore/tools/dryrun_split.ps1` | dry run of the folder split into a scratch folder, with the text proofs (private plan: `.gitignore/drafts/FOLDER_SPLIT_PLAN.md`) |
-| `.gitignore/tools/split_data.ps1` | step 3 of the folder split: moves the question bank and the glossary out of the page into `game/data/` and proves that nothing changed (used once; kept as the record of how the split was made) | step 2 of the folder split: cuts the old `<style>` block into the five css files and proves that nothing changed (used once; kept as the record of how the split was made) |
+| `.gitignore/tools/split_code1.ps1` | step 4a of the folder split: moves the first nine sections of the script into `game/js/` with headers, and proves that nothing changed (used once; kept as the record of how the split was made) | step 3 of the folder split: moves the question bank and the glossary out of the page into `game/data/` and proves that nothing changed (used once; kept as the record of how the split was made) | step 2 of the folder split: cuts the old `<style>` block into the five css files and proves that nothing changed (used once; kept as the record of how the split was made) |
 | `.gitignore/words/ORG_A1_WORDS.md` | A1 word lists, about 40,000 characters: read only the theme or topic you need |
 | `.gitignore/plans/PLAN_A1_VOCABULARY.md` | target-word plans, about 7,000 characters |
 | `.gitignore/words/A1_WORDS.md` | the original A1 list, never changed, almost never read |
@@ -181,7 +181,7 @@ Sub-sections (`###`) you may need, inside the sections above (the map check does
 | A vocabulary theme | `TOPICS_BY_SECTION`, a new file in `game/data/questions/` (name, keys, script tag in the page, row in the Data file table), the level file in `game/data/glossary/`, the plan file, DESIGN names list; run the question check |
 | The shape of a question | README Question types, the renderers, `generateLoremQuestions`, the check script |
 | A screen | its HTML section, `SCREEN_DEPTH`, `showScreen`, the menu tree steps; README Screen flow |
-| A function, banner, id or doc heading name | this map (rule 12), then run the map check |
+| A function, banner, id or doc heading name | this map (rule 12) and the `Provides` / `Needs` header of its code file in `game/js/`, then run the map check |
 | The question check script (a check, an option, a number it reads) | the script's header, `$CHECK_NAMES` and `$REVIEW_MAP` in it, `test_check_questions.ps1`, README Check script (the guide, "Known warnings") and Testing, the `CONFIG` numbers it reads (rule 13) |
 
 ### F. Keeping the map true (AGENTS.md rule 12)
@@ -192,7 +192,7 @@ In the same change, update this map whenever you **add, remove, rename or move**
 powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_filemap.ps1
 ```
 
-It must end with `OK`. It reports an **error** when the map names something that does not exist, when something exists but is not in the map (every top-level function, script banner, `screen-` section, data file, css file and `##` heading is checked; a theme file's name must also match the keys inside it), or when a function is listed under the wrong banner. It reports a **warning** for a CSS anchor that is not found in the css file the map names or a private file that is absent, and an **error** for a css file that is not named in the map, not linked by the page, or named but missing. **Stale names in the docs:** it also reports an **error** when a function name written in backticks with round brackets right after it, or an UPPER_CASE name written alone in backticks, in README.md, DESIGN.md or AGENTS.md does not exist in `index.html` (a renamed or removed name; the first real catch was the old question bank loader, which the README still named after it was renamed). CSS words that look like calls (`rgba`, `scale` …) and names the docs mention on purpose as removed (`THEME_LABELS`) are in two lists at the top of the script, `$DOC_ALLOWED_CALLS` and `$DOC_REMOVED_NAMES`: add to them when the check gives a false alarm. If the map and the files disagree, fix the one that is wrong and tell the owner. **What the check does not do:** it does not check the "Holds" and "Read when" descriptions, the names inside tables A and E, the `###` sub-sections, names written another way (for example `CONFIG.LEVELS`, or without backticks) or whether every CSS anchor is listed, so read those with a critical eye and fix any that are wrong. The script is private (it lives in `.gitignore/tools/`, which is never uploaded): on a copy without that folder the check cannot run, so compare by hand and tell the owner. Table syntax the script relies on: the first cell of a row in a table is the thing to find, written in backticks; function and constant cells are plain names separated by commas; do not put a `|` inside a cell.
+It must end with `OK`. It reports an **error** when the map names something that does not exist, when something exists but is not in the map (every top-level function, script banner, `screen-` section, data file, css file and `##` heading is checked; a theme file's name must also match the keys inside it), or when a function is listed under the wrong banner. It reports a **warning** for a CSS anchor that is not found in the css file the map names or a private file that is absent, and an **error** for a css file that is not named in the map, not linked by the page, or named but missing. **Code files (split layout):** it also checks every file of `game/js/`: the page must load it, its name must be lower case, `'use strict';` must follow its header (each file needs its own), and its header must list exactly the names the file defines (`Provides`) and the names of other files that it uses (`Needs`; a name that is only used as an object key or inside a string or comment does not count). So when a code file gets a new function, or starts using something from another file, change its header in the same change. The scanner is `jsnames.ps1`. **Stale names in the docs:** it also reports an **error** when a function name written in backticks with round brackets right after it, or an UPPER_CASE name written alone in backticks, in README.md, DESIGN.md or AGENTS.md does not exist in `index.html` (a renamed or removed name; the first real catch was the old question bank loader, which the README still named after it was renamed). CSS words that look like calls (`rgba`, `scale` …) and names the docs mention on purpose as removed (`THEME_LABELS`) are in two lists at the top of the script, `$DOC_ALLOWED_CALLS` and `$DOC_REMOVED_NAMES`: add to them when the check gives a false alarm. If the map and the files disagree, fix the one that is wrong and tell the owner. **What the check does not do:** it does not check the "Holds" and "Read when" descriptions, the names inside tables A and E, the `###` sub-sections, names written another way (for example `CONFIG.LEVELS`, or without backticks) or whether every CSS anchor is listed, so read those with a critical eye and fix any that are wrong. The script is private (it lives in `.gitignore/tools/`, which is never uploaded): on a copy without that folder the check cannot run, so compare by hand and tell the owner. Table syntax the script relies on: the first cell of a row in a table is the thing to find, written in backticks; function and constant cells are plain names separated by commas; do not put a `|` inside a cell.
 
 ## How to play
 
@@ -444,7 +444,7 @@ Run them from the project folder. Every command starts with `powershell -Executi
 - `-ShowLevel A1`: shows how `ORG_A1_WORDS.md` is read (see "Building an organized word file for a level").
 - `-BankFile sample.json` and `-GlossaryFile glossary.json`: **replace** the real data. Use them only to test the script itself (or a sample bank for a new level); for drafts use `-Draft`.
 - `-PlanDir` and `-WordsDir`: where the plan files and the word files are (default: the private `.gitignore/plans/` and `.gitignore/words/` drawers).
-- `-Html`: the page to check (default: `game/index.html`, or `index.html` in the old layout). The real questions and the glossary are read from the `data/questions/` and `data/glossary/` files next to that page (joined in file name order); in the old layout they were the two JSON blocks inside the page, and the script still reads them when there are no data files. A data file that is not valid JSON, or has no `Object.assign(GAME_DATA...)` call, is reported as an error.
+- `-Html`: the page to check (default: `game/index.html`, or `index.html` in the old layout). The real questions and the glossary are read from the `data/questions/` and `data/glossary/` files next to that page (joined in file name order); in the old layout they were the two JSON blocks inside the page, and the script still reads them when there are no data files. The `CONFIG` numbers and the topic names are read from the page and the `js/` files next to it, wherever they are written. A data file that is not valid JSON, or has no `Object.assign(GAME_DATA...)` call, is reported as an error.
 
 **Exit code:** 0 = no errors, 1 = errors found. Warnings never change it.
 
@@ -959,7 +959,7 @@ Saved at the owner's request as a reminder. **When the owner returns to this, as
 
 ### Later, not planned yet: splitting the file
 
-**Status (2026-11-02): the split is in progress** on the branch `split`, in its own work folder (`.gitignore/split-work/`, never uploaded). The plan, with a progress checklist, is the private file `.gitignore/drafts/FOLDER_SPLIT_PLAN.md`. Done so far: steps 0 and 1 (save, play-through test, dry run, private folder sorted into drawers) on `main`; step 2 (the page moved into `game/`, the CSS cut into `game/css/`, AGENTS.md rule 2 changed) on the branch. Not merged into `main`.
+**Status (2026-11-02): the split is in progress** on the branch `split`, in its own work folder (`.gitignore/split-work/`, never uploaded). The plan, with a progress checklist, is the private file `.gitignore/drafts/FOLDER_SPLIT_PLAN.md`. Done so far: steps 0 and 1 (save, play-through test, dry run, private folder sorted into drawers) on `main`; on the branch: step 2 (the page moved into `game/`, the CSS cut into `game/css/`, AGENTS.md rule 2 changed), step 3 (the questions and word meanings moved into `game/data/`) and step 4a (the first nine sections of the script moved into `game/js/`, 8 files). Next: step 4b (the rest of the code), which may wait. Not merged into `main`.
 
 **Update (owner's decision, 2026-11-01): there will be no single-file download after the switch (see Roadmap item 11), so the bundler idea below is no longer needed for downloads. The cautions about loading and testing still apply to a split. Nothing is decided or built.**
 
