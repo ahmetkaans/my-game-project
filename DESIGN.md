@@ -2,7 +2,7 @@
 
 ## Status
 
-The visual design is **decided** and applied in [index.html](index.html) (all CSS lives in its `<style>` block). Copy that the owner has not named explicitly is still lorem ipsum.
+The visual design is **decided** and applied in [game/index.html](game/index.html) (all CSS lives in the five files of [game/css/](game/css/)). Copy that the owner has not named explicitly is still lorem ipsum.
 
 Names that are fixed by the owner: A1, A2, B1, B2, C1, Vocabulary, Grammar, Multiple Choice, Fill in the Blanks, True or False, Matching, Easy, Medium, Hard, Very Hard, "Same duration per question across all difficulty settings", Credits, Back, Time out, Game over, Skip question, Retry, Next exercise.
 
@@ -107,7 +107,7 @@ All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distanc
 
 ## Sound
 
-Generated with the Web Audio API inside `index.html` (no audio files):
+Generated with the Web Audio API inside `game/index.html` (no audio files):
 
 - **Correct**: soft two-note sine chime (E5 → B5).
 - **Partly right**: one soft sine note (D5), between the chime and the low tone.

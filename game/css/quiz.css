@@ -1,0 +1,163 @@
+  /* Quiz header */
+  .quiz-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  #quiz-timer-text { color: var(--fg); }
+  #quiz-timer-text.is-extension { color: var(--extra); }
+  .timer-bar {
+    height: 8px;
+    margin-bottom: 20px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  }
+  .timer-fill { height: 100%; width: 100%; border-radius: inherit; background: var(--accent); transition: width 0.1s linear; }
+  .timer-bar.is-low .timer-fill { animation: pulse 1s ease-in-out infinite; }
+  .timer-bar.is-extension { background: color-mix(in srgb, var(--extra) 16%, var(--surface)); }
+  .timer-bar.is-extension .timer-fill {
+    background: repeating-linear-gradient(-45deg, var(--extra) 0 8px, color-mix(in srgb, var(--extra) 70%, var(--surface)) 8px 16px);
+  }
+
+  .prompt { font-size: 1.25rem; font-weight: 500; line-height: 1.45; margin: 0 0 18px; }
+  .instructions { color: var(--muted); margin: 0 0 12px; }
+  .options { display: grid; gap: 10px; }
+  .options.two { grid-template-columns: 1fr 1fr; }
+  .option { min-height: 56px; text-align: left; font-size: 1.05rem; }
+  .options.two .option { text-align: center; }
+
+  .is-correct { background: var(--ok-soft) !important; border-color: var(--ok) !important; color: var(--ok) !important; }
+  .is-wrong { background: var(--bad-soft) !important; border-color: var(--bad) !important; color: var(--bad) !important; }
+  button.is-correct:disabled, button.is-wrong:disabled { opacity: 1; }
+  .pop { animation: pop 0.32s ease-out; }
+
+  .check-btn { width: 100%; margin-top: 4px; }
+  @media (min-width: 600px) { .check-btn { width: auto; min-width: 160px; } }
+
+  /* Fill in the blanks */
+  .word-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 66px;
+    padding: 10px;
+    margin-bottom: 18px;
+    background: var(--accent-soft);
+    border: 1.5px dashed var(--accent-line);
+    border-radius: var(--radius-sm);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    font-weight: 500;
+  }
+  .fill-sentence { line-height: 2.4; }
+  /* Typed blank: fixed width so it never hints at the word's length */
+  .blank-input {
+    width: 9.5em;
+    max-width: 100%;
+    min-height: 46px;
+    padding: 4px 10px;
+    vertical-align: middle;
+    font: inherit;
+    color: var(--fg);
+    background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    border-radius: 8px 8px 0 0;
+    outline: none;
+  }
+  .blank-input:focus-visible { background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-line); }
+  .blank-input:disabled { opacity: 1; }
+  .blank-input.is-partial { background: var(--accent-soft) !important; border-color: var(--accent) !important; }
+
+  /* SmartBoard mode: tappable bank words and a tappable blank (no typing) */
+  button.chip { cursor: pointer; font: inherit; font-weight: 500; color: var(--fg); }
+  .chip.is-used { opacity: 0.4; border-style: dashed; }
+  .blank-slot {
+    display: inline-block;
+    width: 9.5em;
+    max-width: 100%;
+    min-height: 46px;
+    padding: 4px 10px;
+    vertical-align: middle;
+    font: inherit;
+    font-weight: 500;
+    text-align: center;
+    color: var(--fg);
+    background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+  }
+  .blank-slot:disabled { opacity: 1; }
+
+  /* Matching */
+  /* Phones: the word column is only as wide as its longest word (words never break), the meanings get
+     the rest, and the pair badge sits on the top-right corner, so no text space is kept free for it.
+     Wider screens: equal columns, badge inside the box on the right. */
+  .match-columns { display: grid; grid-template-columns: auto 1fr; gap: var(--gap); margin-bottom: 16px; }
+  .match-col { display: grid; gap: 10px; align-content: start; }
+  .match-item { position: relative; min-height: 52px; padding: 10px 12px; text-align: left; overflow-wrap: anywhere; }
+  .match-col:first-child .match-item { overflow-wrap: normal; }
+  .match-item[data-pair] { border-color: var(--accent-line); }
+  .match-item.is-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+  .match-item[data-pair]::after {
+    content: attr(data-pair);
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.8rem;
+  }
+  @media (min-width: 600px) {
+    .match-columns { grid-template-columns: 1fr 1fr; }
+    .match-item { padding: 12px 42px 12px 18px; }
+    .match-item[data-pair]::after { top: 50%; right: 10px; width: 24px; height: 24px; transform: translateY(-50%); }
+  }
+
+  .feedback {
+    margin: 16px 0;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    animation: rise 0.25s ease-out;
+  }
+  .feedback.ok { background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 40%, var(--surface)); }
+  .feedback.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 40%, var(--surface)); }
+  .feedback.partial { background: var(--accent-soft); border-color: var(--accent-line); }
+  .feedback.ok strong { color: var(--ok); }
+  .feedback.bad strong { color: var(--bad); }
+  .feedback.partial strong { color: var(--accent); }
+  .feedback .points { color: var(--muted); }
+  .feedback p { margin: 4px 0; }
+  .feedback strong { font-weight: 500; font-size: 1.1rem; }
+
+  #quiz-next { width: 100%; }
+  @media (min-width: 600px) { #quiz-next { width: auto; min-width: 160px; } }
+
+  .actions { display: flex; flex-wrap: wrap; gap: var(--gap); margin-top: 16px; }
+  .actions button { flex: 1 1 auto; }
+  @media (min-width: 600px) { .actions button { flex: 0 0 auto; min-width: 140px; } }
+

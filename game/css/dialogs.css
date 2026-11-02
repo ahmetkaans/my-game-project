@@ -1,0 +1,238 @@
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: var(--overlay);
+    animation: fade 0.2s ease-out;
+  }
+  .modal {
+    width: 100%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow: auto;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    animation: rise 0.2s ease-out;
+  }
+  .modal-head { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; }
+  .modal-head .icon-btn { margin-left: -6px; flex: none; }
+  .modal h2 { margin: 0; font-size: 1.35rem; font-weight: 500; }
+  .modal p { color: var(--muted); }
+  .modal ul { padding-left: 20px; }
+  /* "Words in this game" pop-up: word, type, meaning */
+  .modal ul.word-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 8px; }
+  .word-list li {
+    padding: 8px 12px;
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+  }
+  .word-list .word { font-weight: 500; }
+  .modal .word-list .word-sense { margin: 2px 0 0; color: var(--fg); }
+  .word-list .word-type { margin-right: 4px; color: var(--muted); font-size: 0.85rem; font-style: italic; }
+  /* the word type used in this game */
+  .word-list .word-type.is-used {
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  /* Settings pop-up: one row per setting (name + control, short explanation underneath) */
+  .settings { display: grid; gap: var(--gap); margin-top: 12px; }
+  .setting { padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .setting-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  label.setting-head { min-height: 44px; cursor: pointer; }
+  .setting-name { font-weight: 500; }
+  .modal .setting-help { margin: 4px 0 0; font-size: 0.9rem; color: var(--muted); }
+  .segmented { display: flex; gap: 4px; margin-top: 8px; padding: 4px; background: var(--accent-soft); border-radius: var(--radius-sm); }
+  .segmented button {
+    flex: 1 1 0;
+    min-height: 44px;
+    padding: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    font-weight: 400;
+  }
+  .segmented button svg { width: 18px; height: 18px; flex: none; }
+  .segmented button[aria-pressed="true"],
+  .segmented button[aria-pressed="true"]:hover:not(:disabled) { background: var(--accent); color: var(--on-accent); font-weight: 500; }
+  .settings-note { margin: 12px 0 0; text-align: center; font-size: 0.85rem; color: var(--muted); }
+  .setting-head.can-wrap { flex-wrap: wrap; }
+
+  /* Language toggle (Settings): a sliding pill, both names always shown (DESIGN.md "Language toggle").
+     Plain elements, not buttons: a tap on a half picks that side, arrow keys pick a side, Space / Enter switch. */
+  .lang-toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: none;
+    box-sizing: border-box;
+    width: 176px;
+    height: 44px;
+    padding: 3px;
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--surface));
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lang-toggle:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 2px; }
+  .lang-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: 36px;
+    border-radius: 18px;
+    background: var(--accent);
+    box-shadow: 0 1px 4px color-mix(in srgb, #000 28%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 30%, transparent);
+    transition: transform 0.3s cubic-bezier(0.22, 0.9, 0.3, 1);
+  }
+  .lang-toggle[aria-checked="true"] .lang-thumb { transform: translateX(100%); }
+  .lang-toggle:active .lang-thumb { transform: scale(0.98); }
+  .lang-toggle[aria-checked="true"]:active .lang-thumb { transform: translateX(100%) scale(0.98); }
+  .lang-lbl {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+    transition: color 0.22s ease-out;
+  }
+  .lang-lbl.is-on { color: var(--on-accent); }
+
+  /* Menu tree: a drawer on the right on wide screens, a bottom sheet on phones */
+  #tree-btn, #home-btn { color: var(--accent); }
+  .tree-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 890;
+    background: var(--overlay);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .tree-overlay.is-open { opacity: 1; }
+  .tree-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(340px, 100%);
+    padding: 20px;
+    overflow: auto;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform; /* the panel is moved on the graphics card, no repaint per frame */
+  }
+  .tree-overlay.is-open .tree-panel { transform: none; }
+  @media (max-width: 599px) {
+    .tree-panel {
+      top: auto;
+      left: 0;
+      width: auto;
+      max-height: 75vh;
+      max-height: 75dvh;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      border-left: none;
+      border-top: 1px solid var(--border);
+      border-radius: 16px 16px 0 0;
+      transform: translateY(100%);
+      transition-duration: 0.22s;
+    }
+  }
+  .tree-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .tree-head h2 { margin: 0; font-size: 1.35rem; font-weight: 500; }
+  .tree-close { min-height: 44px; padding: 8px 14px; }
+  .tree { list-style: none; margin: 0; padding: 0; }
+  /* each step sits one level deeper; an elbow line joins it to the step above, a dot marks it */
+  .tree li {
+    position: relative;
+    margin-left: calc(var(--depth) * 14px);
+    padding-left: 22px;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .tree-overlay.is-open .tree li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.12s + var(--i) * 0.06s);
+  }
+  .tree li + li::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 14px;
+    height: 21px;
+    border-left: 2px solid var(--accent-line);
+    border-bottom: 2px solid var(--accent-line);
+    border-bottom-left-radius: 8px;
+  }
+  .tree li::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 15px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .tree li.is-pending::after { background: var(--surface); border: 2px solid var(--muted); }
+  .tree li.is-current::after { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); }
+  .tree-step {
+    display: block;
+    width: 100%;
+    min-height: 56px;
+    margin: 2px 0;
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid transparent;
+    background: transparent;
+    font-weight: 400;
+  }
+  .tree-step .cap { display: block; color: var(--muted); font-size: 0.8rem; }
+  .tree-step .val { display: block; font-weight: 500; overflow-wrap: anywhere; }
+  .tree li.is-pending .tree-step .val { font-weight: 400; color: var(--muted); }
+  .tree li.is-current .tree-step { background: var(--accent-soft); border-color: var(--accent-line); }
+  .tree-here {
+    margin-left: 6px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.72rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 950; }
+
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.035); } 100% { transform: scale(1); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }

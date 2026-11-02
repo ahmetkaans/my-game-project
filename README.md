@@ -1,23 +1,24 @@
 # my-game-project
 I have a dream so close.
 
-A language-learning quiz game in a single file: [index.html](index.html). No build step — open the file in a browser. The only external resource is the Inter font from Google Fonts (optional: the system font is used when it can't load).
+A language-learning quiz game in plain files with no build step: the page is [game/index.html](game/index.html) and its look is in [game/css/](game/css/); open the page in a browser. (The code and the questions are still inside the page; they move into their own files in the next steps of the folder split.) The only external resource is the Inter font from Google Fonts (optional: the system font is used when it can't load).
 
 The game is called **My Game Project**. Texts the owner has not named are still lorem ipsum (mostly questions and the topic names of other levels); the approved screen and pop-up texts are listed in DESIGN.md. The visual design ("clean study app", level colors, dark mode, motion, sound) is documented in [DESIGN.md](DESIGN.md). Agents must read [AGENTS.md](AGENTS.md) first. What changed and when is listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## File map
 
 **Read AGENTS.md first, then this map.** It says where things are and what to read for a task, so nobody has to read whole files. **No line numbers are stored here** (they change with every edit).
+- **Where the files are (folder split, step 2):** the page is `game/index.html` and the CSS is in `game/css/` (5 files). In this README, `index.html` means `game/index.html`. The tools find them by themselves.
 - **Code (`index.html`): read a window.** Search for the anchor (any search tool: `grep -n`, the Grep tool), then read about 60 lines around the hit (the Read tool with `offset` and `limit`, or `sed -n`). How to search: a script **banner** as `^ \* NAME` (for example `^ \* TIMER`; the bare word also appears in many other places), a **function** as `^function name(`, a **CSS anchor** as `/\* anchor`, an **id** as `id="name"`, a **JSON key** as the key itself. Search every anchor of your task's row in **one** call (for example `grep -n -E "^ \* (TIMER|TEXTS)"`) and read the routed doc sections in parallel calls.
 - **Docs (README.md, DESIGN.md): read the whole section the map points to.** Find it with `^## Heading` (for example `^## Screen flow`); it runs to the next `## ` heading.
 - **Current line ranges** of every banner and `##` heading: `powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_filemap.ps1 -Lines`. The same script, run without `-Lines`, checks that this map matches the files (see F).
 
-**Do not read whole:** `index.html` (about 3,100 lines); the JSON blocks `question-bank` (about 55,000 characters) and `glossary` (about 8,000): search a key, for example `A1|vocabulary|1|mc|easy`, and read around it; the README parts "Question content method" and "Content (questions)" unless you work on questions; the private word lists in `.gitignore/` (10,000 to 40,000 characters each).
+**Do not read whole:** `index.html` (about 2,400 lines); the CSS files in `game/css/` are 40 to 240 lines each and may be read whole; the JSON blocks `question-bank` (about 55,000 characters) and `glossary` (about 8,000): search a key, for example `A1|vocabulary|1|mc|easy`, and read around it; the README parts "Question content method" and "Content (questions)" unless you work on questions; the private word lists in `.gitignore/` (10,000 to 40,000 characters each).
 **Always read:** this map. **Before you change something, also read** README "Confirmed decisions" and the "Change together" row (E) for your task; for a plain question about how things work you may skip those two. **When unsure, read more, not less.**
 
 ### A. Start here: the task, then what to read
 
-| Task | Anchors in index.html | Docs to read (README / DESIGN) |
+| Task | Anchors in index.html (or the CSS files) | Docs to read (README / DESIGN) |
 |---|---|---|
 | Change a visible text, or a Turkish text | `TEXTS`, `LANGUAGE` | README Language (English / Turkish); DESIGN Status |
 | Change a number (time, points, thresholds) | `CONFIG` | README Configuration |
@@ -27,15 +28,15 @@ The game is called **My Game Project**. Texts the owner has not named are still 
 | Change a question type, answer checking or scoring | `QUESTIONS`, `RENDERERS`, `QUIZ FLOW`, `CONFIG` (`POINTS_CORRECT`, `POINTS_INCORRECT`, `SPELL_EXACT_MAX_LENGTH`, `SPELL_SHORT_MAX_LENGTH`, `SPELL_MAX_EDITS_SHORT`, `SPELL_MAX_EDITS_LONG`) | README Question types (with "Typed Fill in the Blanks"), Scoring algorithm, Answer feedback |
 | Change the timer or the time-out | `TIMER`, `TEXTS` (its pop-up texts), `CONFIG` (`EXTENSION_SECONDS`, `EXTENSION_PENALTY`) | README Timer and time-out algorithm |
 | Change the results screen | `RESULTS` | README Answer feedback, Screen flow |
-| Change the look (colors, spacing, motion) | CSS anchors (B) | DESIGN (the matching sections) |
+| Change the look (colors, spacing, motion) | CSS anchors (B), in `game/css/` | DESIGN (the matching sections) |
 | Write or review questions or glossary meanings (a change task: also read "Confirmed decisions" and row E) | `question-bank`, `glossary` (search keys), the check script (its commands: `-Draft`, `-Worksheet`), and the private files `.gitignore/plans/PLAN_<LEVEL>_<CATEGORY>.md` (the theme's approved plan) and `.gitignore/words/ORG_<LEVEL>_WORDS.md` (only that theme's lines) | README Content (questions), Question content method (it holds "Workflow: draft → review → write" and the Review checklist; AGENTS.md rule 9) |
 | Add a vocabulary theme | `TOPICS AND DATA`, `question-bank` | README Content (questions), "Next theme, step by step" |
 | Plan something new, or check what is decided or still open | none | README Roadmap (with its "Open questions"), Question content method ("Open questions"), Confirmed decisions; AGENTS.md rule 4 |
 | Commit | none | AGENTS.md rule 7, README Changelog, CHANGELOG.md |
 
-### B. index.html, in file order
+### B. index.html and the css files, in file order
 
-The `<head>` script applies the saved theme before the first paint. The `<style>` block holds all CSS. The `<body>` holds the screens. Then come the two JSON blocks and one `<script>`.
+The `<head>` script applies the saved theme before the first paint, and the page links the five CSS files of `game/css/` (colors, layout, quiz, results, dialogs). The `<body>` holds the screens. Then come the two JSON blocks and one `<script>`.
 
 **Script banners** (each is the first uppercase words of a `/* ===` comment in the `<script>`; a function belongs to the nearest banner above it):
 
@@ -81,28 +82,28 @@ The `<head>` script applies the saved theme before the first paint. The `<style>
 | `question-bank` | JSON: real questions by quiz key (large: search a key, do not read it whole) |
 | `glossary` | JSON: word meanings for the word pre-view pop-up (search a word) |
 
-**CSS anchors** (each is the start of a `/* ... */` comment in the `<style>` block; the look itself is described in DESIGN.md):
+**CSS anchors** (each is the start of a `/* ... */` comment in one of the five files of `game/css/`; the look itself is described in DESIGN.md):
 
-| CSS anchor | Covers |
-|---|---|
-| `Design language` | color tokens, light and dark values |
-| `The level accent` | accent colors per level |
-| `Top bar` | top bar and icon buttons |
-| `Buttons` | normal and primary buttons |
-| `Menu grids` | level, category, topic, type and difficulty buttons |
-| `The quiz suggested` | the "Next" mark on the difficulty screen |
-| `Switch` | switch rows |
-| `Quiz header` | progress, score, timer bar |
-| `Fill in the blanks` | word bank, instructions |
-| `Typed blank` | the typed blank |
-| `SmartBoard mode` | tappable bank words and blank |
-| `Matching` | two-column matching |
-| `Results` | results hero and cards |
-| `Footer / credits` | footer link |
-| `Modal` | pop-up |
-| `Settings pop-up` | Settings rows, segmented control |
-| `Language toggle` | the sliding English / Türkçe pill |
-| `Menu tree` | menu tree drawer and sheet |
+| CSS anchor | File | Covers |
+|---|---|---|
+| `Design language` | `colors.css` | color tokens, light and dark values |
+| `The level accent` | `colors.css` | accent colors per level |
+| `Top bar` | `layout.css` | top bar and icon buttons |
+| `Buttons` | `layout.css` | normal and primary buttons |
+| `Menu grids` | `layout.css` | level, category, topic, type and difficulty buttons |
+| `The quiz suggested` | `layout.css` | the "Next" mark on the difficulty screen |
+| `Switch` | `layout.css` | switch rows |
+| `Quiz header` | `quiz.css` | progress, score, timer bar |
+| `Fill in the blanks` | `quiz.css` | word bank, instructions |
+| `Typed blank` | `quiz.css` | the typed blank |
+| `SmartBoard mode` | `quiz.css` | tappable bank words and blank |
+| `Matching` | `quiz.css` | two-column matching |
+| `Results` | `results.css` | results hero and cards |
+| `Footer / credits` | `results.css` | footer link |
+| `Modal` | `dialogs.css` | pop-up |
+| `Settings pop-up` | `dialogs.css` | Settings rows, segmented control |
+| `Language toggle` | `dialogs.css` | the sliding English / Türkçe pill |
+| `Menu tree` | `dialogs.css` | menu tree drawer and sheet |
 
 ### C. Docs: which section when
 
@@ -156,6 +157,7 @@ Sub-sections (`###`) you may need, inside the sections above (the map check does
 | `.gitignore/tools/serve_test.ps1` | private test server for any folder (also a split one); adds the play-through test to the page when the address ends in `?playtest` (README Testing) |
 | `.gitignore/tools/playthrough.js` | the play-through test: plays every question type, the timer, pop-ups, language and settings through the real screens (README Testing); run by `serve_test.ps1`, never part of the game |
 | `.gitignore/tools/dryrun_split.ps1` | dry run of the folder split into a scratch folder, with the text proofs (private plan: `.gitignore/drafts/FOLDER_SPLIT_PLAN.md`) |
+| `.gitignore/tools/split_css.ps1` | step 2 of the folder split: cuts the old `<style>` block into the five css files and proves that nothing changed (used once; kept as the record of how the split was made) |
 | `.gitignore/words/ORG_A1_WORDS.md` | A1 word lists, about 40,000 characters: read only the theme or topic you need |
 | `.gitignore/plans/PLAN_A1_VOCABULARY.md` | target-word plans, about 7,000 characters |
 | `.gitignore/words/A1_WORDS.md` | the original A1 list, never changed, almost never read |
@@ -183,15 +185,15 @@ In the same change, update this map whenever you **add, remove, rename or move**
 powershell -ExecutionPolicy Bypass -File .gitignore/tools/check_filemap.ps1
 ```
 
-It must end with `OK`. It reports an **error** when the map names something that does not exist, when something exists but is not in the map (every top-level function, script banner, `screen-` section, JSON block, and `##` heading is checked), or when a function is listed under the wrong banner. It reports a **warning** for a CSS anchor that is not found or a private file that is absent. **Stale names in the docs:** it also reports an **error** when a function name written in backticks with round brackets right after it, or an UPPER_CASE name written alone in backticks, in README.md, DESIGN.md or AGENTS.md does not exist in `index.html` (a renamed or removed name; the first real catch was the old question bank loader, which the README still named after it was renamed). CSS words that look like calls (`rgba`, `scale` …) and names the docs mention on purpose as removed (`THEME_LABELS`) are in two lists at the top of the script, `$DOC_ALLOWED_CALLS` and `$DOC_REMOVED_NAMES`: add to them when the check gives a false alarm. If the map and the files disagree, fix the one that is wrong and tell the owner. **What the check does not do:** it does not check the "Holds" and "Read when" descriptions, the names inside tables A and E, the `###` sub-sections, names written another way (for example `CONFIG.LEVELS`, or without backticks) or whether every CSS anchor is listed, so read those with a critical eye and fix any that are wrong. The script is private (it lives in `.gitignore/tools/`, which is never uploaded): on a copy without that folder the check cannot run, so compare by hand and tell the owner. Table syntax the script relies on: the first cell of a row in a table is the thing to find, written in backticks; function and constant cells are plain names separated by commas; do not put a `|` inside a cell.
+It must end with `OK`. It reports an **error** when the map names something that does not exist, when something exists but is not in the map (every top-level function, script banner, `screen-` section, JSON block, and `##` heading is checked), or when a function is listed under the wrong banner. It reports a **warning** for a CSS anchor that is not found in the css file the map names or a private file that is absent, and an **error** for a css file that is not named in the map, not linked by the page, or named but missing. **Stale names in the docs:** it also reports an **error** when a function name written in backticks with round brackets right after it, or an UPPER_CASE name written alone in backticks, in README.md, DESIGN.md or AGENTS.md does not exist in `index.html` (a renamed or removed name; the first real catch was the old question bank loader, which the README still named after it was renamed). CSS words that look like calls (`rgba`, `scale` …) and names the docs mention on purpose as removed (`THEME_LABELS`) are in two lists at the top of the script, `$DOC_ALLOWED_CALLS` and `$DOC_REMOVED_NAMES`: add to them when the check gives a false alarm. If the map and the files disagree, fix the one that is wrong and tell the owner. **What the check does not do:** it does not check the "Holds" and "Read when" descriptions, the names inside tables A and E, the `###` sub-sections, names written another way (for example `CONFIG.LEVELS`, or without backticks) or whether every CSS anchor is listed, so read those with a critical eye and fix any that are wrong. The script is private (it lives in `.gitignore/tools/`, which is never uploaded): on a copy without that folder the check cannot run, so compare by hand and tell the owner. Table syntax the script relies on: the first cell of a row in a table is the thing to find, written in backticks; function and constant cells are plain names separated by commas; do not put a `|` inside a cell.
 
 ## How to play
 
-**You only need one file: [`index.html`](index.html).** Nothing to install, no account.
+**You need the whole `game` folder.** Nothing to install, no account.
 
-1. Open [`index.html`](index.html) here on GitHub.
-2. Click the **download** button (the arrow icon, "Download raw file") at the top right of the file.
-3. Open the downloaded file with your browser (Chrome, Edge, Firefox or Safari): double-click it, or drag it into a browser window.
+1. On GitHub, click the green **Code** button, then **Download ZIP**.
+2. Unzip the downloaded file.
+3. Open `game/index.html` with your browser (Chrome, Edge, Firefox or Safari): double-click it, or drag it into a browser window.
 
 - The game works on **phones and computers**.
 - Works **offline**, too: without internet, the game uses your device's own font instead of Inter.
@@ -865,9 +867,9 @@ All built and tested with lorem questions (see the sections above for how each w
 ## Testing
 
 AGENTS.md rule 6 lists what to check before handing over. Practical notes from building the Settings menu, Next exercise and the menu tree:
-- **Saved settings need a real web address.** A preview of the file (a `data:` address, or a file shown as a snapshot) blocks `localStorage`, so language, theme, sound, same-duration and SmartBoard mode cannot be tested there. Start the private test server with `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve.ps1` (it serves only `index.html` at `http://localhost:8765/`), open that address, and stop the server when done (Ctrl+C, or end its PowerShell process). Clear the test storage afterwards (`localStorage.clear()` in the console). The server never serves a cached page, so a reload always shows the latest `index.html`. If it says the port is busy, an old server is still running: stop it (below) or start another with `-Port 8766` (then open that port). If it was started hidden (for example by an assistant), stop it with `Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*serve.ps1*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`. The tool is private (in `.gitignore/tools/`) and only for testing; players never need it.
+- **Saved settings need a real web address.** A preview of the file (a `data:` address, or a file shown as a snapshot) blocks `localStorage`, so language, theme, sound, same-duration and SmartBoard mode cannot be tested there. Start the private test server with `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve_test.ps1` (it serves the game folder, `game/`, at `http://localhost:8766/`; the older `serve.ps1` serves only an `index.html` in the project folder and is retired at the end of the split), open that address, and stop the server when done (Ctrl+C, or end its PowerShell process). Clear the test storage afterwards (`localStorage.clear()` in the console). The server never serves a cached page, so a reload always shows the latest `index.html`. If it says the port is busy, an old server is still running: stop it (below) or start another with `-Port 8767` (then open that port). If it was started hidden (for example by an assistant), stop it with `Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object { $_.CommandLine -like '*serve_test.ps1*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`. The tool is private (in `.gitignore/tools/`) and only for testing; players never need it.
 - **Play-through test** (built 2026-11-02, step 0 of the folder split plan): `powershell -ExecutionPolicy Bypass -File .gitignore/tools/serve_test.ps1` serves the project folder (or another one with `-Root <folder>`) at `http://localhost:8766/` and, when the address ends in `?playtest`, adds the test (`.gitignore/tools/playthrough.js`) to the page; the files on disk are never changed. About 6 seconds after the page loads, `window.__playtest.summary` holds the result; the expected result today is **300 passed, 0 failed**, with no errors in the browser console. It plays Multiple Choice, True or False, typed and tapped Fill in the Blanks and Matching (right, wrong and misspelled answers) on real and placeholder quizzes, and checks the scores, the timer, time-out, extra time, game over, Quit, Next exercise, the language and theme switches, same duration, Settings, Credits, the menu tree and the menu buttons. It uses only the game's global names, so it must work the same after the folder is split; run it before and after every split step. The test was checked on 2026-11-02 by breaking two things on purpose (a score and the extra-time penalty): it reported 10 failures. Stop the server like the first note above, with `'*serve_test.ps1*'` in the filter.
-- **Checking a work folder** (the folder of the split branch, for example `.gitignore/split-work/`): point the tools at it. `check_filemap.ps1 -Html <work>\index.html -Readme <work>\README.md -Design <work>\DESIGN.md -Agents <work>\AGENTS.md` (the private files are still looked for in the main folder), `check_questions.ps1 -Html <work>\index.html`, and `serve_test.ps1 -Root <work>`. The self-tests (`test_check_questions.ps1`) always run from the main folder, because the private tools live only there. A shorter option is added when the folder layout changes.
+- **Checking a work folder** (the folder of the split branch, for example `.gitignore/split-work/`): point the tools at it. `check_filemap.ps1 -Work <work>` (it finds the page, the css files and the notes there; the private files are still looked for in the main folder), `check_questions.ps1 -Html <work>\game\index.html`, and `serve_test.ps1 -Root <work>\game`. The self-tests (`test_check_questions.ps1`) always run from the main folder, because the private tools live only there.
 - **Phone width:** use a 375px wide view (the preview's Mobile size) and reset it to desktop afterwards. Changing the size can reload the page, so set the state again.
 - **Animations in previews:** the preview can run slower than a real browser, and a screenshot may catch a pop-up in the middle of its slide, so take a second screenshot before judging the final look. How smooth an animation feels can only be judged on a real device.
 - **Reaching any screen quickly:** in the browser console, set `state.nav` and call `startQuiz()` or `showResults()`; the order of Next exercise can be tested with `getNextExercise(nav)` (all 1,856 quizzes are visited once, in order).
@@ -899,7 +901,7 @@ Planned work (not implemented yet). The owner rewrote this list on 2026-11-01. A
    - **Address formats:** GitHub Pages: `https://ahmetkaans.github.io/my-game-project/`. Cloudflare Pages: `https://<name>.pages.dev` (the owner chooses the name; it may be taken). Saved settings and the future history belong to the web address, so choose the address to keep before sharing it widely. A custom domain such as a `.com` costs about 10 to 15 dollars a year.
    - **Limits (written from memory on 2026-11-01; check the current numbers when setting up):** Cloudflare Pages free plan: about 20,000 files per site, 25 MiB per file, about 500 builds a month, unlimited traffic for static files. GitHub Pages: about 1 GB per site. A 25 MB single file is very unlikely for text only (the estimate for all five levels is 10 to 15 MB, see "Later, not planned yet: splitting the file").
    - **Public repository:** the free GitHub Pages plan needs a public repository (not yet checked for this one). Everything that is pushed becomes public, including README.md, DESIGN.md, AGENTS.md and CHANGELOG.md; the private `.gitignore/` folder is never pushed and stays private.
-   - **Decision (owner, 2026-11-01): after the switch there will be no single-file download.** The game becomes several files on a website. **It starts only when we split the file** (until then `index.html` stays the one file and every rule stays as it is). When we split, rewrite together: AGENTS.md rule 2 (only when the owner asks, as always), README "How to play" (from "download `index.html`" to "open the link", and install it once the installable app exists), the section "Later, not planned yet: splitting the file", and the note on item 10. Why: a link is easier than a saved file, updates reach everyone, a multi-file game cannot be opened from phone storage (reports: Android gives files `content://` addresses so relative links fail, iOS Files/Safari restricts local files; not tested; sources: community.particle.io thread 27128, a SitePoint forum thread, a MacRumors iPad thread), and a split lets the assistant open only the file it needs (smaller reads). The split waits for real numbers (the file passes about 1 MB, content grows, or loading feels slow) and needs a short file map in this README so a new session finds the right file.
+   - **Decision (owner, 2026-11-01): after the switch there will be no single-file download.** The game becomes several files on a website. **It starts only when we split the file** (until then `index.html` stays the one file and every rule stays as it is). **Update 2026-11-02: the split has started on the branch `split` (see the status under "Later, not planned yet: splitting the file"); AGENTS.md rule 2 was reworded there with the owner's permission, and "How to play" now says to download the ZIP and open `game/index.html`.** When we split, rewrite together: AGENTS.md rule 2 (only when the owner asks, as always), README "How to play" (from "download `index.html`" to "open the link", and install it once the installable app exists), the section "Later, not planned yet: splitting the file", and the note on item 10. Why: a link is easier than a saved file, updates reach everyone, a multi-file game cannot be opened from phone storage (reports: Android gives files `content://` addresses so relative links fail, iOS Files/Safari restricts local files; not tested; sources: community.particle.io thread 27128, a SitePoint forum thread, a MacRumors iPad thread), and a split lets the assistant open only the file it needs (smaller reads). The split waits for real numbers (the file passes about 1 MB, content grows, or loading feels slow) and needs a short file map in this README so a new session finds the right file.
    - **Offline use after the switch: an installable web app (PWA).** Possible on Cloudflare Pages and GitHub Pages (both give https). It needs a manifest, a service worker that saves the game, and app icons. When a new version is published, the saved copy must refresh (version number), or students keep an old one. On iPhone it is installed with Share > Add to Home Screen and has had more limits than on Android, so test on a real device. A browser's "Save page" can save a broken copy of a multi-file game, which is another reason to offer the install button instead. Not built, not planned yet.
    - **Keep the names clean for adblockers:** avoid class names and file names with `ad(s)`, `banner`, `sponsor`, `tracker` or `popup`. Words inside question text are never blocked. The only outside request is the Inter font; if a strict privacy tool blocks it, the game falls back to a normal font.
 12. **Menu tree** (owner's request, 2026-11-01). **Built (2026-11-01)**, see "Screen flow": a button next to Settings opens a panel with the student's path through the menu; each chosen step is clickable.
@@ -949,10 +951,12 @@ Saved at the owner's request as a reminder. **When the owner returns to this, as
 
 ### Later, not planned yet: splitting the file
 
+**Status (2026-11-02): the split is in progress** on the branch `split`, in its own work folder (`.gitignore/split-work/`, never uploaded). The plan, with a progress checklist, is the private file `.gitignore/drafts/FOLDER_SPLIT_PLAN.md`. Done so far: steps 0 and 1 (save, play-through test, dry run, private folder sorted into drawers) on `main`; step 2 (the page moved into `game/`, the CSS cut into `game/css/`, AGENTS.md rule 2 changed) on the branch. Not merged into `main`.
+
 **Update (owner's decision, 2026-11-01): there will be no single-file download after the switch (see Roadmap item 11), so the bundler idea below is no longer needed for downloads. The cautions about loading and testing still apply to a split. Nothing is decided or built.**
 
 Discussed 2026-11-01; nothing is decided or built. `index.html` is about 120 KB today, and 76 KB of the question data is for one theme; a rough estimate is 2-3 MB for all of A1 and 10 MB or more for all five levels. If it grows too big, the idea is to keep separate source files (styles, code, one data file per theme or level) and join them into the single `index.html` that learners download, with a PowerShell bundling script. Learners would still download one file that works offline.
 - **When to bring it up:** the file passes about 1 MB, A2 starts, the game feels slow to open, or edits to the big file start going wrong. Until then one file is fine; writing the question JSON without indentation comes first.
-- **Cautions agreed with the owner:** ask the owner first (AGENTS.md rule 1; rule 2, "single file, no build step", would need new wording, and AGENTS.md changes only when the owner asks). Never edit the built `index.html` by hand once it is generated; rebuild after every change and check it in the browser. First test: split today's file, glue it back and compare it with the original; any difference is a bug in the bundler. The check script should warn when `index.html` is older than its sources, and the build should run the check script. Keep the bundler pure ASCII, write UTF-8 without BOM and LF line endings, wrap one-item results in `@()`, escape a stray `</script>` inside data, and use a `.ps1` file (Node and Python are not installed).
+- **Cautions agreed with the owner:** ask the owner first (AGENTS.md rule 1; rule 2 was reworded on 2026-11-02, on the branch `split`, with the owner's permission; AGENTS.md changes only when the owner asks). Never edit the built `index.html` by hand once it is generated; rebuild after every change and check it in the browser. First test: split today's file, glue it back and compare it with the original; any difference is a bug in the bundler. The check script should warn when `index.html` is older than its sources, and the build should run the check script. Keep the bundler pure ASCII, write UTF-8 without BOM and LF line endings, wrap one-item results in `@()`, escape a stray `</script>` inside data, and use a `.ps1` file (Node and Python are not installed).
 - A "load each level only when chosen" mode would work only on the website, not in the downloaded file.
 - The lesson-file maker (item 10) would use the same pieces.

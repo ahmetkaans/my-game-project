@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### First safe steps toward splitting the game into several files
+### The game page moves into a game folder and its look gets its own files (work in progress, not yet in the main version)
+This is the first real step of the split, made on a separate working copy. The page now lives in `game/index.html`, and all of its look is in five small files in `game/css/` (colors, layout, quiz, results, dialogs). Nothing changed for a player: the page looks and plays exactly the same, which was checked by comparing the text of the style files, the computed look of the screens in light and dark, and a test that plays the whole game by itself. The working rule about "one single file" was reworded, and "How to play" now says to download the ZIP and open `game/index.html`.
+
+### First safe steps toward splitting the game into several files (`aa371ca`)
 Nothing in the game itself changed. A test that plays the whole game by itself was added (about 300 checks, covering every question type, the timer, pop-ups, language and settings), and a practice run of the split showed that cutting the page into 27 smaller files loses nothing: the joined files are exactly the old text. The private notes folder was also tidied into four drawers (tools, drafts, word lists, plans).
 
 ### Helper agents dropped from the plan, and a small saving in the notes (`3b03dc8`)
