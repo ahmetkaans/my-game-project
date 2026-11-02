@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### The first part of the game code moves into its own files (work in progress, not yet in the main version)
+### All the game code now lives in its own files (work in progress, not yet in the main version)
+The last cutting step of the split, made on the separate working copy. The rest of the code (questions, menus, pop-ups, settings, the quiz, the timer, the question screens, the results and the start-up) moved into fourteen more small files in `game/js/`, so the page itself only holds the screens and a list of the files to load. Nothing changed for a player: the joined files are exactly the old code text, the whole-game test still passes, and the screens look the same in light, dark and Turkish.
+
+### The first part of the game code moves into its own files (work in progress, not yet in the main version) (`4cddfd1`)
 The third step of the split, made on the separate working copy. The numbers, the English and Turkish texts, the topic names, the helper tools, the language switch, the theme, the sounds and the confetti now live in eight small files in `game/js/`, each starting with a short note that says what it provides and what it needs from the other files. Nothing changed for a player: the joined files are exactly the old code text, the whole-game test still passes, and the screens look the same in light, dark and Turkish.
 
 ### The questions and word meanings move out of the page into their own files (work in progress, not yet in the main version) (`4c8d9b5`)
