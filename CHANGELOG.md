@@ -4,16 +4,19 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### All the game code now lives in its own files (work in progress, not yet in the main version)
+### The game is now split into several tidy files, and a folder for what players need
+The split is finished and joined into the main version. A player opens `game/index.html`: the page only holds the screens, the look is in 5 files, the code in 22 small files that each start with a note of what they give and need, and the questions and word meanings in files of their own (one per theme). The old single-file game is kept safely in a private archive folder. The notes were tidied too (a plain "what is in this folder" paragraph, the new rules for the private folder), and the final tests passed: the whole-game test, phone width in light, dark and Turkish, and saved settings.
+
+### All the game code now lives in its own files (`796723f`)
 The last cutting step of the split, made on the separate working copy. The rest of the code (questions, menus, pop-ups, settings, the quiz, the timer, the question screens, the results and the start-up) moved into fourteen more small files in `game/js/`, so the page itself only holds the screens and a list of the files to load. Nothing changed for a player: the joined files are exactly the old code text, the whole-game test still passes, and the screens look the same in light, dark and Turkish.
 
-### The first part of the game code moves into its own files (work in progress, not yet in the main version) (`4cddfd1`)
+### The first part of the game code moves into its own files (`4cddfd1`)
 The third step of the split, made on the separate working copy. The numbers, the English and Turkish texts, the topic names, the helper tools, the language switch, the theme, the sounds and the confetti now live in eight small files in `game/js/`, each starting with a short note that says what it provides and what it needs from the other files. Nothing changed for a player: the joined files are exactly the old code text, the whole-game test still passes, and the screens look the same in light, dark and Turkish.
 
-### The questions and word meanings move out of the page into their own files (work in progress, not yet in the main version) (`4c8d9b5`)
+### The questions and word meanings move out of the page into their own files (`4c8d9b5`)
 The second step of the split, made on the separate working copy. The real questions now live in one small file per theme (`game/data/questions/`), and the word meanings in one file per level (`game/data/glossary/`), instead of two huge blocks inside the page, which is now about 500 lines shorter. Nothing changed for a player: the files read back give exactly the old questions and meanings, the whole-game test still passes, and the question checker gives the same report as before.
 
-### The game page moves into a game folder and its look gets its own files (work in progress, not yet in the main version) (`c69e036`)
+### The game page moves into a game folder and its look gets its own files (`c69e036`)
 This is the first real step of the split, made on a separate working copy. The page now lives in `game/index.html`, and all of its look is in five small files in `game/css/` (colors, layout, quiz, results, dialogs). Nothing changed for a player: the page looks and plays exactly the same, which was checked by comparing the text of the style files, the computed look of the screens in light and dark, and a test that plays the whole game by itself. The working rule about "one single file" was reworded, and "How to play" now says to download the ZIP and open `game/index.html`.
 
 ### First safe steps toward splitting the game into several files (`aa371ca`)
