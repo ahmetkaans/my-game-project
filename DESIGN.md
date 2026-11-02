@@ -99,7 +99,7 @@ Each level's color is the accent (`--accent`) on **every screen inside that leve
 
 ## Motion
 
-All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distances).
+All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distances). **The one exception is the Halloween walker** (Halloween theme only, see Components): a calm decoration that lasts much longer (one pass of about 25 s on a phone and about 57 s on a wide screen, then the 2.2 s sinking when a quiz starts).
 
 - Screens and the feedback box fade/rise in by 4–6px.
 - **Correct answer**: the correct element(s) do a gentle "pop" (scale to 1.035 and back, 320ms).
@@ -107,7 +107,7 @@ All motion is short (≤ 350ms, confetti ~2.8s) and soft (ease-out, tiny distanc
 - Low-time timer bar pulses softly.
 - **Confetti** on the results screen for a high score: final score **≥ 80** (Multiple Choice, Fill in the Blanks, True or False) or **≥ 75** (Matching, which has partial points). Drawn on a temporary `<canvas>` in the five level colors, removed when done or when leaving the screen.
 - **Menu tree**: the backdrop fades in (0.25s); on wide screens the drawer slides in from the right (0.28s, ease-out), on phones the sheet slides up (0.22s); then the steps fade and slide in one after another (0.06s apart, starting 0.12s in). Closing reverses it (`CONFIG.TREE_CLOSE_MS` = 280).
-- **Reduce motion**: when the device has "reduce motion" on, all CSS animations/transitions are disabled and confetti is skipped.
+- **Halloween walker** (Trick or Treat only): one slow pass along the bottom per visit, drawn frame by frame by a script (not CSS); the feet, bumps, tugs, look-back, rope and the 2.2 s sinking into the ground are described under Components. It never moves faster than a calm walk (28 px per second), it lives behind everything, and it never blocks a tap.
 
 ## Sound
 
