@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### New tools to write and review questions more safely
+### Helper agents dropped from the plan, and a small saving in the notes
+The notes no longer suggest using helper agents or a second AI reviewer, because they used too much of the owner's working space. Questions are reviewed in the main conversation by reading, with a quote for every hard item. The file map also now says to read only the first 12 lines of this changelog when adding an entry.
+
+### New tools to write and review questions more safely (`9536b30`)
 The question checker can now check a draft together with the questions that already exist, so repeated sentences and names are caught before you see the draft. Its report is much shorter, and it always ends by saying that a person must still read and review the questions. It can also print "review pages" for a reader (every option in the sentence, every Matching meaning against all four words) and has its own set of 26 self-tests. The working rules and the guide in the README were updated to match, and drafts now live in a private folder.
 
 ### Added a file map so the notes are quicker and cheaper to use (`6dc0b7a`)
