@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### Added a file map so the notes are quicker and cheaper to use
+### New tools to write and review questions more safely
+The question checker can now check a draft together with the questions that already exist, so repeated sentences and names are caught before you see the draft. Its report is much shorter, and it always ends by saying that a person must still read and review the questions. It can also print "review pages" for a reader (every option in the sentence, every Matching meaning against all four words) and has its own set of 26 self-tests. The working rules and the guide in the README were updated to match, and drafts now live in a private folder.
+
+### Added a file map so the notes are quicker and cheaper to use (`6dc0b7a`)
 The README now starts with a map that says where everything is and what to read for each kind of task, so a helper no longer has to read the whole file first. A new working rule keeps the map up to date, and a private checker also looks for out-of-date names in the notes. In a test with six helpers, the answers were just as correct and used about 40% fewer tokens. A few old lines in the notes were corrected, and the testing rule now lists all five saved settings.
 
 ## 2026-11-01
