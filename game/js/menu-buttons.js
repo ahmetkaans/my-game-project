@@ -1,24 +1,45 @@
-/* js/menu-buttons.js - the topic, level, category and type buttons; menu start-up
-   Provides: renderTopicButtons, renderMenus, initMenus
-   Needs: CONFIG, el, loadPref, state, $, t, getTopics, ICONS, showScreen, renderButtons, setSameDuration, goHome,
-          openNextExercise, openCredits, setSmartBoard, openSettings, startQuiz, goNext, requestQuit */
+/* js/menu-buttons.js - the topic, level, category and type buttons (with the gray "not finished" ones); menu start-up
+   Provides: renderTopicButtons, renderCategoryButtons, renderMenus, initMenus
+   Needs: CONFIG, el, loadPref, state, $, t, getTopics, ICONS, hasRealQuizzes, showScreen, renderButtons,
+          setSameDuration, goHome, openNextExercise, openCredits, setSmartBoard, openSettings, startQuiz, goNext,
+          requestQuit */
 'use strict';
 /* =========================================================================
  * MENU BUTTONS (topic, level, category and question type buttons; the menus' start-up)
  * ========================================================================= */
-// Topics depend on level + category, so they are rendered each time a category is chosen.
+// "Not finished" (grayed) buttons: a button is gray when the part behind it has no real questions yet AND the part it
+// sits in has some. So only the FIRST button that leads to lorem ipsum is gray (a level like A2, A1 Grammar, an A1
+// vocabulary theme without questions); inside such a part nothing is gray. See hasRealQuizzes() in questions.js.
+
+// Topics depend on level + category: built each time the topic screen is shown (showScreen).
 function renderTopicButtons() {
-  renderButtons($('#topic-buttons'), getTopics(state.nav).map((name, i) => ({ id: i, label: name, lang: 'en' })), (item) => {
+  const { level, category } = state.nav;
+  const categoryFinished = hasRealQuizzes(level, category);
+  renderButtons($('#topic-buttons'), getTopics(state.nav).map((name, i) => ({
+    id: i, label: name, lang: 'en', unfinished: categoryFinished && !hasRealQuizzes(level, category, i),
+  })), (item) => {
     state.nav.topic = item.id;
     showScreen('type');
   });
 }
 
-// The level, category and question type buttons; built again when the language changes.
+// Categories depend on the level: built each time the category screen is shown (showScreen) and when the language changes.
+function renderCategoryButtons() {
+  const level = state.nav.level;
+  const levelFinished = !!level && hasRealQuizzes(level);
+  renderButtons($('#category-buttons'), CONFIG.CATEGORIES.map((c) => ({
+    ...c, label: t(`category.${c.id}`), unfinished: levelFinished && !hasRealQuizzes(level, c.id),
+  })), (item) => {
+    state.nav.category = item.id;
+    showScreen('topic');
+  });
+}
+
+// The level and question type buttons (and the category buttons); built again when the language changes.
 function renderMenus() {
   $('#level-buttons').replaceChildren(...CONFIG.LEVEL_GROUPS.map((group) => {
     const grid = el('div', { class: 'grid' });
-    renderButtons(grid, group.levels.map((l) => ({ id: l, label: l, sub: t(`levelName.${l}`) })), (item) => {
+    renderButtons(grid, group.levels.map((l) => ({ id: l, label: l, sub: t(`levelName.${l}`), unfinished: !hasRealQuizzes(l) })), (item) => {
       state.nav.level = item.id;
       showScreen('category');
     });
@@ -29,11 +50,7 @@ function renderMenus() {
     });
     return el('div', { class: 'level-group' }, [el('h2', { class: 'level-group-title', text: t(`levelGroup.${group.id}`) }), grid]);
   }));
-  renderButtons($('#category-buttons'), CONFIG.CATEGORIES.map((c) => ({ ...c, label: t(`category.${c.id}`) })), (item) => {
-    state.nav.category = item.id;
-    renderTopicButtons();
-    showScreen('topic');
-  });
+  renderCategoryButtons();
   renderButtons($('#type-buttons'), CONFIG.TYPES.map((x) => ({ ...x, label: t(`type.${x.id}`) })), (item) => {
     state.nav.type = item.id;
     showScreen('difficulty');

@@ -1,7 +1,7 @@
 /* js/language.js - the saved language, the static texts of the page, switching the language
    Provides: initLanguage, applyStaticTexts, setLanguage
    Needs: t, LANGS, loadPref, savePref, state, $, refreshBreadcrumb, renderDifficultyButtons, renderMenus,
-          translateSettings, renderResultsContent, modalState */
+          renderTopicButtons, translateSettings, renderResultsContent, modalState */
 'use strict';
 /* =========================================================================
  * LANGUAGE  (English / Turkish, chosen in Settings, remembered in localStorage "lg-lang")
@@ -29,6 +29,7 @@ function setLanguage(lang, save = true) {
   if (save) savePref('lg-lang', lang);
   applyStaticTexts();
   renderMenus();
+  if (state.screen === 'topic') renderTopicButtons();   // the "Not finished" tags are texts too
   renderDifficultyButtons();
   refreshBreadcrumb();
   // Settings is the only pop-up that can be open now: its texts change in place, so the toggle keeps its slide and its focus.

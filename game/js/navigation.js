@@ -1,7 +1,8 @@
-/* js/navigation.js - screens, the path line, the button builder, difficulty buttons, the same-duration switch
+/* js/navigation.js - screens, the path line, the button builder (with the gray "not finished" buttons), difficulty buttons, the same-duration switch
    Provides: breadcrumbParts, refreshBreadcrumb, showScreen, renderButtons, getQuestionSeconds, setSameDuration,
              renderDifficultyButtons, SCREEN_DEPTH
-   Needs: stopConfetti, CONFIG, el, findById, savePref, state, $, t, getTopics, refreshSettings, startQuiz */
+   Needs: stopConfetti, CONFIG, el, findById, savePref, state, $, t, getTopics, renderCategoryButtons,
+          renderTopicButtons, openUnfinishedConfirm, refreshSettings, startQuiz */
 'use strict';
 /* =========================================================================
  * NAVIGATION / MENUS
@@ -38,10 +39,15 @@ function showScreen(name) {
   $('#topbar').hidden = name === 'quiz';
   $('#home-btn').hidden = name === 'level'; // already on the main menu
   refreshBreadcrumb();
+  // These grids depend on the chosen level / category (the gray "not finished" buttons too): built each time they are shown.
+  if (name === 'category') renderCategoryButtons();
+  if (name === 'topic') renderTopicButtons();
   if (name === 'difficulty') renderDifficultyButtons();
   window.scrollTo(0, 0);
 }
 
+// item.unfinished: the part behind the button has no real questions yet. The button is grayed, carries a small tag, and
+// asks "Go back / Go there" before it leads anywhere; it is a normal, clickable button (not disabled).
 function renderButtons(container, items, onClick) {
   container.replaceChildren(...items.map((item) => {
     const btn = el('button', { class: 'menu-btn' }, [item.label]);
@@ -51,7 +57,11 @@ function renderButtons(container, items, onClick) {
       btn.classList.add('is-next');
       btn.append(el('span', { class: 'next-tag', text: item.tag }));
     }
-    btn.addEventListener('click', () => onClick(item));
+    if (item.unfinished) {
+      btn.classList.add('is-unfinished');
+      btn.append(el('span', { class: 'unfinished-tag', lang: state.lang, text: t('unfinishedTag') }));
+    }
+    btn.addEventListener('click', () => (item.unfinished ? openUnfinishedConfirm(() => onClick(item)) : onClick(item)));
     return btn;
   }));
 }

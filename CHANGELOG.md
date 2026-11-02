@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-02
 
-### The game is now split into several tidy files, and a folder for what players need
+### Menu buttons that lead to unfinished parts are grayed out and ask first
+A button whose part has no real questions yet (A2 to C1, A1 Grammar and the A1 vocabulary themes that are still placeholders) is now softer and carries a small "Not finished" tag, but keeps its level color and still works. Clicking it asks "The part you want to go to is not finished yet. Do you still want to go there?" with Go back or Go there, in English and Turkish. Only the first such button on a path is gray, Next exercise asks too when it leads from a finished theme into an unfinished one, and the gray disappears by itself as soon as a part gets real questions.
+
+### The game is now split into several tidy files, and a folder for what players need (`e8121f8`)
 The split is finished and joined into the main version. A player opens `game/index.html`: the page only holds the screens, the look is in 5 files, the code in 22 small files that each start with a note of what they give and need, and the questions and word meanings in files of their own (one per theme). The old single-file game is kept safely in a private archive folder. The notes were tidied too (a plain "what is in this folder" paragraph, the new rules for the private folder), and the final tests passed: the whole-game test, phone width in light, dark and Turkish, and saved settings.
 
 ### All the game code now lives in its own files (`796723f`)

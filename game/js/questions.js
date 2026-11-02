@@ -1,6 +1,6 @@
-/* js/questions.js - the quiz key, getting and shuffling questions, lorem questions, checking a typed Fill answer
-   Provides: quizKey, getQuestions, generateLoremQuestions, prepareQuiz, balancedPositions, editDistance,
-             normalizeAnswer, judgeFill, questionText, correctAnswerText
+/* js/questions.js - the quiz key, which parts have real questions, getting and shuffling questions, lorem questions, checking a typed Fill answer
+   Provides: quizKey, hasRealQuizzes, isInUnfinished, getQuestions, generateLoremQuestions, prepareQuiz,
+             balancedPositions, editDistance, normalizeAnswer, judgeFill, questionText, correctAnswerText
    Needs: CONFIG, hashString, mulberry32, makeLorem, QUESTION_BANK, fillBefore, fillAfter */
 'use strict';
 /* =========================================================================
@@ -8,6 +8,19 @@
  * ========================================================================= */
 function quizKey(nav) {
   return `${nav.level}|${nav.category}|${nav.topic}|${nav.type}|${nav.difficulty}`;
+}
+
+// True when the question bank holds at least one real quiz below the given parts: hasRealQuizzes('A1'),
+// hasRealQuizzes('A1', 'vocabulary'), hasRealQuizzes('A1', 'vocabulary', 1). Everything else shows lorem ipsum quizzes.
+// This is how the menus know which buttons are "not finished" (they follow the data, nothing to edit by hand).
+function hasRealQuizzes(...parts) {
+  const prefix = `${parts.join('|')}|`;
+  return Object.keys(QUESTION_BANK).some((key) => key.startsWith(prefix));
+}
+
+// True when a quiz (a full nav: level, category, topic) sits in a part that has no real questions yet.
+function isInUnfinished(nav) {
+  return !hasRealQuizzes(nav.level) || !hasRealQuizzes(nav.level, nav.category) || !hasRealQuizzes(nav.level, nav.category, nav.topic);
 }
 
 // Stored shapes: the correct answer is first (mc options[0], fill bank[0]); prepareQuiz() shuffles.

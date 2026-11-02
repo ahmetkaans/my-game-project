@@ -28,6 +28,9 @@ const I18N = {
     sameDuration: 'Same duration per question across all difficulty settings',
 
     homeTitle: 'Go to the main menu?', homeBody: 'You will go back to the level selection screen.', no: 'No', yes: 'Yes',
+    unfinishedTag: 'Not finished', unfinishedTitle: 'Not finished yet',
+    unfinishedBody: 'The part you want to go to is not finished yet. Do you still want to go there?',
+    goBack: 'Go back', goThere: 'Go there',
     endTitle: 'End of {here}',
     endBody: 'You have reached the end of {here}. Where do you want to go next?',
     quitTitle: 'Quit quiz?', quitBody: 'Your answers in this quiz will be lost.', cancel: 'Cancel', quit: 'Quit',
@@ -87,6 +90,9 @@ const I18N = {
     sameDuration: 'Tüm zorluk seviyelerinde soru başına aynı süre',
 
     homeTitle: 'Ana menüye gitmek istiyor musun?', homeBody: 'Seviye seçim ekranına geri döneceksin.', no: 'Hayır', yes: 'Evet',
+    unfinishedTag: 'Henüz bitmedi', unfinishedTitle: 'Henüz bitmedi',
+    unfinishedBody: 'Gitmek istediğin bölüm henüz tamamlanmadı. Yine de oraya gitmek istiyor musun?',
+    goBack: 'Geri dön', goThere: 'Oraya git',
     endTitle: '{here} tamamlandı',
     endBody: '{here} bölümünün sonuna geldin. Şimdi nereye gitmek istersin?',
     quitTitle: 'Alıştırmadan çıkmak istiyor musun?', quitBody: 'Bu alıştırmadaki cevapların kaybolacak.', cancel: 'Vazgeç', quit: 'Çık',

@@ -140,6 +140,39 @@
     border-color: var(--chip);
   }
 
+  /* Unfinished buttons: the part behind them has no real questions yet. Grayed (softer, no shadow, muted text) but still
+     clickable (they open "Go back / Go there"), and the text keeps its contrast: no opacity. A level button keeps its
+     own level color, only paler; the small tag says it in words, so color is never the only signal. */
+  .menu-btn.is-unfinished {
+    color: var(--muted);
+    background: color-mix(in srgb, var(--surface) 55%, var(--bg));
+    border-color: var(--border);
+    box-shadow: none;
+  }
+  .menu-btn.is-unfinished:hover:not(:disabled) { background: color-mix(in srgb, var(--surface) 75%, var(--bg)); border-color: var(--muted); }
+  .level-btn.is-unfinished {
+    color: color-mix(in srgb, var(--chip) 60%, var(--muted));
+    background: color-mix(in srgb, var(--chip) calc(var(--soft) * 0.45), var(--surface));
+    border-color: color-mix(in srgb, var(--chip) 22%, var(--border));
+  }
+  .level-btn.is-unfinished small { color: inherit; }
+  .level-btn.is-unfinished:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--chip) calc(var(--soft) * 0.8), var(--surface));
+    border-color: color-mix(in srgb, var(--chip) 45%, var(--border));
+  }
+  .unfinished-tag {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 1px 9px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
   /* Switch */
   .switch-row {
     display: flex;

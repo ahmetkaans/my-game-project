@@ -1,5 +1,5 @@
-/* js/dialogs.js - the pop-up engine, the inert page behind it, Credits
-   Provides: updateInert, openModal, closeModal, openCredits, modalState
+/* js/dialogs.js - the pop-up engine, the inert page behind it, the "not finished yet" question, Credits
+   Provides: updateInert, openModal, closeModal, openUnfinishedConfirm, openCredits, modalState
    Needs: el, $, t, CREDITS */
 'use strict';
 /* =========================================================================
@@ -43,6 +43,20 @@ function closeModal() {
   const opener = modalState.opener;
   modalState.opener = null;
   if (opener && opener.isConnected && !opener.disabled) opener.focus({ preventScroll: true });
+}
+
+// Asks before entering a part that has no real questions yet (a grayed-out menu button, or Next exercise leading there).
+// "Go back" (the main button) stays where the student was; "Go there" runs onGo.
+function openUnfinishedConfirm(onGo) {
+  openModal({
+    title: t('unfinishedTitle'),
+    body: t('unfinishedBody'),
+    dismissible: true,
+    buttons: [
+      { label: t('goBack'), primary: true, onClick: closeModal },
+      { label: t('goThere'), onClick: () => { closeModal(); onGo(); } },
+    ],
+  });
 }
 
 function openCredits() {

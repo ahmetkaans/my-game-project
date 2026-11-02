@@ -12,6 +12,8 @@ Student-facing text approved in real short English (not lorem): "Words in this g
 
 Language row in Settings (owner approved the wording, 2026-11-01): name "Language" / "Dil"; the two sides are always "English" and "Türkçe"; explanation "Choose the language of menus and buttons. Questions and answer options always stay in English." / "Menülerin ve düğmelerin dilini seç. Sorular ve cevap seçenekleri her zaman İngilizce kalır." It is the first row of the pop-up.
 
+Pop-up for a part without real questions (owner approved the wording, 2026-11-02): English title "Not finished yet", text "The part you want to go to is not finished yet. Do you still want to go there?", buttons "Go back" (the main button) and "Go there", and the tag "Not finished" on the grayed buttons; Turkish: "Henüz bitmedi", "Gitmek istediğin bölüm henüz tamamlanmadı. Yine de oraya gitmek istiyor musun?", "Geri dön", "Oraya git" and the tag "Henüz bitmedi".
+
 Game name: **My Game Project** (level screen title and browser tab). Credits: **Claude**, **Ahmet Kaan Sarılarlı**, **Enes Miraç Ateş**.
 
 Settings pop-up texts (approved with the plan, 2026-11-01; "Work in Progress" is the owner's own text):
@@ -125,6 +127,7 @@ Generated with the Web Audio API in `game/js/sound.js` (no audio files):
 
 - **Menu button** (`.menu-btn`): white card button in a grid; optional `<small>` sub-label (seconds on difficulty buttons).
 - **Level button** (`.level-btn`): bigger, tinted in its own level color; the level code in large type with its name below in a small, softer line. The buttons sit in three groups (`.level-group`) with a small muted uppercase heading (`.level-group-title`), 28px apart.
+- **Unfinished button** (`.menu-btn.is-unfinished`, `.level-btn.is-unfinished`, `.unfinished-tag`; owner's request, 2026-11-02): a menu or level button whose part has no real questions yet. Softer, not disabled: muted text, a flat surface a little closer to the page color, no shadow, a thin neutral border; a level button keeps its **own level color**, only paler (text 60% level color, a tint of about half the usual strength). **No opacity** (the text keeps its contrast; the button stays a normal, focusable, clickable button). A small neutral pill tag in words ("Not finished" / "Henüz bitmedi", 0.75rem, muted, 1px border) sits in the button's own column under the label, so a long name never runs under it and color is never the only signal. Hover makes the button a little less pale. A click opens the "Not finished yet" pop-up (a normal modal, Go back is the primary button).
 - **Primary button** (`button.primary`): accent background; Next, Check, Next exercise, main modal action. (Retry is a normal button.)
 - **Next-quiz mark** (`.menu-btn.is-next`, `.next-tag`): after Next exercise, the suggested difficulty on the Difficulty screen gets an accent outline and a small accent pill "Next" in its top-right corner. It disappears when the student leaves the screen.
 - **Icon button** (`.icon-btn`): 44px round, the menu tree and the Settings gear.

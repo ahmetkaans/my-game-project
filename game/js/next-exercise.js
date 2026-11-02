@@ -1,6 +1,7 @@
 /* js/next-exercise.js - the order of the next quiz, the main menu pop-up, the end-of-category pop-up
-   Provides: getNextExercise, levelCategoryLabel, openHomeConfirm, goHome, goToNextExercise, openNextExercise
-   Needs: CONFIG, state, t, getTopics, showScreen, openModal, closeModal */
+   Provides: getNextExercise, levelCategoryLabel, openHomeConfirm, goHome, goToNextExercise, goToNextExerciseAsking,
+             openNextExercise
+   Needs: CONFIG, state, t, getTopics, isInUnfinished, showScreen, openModal, closeModal, openUnfinishedConfirm */
 'use strict';
 /* =========================================================================
  * NEXT EXERCISE  (results screen: difficulty -> question type -> topic; the student chooses at the end of a category)
@@ -57,16 +58,28 @@ function goToNextExercise(nav) {
   showScreen('difficulty');
 }
 
+// Same as goToNextExercise, but asks first when the next quiz sits in a part without real questions and the quiz that
+// was just played does not (finished -> unfinished): "Go back" stays on the results screen, "Go there" continues.
+// Moving from one unfinished part to another does not ask again.
+function goToNextExerciseAsking(nav) {
+  if (isInUnfinished(nav) && !isInUnfinished(state.nav)) {
+    closeModal();
+    openUnfinishedConfirm(() => goToNextExercise(nav));
+  } else {
+    goToNextExercise(nav);
+  }
+}
+
 function openNextExercise() {
   const next = getNextExercise(state.nav);
   if (!next) return;
-  if (next.nav) { goToNextExercise(next.nav); return; }
+  if (next.nav) { goToNextExerciseAsking(next.nav); return; }
   const here = levelCategoryLabel(state.nav);
   openModal({
     title: t('endTitle', { here }),
     body: t('endBody', { here }),
     buttons: [
-      ...next.options.map((o, i) => ({ label: levelCategoryLabel(o.nav), primary: i === 0, onClick: () => goToNextExercise(o.nav) })),
+      ...next.options.map((o, i) => ({ label: levelCategoryLabel(o.nav), primary: i === 0, onClick: () => goToNextExerciseAsking(o.nav) })),
       { label: t('mainMenu'), onClick: () => { closeModal(); goHome(); } },
     ],
     dismissible: true,
