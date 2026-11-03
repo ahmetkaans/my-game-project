@@ -4,10 +4,13 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-03
 
+### A small notice after the page is reloaded
+When the page is reloaded, the game starts again on the main menu, as before, but now a small pop-up says so: "Oops, you reloaded the page. When you reload the page, you go back to the main menu." (Turkish too, with an OK / Tamam button). It has no title, and Escape or a click outside closes it. With Trick or Treat on, the walker waits until it is closed. The pop-up engine can now show a pop-up without a title. The notes say that the browser's back and forward buttons are still not used, and the Roadmap has the idea for later.
+
 ### A black and orange Halloween theme, "Trick or Treat", with a walking scene (`25df911`)
 Settings has a new switch, Trick or Treat (Şeker mi şaka mı in Turkish), that turns the whole game into a Halloween look: pure black, one pumpkin orange, thin orange lines and a small ghost in the top corner. While it is on, Auto, Light and Dark are grayed out with a note, and the choice is remembered. A few seconds after the game opens (after Settings closes, when the switch was turned on there), a hooded figure with a lantern walks across the bottom once, dragging a skeleton on a rope, stops to look back, tugs the rope now and then and leaves. It lives behind everything, so changing menus never cuts it, and if a quiz starts while it is still on screen it sinks into a glowing hole in the ground and the quiz starts after it. It only runs once per visit and not with "reduce motion". Everything is drawn in code, so the game still opens by double-click from the folder and works the same on a website.
 
-### The notes now cover the walking scene fully
+### The notes now cover the walking scene fully (`bcef30a`)
 The README and DESIGN notes now say that the Halloween walker is the one long animation (everything else is short), that it does not run with "reduce motion", and that a quiz waits a little while the walker sinks into the ground. This is only a change to the notes; the game itself is the same.
 ### Clearer working notes
 The README now explains the private tools and the git leftovers (the `split` branch and the `before-split` tag), has a Website check list so every change works both from the folder and on a website, and describes the idea of a compact single-file lesson maker. The rules for the helper assistant now say that a question or a "yes" to one item is never a go-ahead for the other items, and that every change must work both on a website and from the folder.

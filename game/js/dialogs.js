@@ -1,5 +1,5 @@
-/* js/dialogs.js - the pop-up engine, the inert page behind it, the "not finished yet" question, Credits
-   Provides: updateInert, openModal, closeModal, openUnfinishedConfirm, openCredits, modalState
+/* js/dialogs.js - the pop-up engine, the inert page behind it, the "not finished yet" question, the reload notice, Credits
+   Provides: updateInert, openModal, closeModal, openUnfinishedConfirm, wasReloaded, openReloadNotice, openCredits, modalState
    Needs: el, $, t, CREDITS, walkerModalClosed */
 'use strict';
 /* =========================================================================
@@ -15,9 +15,13 @@ function updateInert() {
 }
 
 // onBack (optional): shows a left arrow button before the title that runs it (used by the "Words in this game" pop-up).
-function openModal({ title, body, buttons, dismissible = false, onBack = null, kind = null }) {
+// title (optional): without one the title row is hidden and the sentence of the pop-up is its name (the reload notice).
+function openModal({ title = '', body, buttons, dismissible = false, onBack = null, kind = null }) {
   modalState.kind = kind;
   $('#modal-title').textContent = title;
+  $('#modal-title').hidden = !title;
+  $('#modal-overlay .modal-head').hidden = !title && !onBack;
+  $('#modal-overlay .modal').setAttribute('aria-labelledby', title ? 'modal-title' : 'modal-body');
   $('#modal-back').hidden = !onBack;
   $('#modal-back').onclick = onBack;
   $('#modal-body').replaceChildren(typeof body === 'string' ? el('p', { text: body }) : body);
@@ -57,6 +61,25 @@ function openUnfinishedConfirm(onGo) {
       { label: t('goBack'), primary: true, onClick: closeModal },
       { label: t('goThere'), onClick: () => { closeModal(); onGo(); } },
     ],
+  });
+}
+
+// The page was reloaded: the game starts again on the main menu, and this notice says so. Shown only after a reload
+// (not on the first visit), if the browser can tell; if it can't, there is no notice and nothing else changes.
+function wasReloaded() {
+  try {
+    const nav = performance.getEntriesByType('navigation')[0];
+    return Boolean(nav) && nav.type === 'reload';
+  } catch (e) {
+    return false;
+  }
+}
+
+function openReloadNotice() {
+  openModal({
+    body: t('reloadedBody'),
+    dismissible: true,
+    buttons: [{ label: t('ok'), primary: true, onClick: closeModal }],
   });
 }
 

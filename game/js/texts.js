@@ -12,7 +12,8 @@ const LANG_NAMES = { en: 'English', tr: 'Türkçe' }; // always shown in their o
 
 const I18N = {
   en: {
-    back: 'Back', backArrow: '← Back', close: 'Close',
+    back: 'Back', backArrow: '← Back', close: 'Close', ok: 'OK',
+    reloadedBody: 'Oops, you reloaded the page. When you reload the page, you go back to the main menu.',
     mainMenu: 'Main menu', menuTree: 'Menu tree', settings: 'Settings', credits: 'Credits',
 
     chooseLevel: 'Choose your level.',
@@ -76,7 +77,8 @@ const I18N = {
     used: 'used', notGraded: 'not graded', questionNumber: 'Q{n}.',
   },
   tr: {
-    back: 'Geri', backArrow: '← Geri', close: 'Kapat',
+    back: 'Geri', backArrow: '← Geri', close: 'Kapat', ok: 'Tamam',
+    reloadedBody: 'Hay aksi, sayfayı yeniden yükledin. Sayfayı yeniden yüklediğinde ana menüye dönersin.',
     mainMenu: 'Ana menü', menuTree: 'Menü ağacı', settings: 'Ayarlar', credits: 'Emeği Geçenler',
 
     chooseLevel: 'Seviyeni seç.',
