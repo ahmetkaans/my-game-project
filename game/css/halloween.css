@@ -24,25 +24,26 @@
     --overlay: rgba(0, 0, 0, 0.82);
     --tint: 0%;
     --soft: 14%;
+    --line: 2px; /* width of the orange outlines: 2px so the round buttons and corners stay smooth (1px looked jagged) */
     color-scheme: dark;
   }
 
-  /* Halloween screens: thin orange lines on black. Cards, menu buttons, level buttons, pop-ups and the top bar buttons get an
+  /* Halloween screens: orange lines on black. Cards, menu buttons, level buttons, pop-ups and the top bar buttons get an
      orange outline; the buttons whose part is not finished keep a dashed amber one. */
   html[data-halloween="on"] .menu-btn,
   html[data-halloween="on"] .card,
   html[data-halloween="on"] .modal,
-  html[data-halloween="on"] .icon-btn { border-color: var(--accent); }
-  html[data-halloween="on"] .level-btn { border-color: var(--chip); }
+  html[data-halloween="on"] .icon-btn { border-color: var(--accent); border-width: var(--line); }
+  html[data-halloween="on"] .level-btn { border-color: var(--chip); border-width: var(--line); }
   html[data-halloween="on"] .menu-btn.is-unfinished,
   html[data-halloween="on"] .level-btn.is-unfinished {
-    border: 1px dashed #5A3A14;
+    border: var(--line) dashed #5A3A14;
     background: var(--surface);
     color: #8A8A8A;
   }
   html[data-halloween="on"] .level-btn.is-unfinished small { color: #C98A3C; }
   html[data-halloween="on"] .unfinished-tag { border-color: #5A3A14; color: #C98A3C; }
-  html[data-halloween="on"] .tree-panel { border-color: var(--accent); }
+  html[data-halloween="on"] .tree-panel { border-color: var(--accent); border-left-width: var(--line); }
 
   /* The ghost in the top bar's left corner (only in the Halloween theme) */
   .topbar-ghost { display: none; margin-right: auto; align-self: center; color: var(--accent); }

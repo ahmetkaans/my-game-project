@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-03
 
-### A small notice after the page is reloaded
+### Smoother orange outlines in the Halloween theme
+The thin 1px orange rings looked rough around the round Tree and Settings buttons. All the orange outlines in Trick or Treat (cards, menu and level buttons, pop-ups, the menu tree panel, the round buttons and the dashed "not finished" ones) are now 2px, set in one place (`--line` in `halloween.css`), so everything stays consistent. Only the Halloween theme changes. The notes say so, and the Roadmap keeps the antialiasing point open in case there are more cases.
+
+### A small notice after the page is reloaded (`e579d40`)
 When the page is reloaded, the game starts again on the main menu, as before, but now a small pop-up says so: "Oops, you reloaded the page. When you reload the page, you go back to the main menu." (Turkish too, with an OK / Tamam button). It has no title, and Escape or a click outside closes it. With Trick or Treat on, the walker waits until it is closed. The pop-up engine can now show a pop-up without a title. The notes say that the browser's back and forward buttons are still not used, and the Roadmap has the idea for later.
 
 ### A black and orange Halloween theme, "Trick or Treat", with a walking scene (`25df911`)
