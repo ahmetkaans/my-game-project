@@ -61,6 +61,7 @@ const CONFIG = {
   CONFETTI_MS: 2800,
   TREE_CLOSE_MS: 280,            // menu tree: how long the close animation runs before the panel is hidden (matches the CSS)
   HISTORY_MAX: 500,              // finished plays kept in the history; when it is full the oldest are dropped first
+  HISTORY_PAGE_SIZE: 10,         // History screen: rows shown at first, and added by each press of "More"
   HALLOWEEN_WALKER_DELAY_SECONDS: 3,        // Trick or Treat: the walker starts this long after the page opens (or after the switch is turned on)
   HALLOWEEN_WALKER_STOP_SECONDS: 2.5,       // it stops this long, and looks back
   HALLOWEEN_WALKER_SPEED: 28,               // walking speed in px per second, the same on every screen width (a calm walk; its feet and rope are made for it)

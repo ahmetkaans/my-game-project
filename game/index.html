@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="css/layout.css">
 <link rel="stylesheet" href="css/quiz.css">
 <link rel="stylesheet" href="css/results.css">
+<link rel="stylesheet" href="css/history.css">
 <link rel="stylesheet" href="css/dialogs.css">
 <link rel="stylesheet" href="css/halloween.css">
 </head>
@@ -29,6 +30,7 @@
 <header class="topbar" id="topbar">
   <span class="topbar-ghost" aria-hidden="true"><svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 27 V14 C7 8.5 11 5 16 5 C21 5 25 8.5 25 14 V27 L21.5 24 L18.5 27 L16 24.5 L13.5 27 L10.5 24 Z"/><circle cx="12.5" cy="14" r="1.6" fill="currentColor"/><circle cx="19.5" cy="14" r="1.6" fill="currentColor"/><path d="M13.5 19 Q16 21 18.5 19"/></svg></span>
   <button class="icon-btn" id="home-btn" type="button" title="Main menu" aria-label="Main menu" data-i18n-label="mainMenu"></button>
+  <button class="icon-btn" id="history-btn" type="button" title="History" aria-label="History" data-i18n-label="historyTitle"></button>
   <button class="icon-btn" id="tree-btn" type="button" title="Menu tree" aria-label="Menu tree" data-i18n-label="menuTree"></button>
   <button class="icon-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings" data-i18n-label="settings"></button>
 </header>
@@ -109,8 +111,34 @@
         <button id="results-retry" data-i18n="retry">Retry</button>
         <button id="results-home" data-i18n="mainMenu">Main menu</button>
       </div>
+      <button class="link-btn history-link" id="results-history" type="button"><span class="history-link-icon" id="results-history-icon" aria-hidden="true"></span><span data-i18n="historyLink">See your history</span></button>
     </div>
     <ol class="results-list" id="results-list"></ol>
+  </section>
+
+  <!-- Screen: history (the list of finished plays, newest first; built by js/history-screen.js) -->
+  <section id="screen-history" class="screen" hidden>
+    <button class="back-btn" id="history-back" type="button" data-i18n="backArrow">&larr; Back</button>
+    <h1 data-i18n="historyTitle">History</h1>
+    <p class="subtitle" data-i18n="historySubtitle">Your previous plays, newest first.</p>
+    <p class="history-message" id="history-message" hidden></p>
+    <ol class="history-list" id="history-list"></ol>
+    <p class="history-count" id="history-count" tabindex="-1" aria-live="polite"></p>
+    <button class="history-more" id="history-more" type="button" data-i18n="historyMore">More</button>
+    <p class="history-note" id="history-note"></p>
+  </section>
+
+  <!-- Screen: one play of the history (the summary and the questions to review) -->
+  <section id="screen-history-detail" class="screen" hidden>
+    <button class="back-btn" id="history-detail-back" type="button" data-i18n="backArrow">&larr; Back</button>
+    <h1 id="history-detail-title"></h1>
+    <p class="subtitle" id="history-detail-sub"></p>
+    <div class="card results-hero">
+      <p class="results-score" id="history-detail-score"></p>
+      <ul class="results-summary" id="history-detail-summary"></ul>
+    </div>
+    <h2 class="history-review-title" data-i18n="historyReview">Questions to review</h2>
+    <ol class="results-list" id="history-detail-list"></ol>
   </section>
 
 </main>
@@ -170,6 +198,7 @@
 <script src="js/match.js"></script>
 <script src="js/history.js"></script>
 <script src="js/results.js"></script>
+<script src="js/history-screen.js"></script>
 <script src="js/init.js"></script>
 </body>
 </html>

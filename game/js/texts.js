@@ -14,6 +14,11 @@ const I18N = {
   en: {
     back: 'Back', backArrow: '← Back', close: 'Close', ok: 'OK',
     reloadedBody: 'Oops, you reloaded the page. When you reload the page, you go back to the main menu.',
+    historyTitle: 'History', historyLink: 'See your history', historySubtitle: 'Your previous plays, newest first.',
+    historyShowing: 'Showing {shown} of {total}', historyMore: 'More', historyNote: 'Only your last {n} plays are kept.',
+    historyEmpty: 'No plays yet. Finish a quiz and it will show up here.', historyPerfect: 'All answers correct',
+    historyReview: 'Questions to review', historySkipped: 'Skipped', historyTimedOut: 'Time ran out',
+    historyUnavailable: 'The history can\'t be shown in this browser.',
     mainMenu: 'Main menu', menuTree: 'Menu tree', settings: 'Settings', credits: 'Credits',
 
     chooseLevel: 'Choose your level.',
@@ -79,6 +84,11 @@ const I18N = {
   tr: {
     back: 'Geri', backArrow: '← Geri', close: 'Kapat', ok: 'Tamam',
     reloadedBody: 'Hay aksi, sayfayı yeniden yükledin. Sayfayı yeniden yüklediğinde ana menüye dönersin.',
+    historyTitle: 'Geçmiş', historyLink: 'Geçmişini gör', historySubtitle: 'Önceki oyunların, en yenisi en üstte.',
+    historyShowing: '{total} oyundan {shown} tanesi gösteriliyor', historyMore: 'Daha fazla', historyNote: 'Yalnızca son {n} oyunun saklanır.',
+    historyEmpty: 'Henüz oyun yok. Bir alıştırmayı bitirince burada görünür.', historyPerfect: 'Tüm cevaplar doğru',
+    historyReview: 'Gözden geçirilecek sorular', historySkipped: 'Atlandı', historyTimedOut: 'Süre doldu',
+    historyUnavailable: 'Geçmiş bu tarayıcıda gösterilemiyor.',
     mainMenu: 'Ana menü', menuTree: 'Menü ağacı', settings: 'Ayarlar', credits: 'Emeği Geçenler',
 
     chooseLevel: 'Seviyeni seç.',

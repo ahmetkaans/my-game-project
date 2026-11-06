@@ -1,0 +1,46 @@
+  /* History: the top bar button, the list of plays, one play in detail, the link on the results screen */
+  #history-btn { color: var(--accent); }
+
+  .history-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--gap); }
+  .history-row {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 0;
+    padding: 14px 40px 14px 16px;
+    text-align: left;
+    font-weight: 400;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  div.history-row { cursor: default; padding-right: 16px; }
+  .history-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .history-date, .history-meta { display: block; color: var(--muted); font-size: 0.85rem; }
+  .history-path { display: block; margin: 2px 0; font-weight: 500; }
+  .history-score { flex: none; color: var(--accent); font-size: 1.6rem; font-weight: 500; line-height: 1.1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .history-score .score-num { font-size: inherit; }
+  .history-score .score-max { font-size: 0.85rem; }
+  .history-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .history-pills span { padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); font-size: 0.8rem; }
+  .history-arrow { position: absolute; right: 14px; bottom: 10px; color: var(--accent); font-size: 1.25rem; line-height: 1; }
+  .history-perfect { display: block; margin-top: 10px; color: var(--ok); font-weight: 500; }
+
+  .history-message { margin: 24px 0; text-align: center; color: var(--muted); }
+  .history-count { margin: 14px 0 6px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+  .history-count:focus { outline: none; }
+  .history-more { display: block; width: 100%; margin: 4px 0 10px; }
+  .history-note { margin: 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+  .history-review-title { margin: 22px 0 -8px; color: var(--muted); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .history-qhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .history-tag { padding: 1px 10px; border: 1px solid currentColor; border-radius: 999px; color: var(--muted); font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+  .history-tag.is-incorrect { color: var(--bad); }
+  .history-tag.is-partial { color: var(--accent); }
+
+  /* The quiet link under the buttons of the results screen */
+  .history-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--accent); font-weight: 500; text-decoration: none; }
+  .history-link:hover:not(:disabled) { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .history-link-icon { display: inline-flex; }
+  .history-link-icon svg { width: 18px; height: 18px; }

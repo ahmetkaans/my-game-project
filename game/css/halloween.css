@@ -33,6 +33,7 @@
   html[data-halloween="on"] .menu-btn,
   html[data-halloween="on"] .card,
   html[data-halloween="on"] .modal,
+  html[data-halloween="on"] .history-row,
   html[data-halloween="on"] .icon-btn { border-color: var(--accent); border-width: var(--line); }
   html[data-halloween="on"] .level-btn { border-color: var(--chip); border-width: var(--line); }
   html[data-halloween="on"] .menu-btn.is-unfinished,

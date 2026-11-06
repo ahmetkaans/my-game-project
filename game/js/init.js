@@ -1,7 +1,7 @@
 /* js/init.js - start-up: the order in which the parts are started
    Provides: (none)
    Needs: initLanguage, wasReloaded, openReloadNotice, applyStaticTexts, initSound, initTheme, showScreen, initMenus, initTree,
-          initModal */
+          initHistory, initModal */
 'use strict';
 /* =========================================================================
  * INIT
@@ -13,5 +13,6 @@ initSound();
 initMenus();
 initModal();
 initTree();
+initHistory();
 applyStaticTexts();
 showScreen('level');

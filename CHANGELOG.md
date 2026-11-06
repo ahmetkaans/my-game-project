@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-07
 
-### The game now remembers finished plays (not shown yet)
+### A History screen with every finished play
+A new History button (a clock with a back arrow) in the top bar, and a quiet "See your history" link on the results screen, open the History: a list of finished plays, newest first, each with its date, path, score out of 100 and the same counts as the results page. It shows 10 plays and a More button adds 10 more each time. Pressing a play opens its details: the summary and every question to review, each with a small tag (Incorrect, Partly correct, Skipped, Not answered, Time ran out), your answer, the correct answer and the explanation. A perfect play says "All answers correct". Back returns to the same list at the same place on the page. English and Turkish, light, dark and Trick or Treat. Quit plays and the overall calculation come later.
+
+### The game now remembers finished plays (not shown yet) (`7d451a6`)
 Every time a real quiz finishes, the game saves one record in the browser: where it was played, the score and the counts from the results page, and every question that was not fully correct with its answers and explanation. It keeps the last 500 plays, drops the oldest first, copes with a full or blocked storage, and never stops the results screen. Quit quizzes and placeholder quizzes are not recorded. There is no History screen yet: that is the next step. A new small function, `quizIsReal`, tells exactly which quizzes have real questions. README has a new History section with the decisions for the next steps.
 
 ## 2026-11-03
