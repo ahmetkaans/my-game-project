@@ -1,7 +1,7 @@
 /* js/navigation.js - screens, the path line, the button builder (with the gray "not finished" buttons), difficulty buttons, the same-duration switch
    Provides: breadcrumbParts, refreshBreadcrumb, showScreen, renderButtons, getQuestionSeconds, setSameDuration,
              renderDifficultyButtons, SCREEN_DEPTH
-   Needs: stopConfetti, HISTORY_SCREENS, CONFIG, el, findById, savePref, state, $, t, getTopics, renderCategoryButtons,
+   Needs: stopConfetti, clearQuizRun, HISTORY_SCREENS, CONFIG, el, findById, savePref, state, $, t, getTopics, renderCategoryButtons,
           renderTopicButtons, openUnfinishedConfirm, refreshSettings, startQuiz */
 'use strict';
 /* =========================================================================
@@ -30,6 +30,7 @@ function showScreen(name) {
   const onHistory = HISTORY_SCREENS.includes(name);
   state.screen = name;
   stopConfetti();
+  if (name !== 'quiz') clearQuizRun(); // the quiz is over or left: a reload is no longer a quit
   if (name !== 'difficulty' && !onHistory) state.nextHint = null; // the History screens keep the "Next" mark for the way back
   document.querySelectorAll('.screen').forEach((s) => { s.hidden = s.id !== `screen-${name}`; });
   // Level accent: neutral on the level screen and the History screens, the chosen level's color everywhere inside a level.

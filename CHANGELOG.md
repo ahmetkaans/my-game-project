@@ -4,7 +4,10 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-07
 
-### A History screen with every finished play
+### A quiz cut short by a reload now shows up in the History as a quit
+When a quiz has started (Start pressed) and the page is reloaded, the History gets a new entry: a "Quit" tag, "Quit in question 3 of 8", and a Play again button that starts the same quiz again. Under the subtitle a small "Quit: n" counts them. Quit entries are never counted in any calculation. Play again starts the quiz from the beginning, not where it was left. Only reloads are tracked: a closed tab, a closed browser or a crash leave nothing, which is an accepted limit. The History screen says both things plainly in a new block at the bottom, "How your history works", always visible, with three short notes (together with the 500-play note, which moved in there). English and Turkish, light, dark and Trick or Treat.
+
+### A History screen with every finished play (`5d85bba`)
 A new History button (a clock with a back arrow) in the top bar, and a quiet "See your history" link on the results screen, open the History: a list of finished plays, newest first, each with its date, path, score out of 100 and the same counts as the results page. It shows 10 plays and a More button adds 10 more each time. Pressing a play opens its details: the summary and every question to review, each with a small tag (Incorrect, Partly correct, Skipped, Not answered, Time ran out), your answer, the correct answer and the explanation. A perfect play says "All answers correct". Back returns to the same list at the same place on the page. English and Turkish, light, dark and Trick or Treat. Quit plays and the overall calculation come later.
 
 ### The game now remembers finished plays (not shown yet) (`7d451a6`)

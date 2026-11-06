@@ -1,8 +1,10 @@
 /* js/history-screen.js - the History screens: the list of finished plays, one play in detail, and the buttons that open them
    Provides: HISTORY_SCREENS, historyView, isPlayRecord, readHistoryPlays, historyDate, historyPath, historyMeta, historyCounts,
              historyScore, historyTag, historyRow, appendHistoryRows, updateHistoryFooter, renderHistoryList, renderHistoryDetail,
-             refreshHistoryScreen, openHistory, closeHistory, openHistoryPlay, backToHistoryList, showMoreHistory, initHistory
-   Needs: CONFIG, el, fmt, englishText, noteText, state, $, t, ICONS, loadHistory, showScreen, renderResultsContent */
+             historyQuitRow, historyPlayAgain, updateHistoryQuitCount, refreshHistoryScreen, openHistory, closeHistory, openHistoryPlay,
+             backToHistoryList, showMoreHistory, initHistory
+   Needs: CONFIG, el, fmt, englishText, noteText, state, $, t, ICONS, loadHistory, showScreen, renderResultsContent, getTopics,
+          quizIsReal, startQuiz */
 'use strict';
 /* =========================================================================
  * HISTORY SCREEN  (list newest first, "More" shows CONFIG.HISTORY_PAGE_SIZE rows each press; a row opens that play;
@@ -15,7 +17,11 @@ const historyView = { plays: [], ok: true, shown: 0, scrollY: 0, openId: null, f
 
 // Saved data can be damaged or edited by hand: only records of the expected shape are used.
 function isPlayRecord(p) {
-  return Boolean(p) && typeof p === 'object' && typeof p.id === 'string' && Boolean(p.counts) && typeof p.counts === 'object' && Array.isArray(p.missed);
+  if (!p || typeof p !== 'object' || typeof p.id !== 'string') return false;
+  if (p.end === 'quit') {
+    return Number.isFinite(p.quitIn) && Number.isFinite(p.total) && ['level', 'category', 'topicName', 'type', 'difficulty'].every((key) => typeof p[key] === 'string');
+  }
+  return Boolean(p.counts) && typeof p.counts === 'object' && Array.isArray(p.missed);
 }
 
 function readHistoryPlays() {
@@ -72,8 +78,36 @@ function historyTag(m) {
   return el('span', { class: `history-tag is-${m.status}`, text: t(key) });
 }
 
+// A play cut short by a reload: a "Quit" tag instead of a score, where it was left, and Play again (when that quiz still exists).
+// It has no detail and is never counted in any calculation.
+function historyQuitRow(p) {
+  const top = el('span', { class: 'history-top' }, [
+    el('span', {}, [
+      el('span', { class: 'history-date', text: historyDate(p.at) }),
+      el('span', { class: 'history-path', text: historyPath(p) }),
+      el('span', { class: 'history-meta', text: historyMeta(p) }),
+    ]),
+    el('span', { class: 'history-tag is-quit', text: t('historyQuitTag') }),
+  ]);
+  const children = [top, el('span', { class: 'history-quit-line', text: t('historyQuitIn', { n: p.quitIn, total: p.total }) })];
+  if (quizIsReal(p) && getTopics(p)[p.topic] === p.topicName) {
+    const again = el('button', { class: 'history-again', type: 'button' }, [el('span', { class: 'history-again-icon', 'aria-hidden': 'true' }), el('span', { text: t('historyPlayAgain') })]);
+    again.firstChild.innerHTML = ICONS.play;
+    again.addEventListener('click', () => historyPlayAgain(p));
+    children.push(again);
+  }
+  return el('li', {}, [el('div', { class: 'history-row is-quit' }, children)]);
+}
+
+// Play again: the same quiz (level, category, topic, type, difficulty), with the same-duration setting as it is now.
+function historyPlayAgain(p) {
+  Object.assign(state.nav, { level: p.level, category: p.category, topic: p.topic, type: p.type, difficulty: p.difficulty });
+  startQuiz();
+}
+
 // A play with questions to review is a button that opens it; a perfect play is a plain box that says so.
 function historyRow(p) {
+  if (p.end === 'quit') return historyQuitRow(p);
   const top = el('span', { class: 'history-top' }, [
     el('span', {}, [
       el('span', { class: 'history-date', text: historyDate(p.at) }),
@@ -96,11 +130,17 @@ function appendHistoryRows(from, to) {
   $('#history-list').append(...historyView.plays.slice(from, to).map(historyRow));
 }
 
+// "Quit: n" under the subtitle, only when there is a quit play in the list.
+function updateHistoryQuitCount() {
+  const quits = historyView.plays.filter((p) => p.end === 'quit').length;
+  $('#history-quit-count').textContent = quits ? t('historyQuitCount', { n: quits }) : '';
+  $('#history-quit-count').hidden = quits === 0;
+}
+
 function updateHistoryFooter() {
   const total = historyView.plays.length;
   const shown = Math.min(historyView.shown, total);
   $('#history-count').textContent = t('historyShowing', { shown, total });
-  $('#history-note').textContent = t('historyNote', { n: CONFIG.HISTORY_MAX });
   $('#history-more').hidden = shown >= total;
 }
 
@@ -112,7 +152,9 @@ function renderHistoryList() {
   $('#history-message').textContent = view.ok ? t('historyEmpty') : t('historyUnavailable');
   $('#history-message').hidden = hasList;
   $('#history-count').hidden = !hasList;
-  $('#history-note').hidden = !hasList;
+  $('#history-note').textContent = t('historyNote', { n: CONFIG.HISTORY_MAX });
+  $('#history-how').hidden = !view.ok; // the "How your history works" panel shows whenever the history can be read, also when it is empty
+  updateHistoryQuitCount();
   if (!hasList) { $('#history-more').hidden = true; return; }
   appendHistoryRows(0, Math.min(view.shown, view.plays.length));
   updateHistoryFooter();

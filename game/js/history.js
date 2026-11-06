@@ -1,6 +1,7 @@
-/* js/history.js - the history of finished plays: one record per finished real quiz, saved in the browser
-   Provides: HISTORY_KEY, HISTORY_BACKUP_KEY, HISTORY_VERSION, newPlayId, buildPlayRecord, loadHistory, saveHistory, recordPlay
-   Needs: CONFIG, state, quizIsReal, questionText, correctAnswerText, getTopics, getQuestionSeconds, clampScore */
+/* js/history.js - the history of plays: one record per finished real quiz, and one per real quiz cut short by a reload; saved in the browser
+   Provides: HISTORY_KEY, HISTORY_BACKUP_KEY, HISTORY_VERSION, QUIZ_RUN_KEY, newPlayId, buildPlayRecord, loadHistory, saveHistory,
+             recordPlay, saveQuizRun, clearQuizRun, buildQuitRecord, recordInterruptedQuiz
+   Needs: CONFIG, state, quizIsReal, questionText, correctAnswerText, getTopics, getQuestionSeconds, clampScore, wasReloaded */
 'use strict';
 /* =========================================================================
  * HISTORY  (recording only for now; README.md, "History")
@@ -102,6 +103,58 @@ function recordPlay() {
     const history = loadHistory();
     if (!history) return false;
     history.plays.unshift(buildPlayRecord(quiz, state.nav));
+    return saveHistory(history.plays);
+  } catch (e) {
+    return false;
+  }
+}
+
+// ---- A quiz cut short by a reload ----
+// While a real quiz is running, a small note ("a quiz is in progress, at question n") is kept in sessionStorage: it survives a
+// reload in the same tab, not a closed tab or browser (accepted limit) and is not shared between tabs. The note is removed when the
+// quiz screen is left (finished, quit). If the page starts again with a note left over after a reload, that quiz was cut short and
+// a "quit" play is added to the history. Quit plays have no score and are never part of any calculation.
+const QUIZ_RUN_KEY = 'lg-quiz-run';
+
+// Called by renderQuestion(): the player is now at this question of a real quiz.
+function saveQuizRun() {
+  try {
+    const quiz = state.quiz;
+    const nav = state.nav;
+    if (!quiz || !quizIsReal(nav)) return;
+    sessionStorage.setItem(QUIZ_RUN_KEY, JSON.stringify({
+      at: Date.now(), level: nav.level, category: nav.category, topic: nav.topic, topicName: getTopics(nav)[nav.topic], type: nav.type,
+      difficulty: nav.difficulty, seconds: getQuestionSeconds(), sameDuration: nav.sameDuration, total: quiz.questions.length, question: quiz.index + 1,
+    }));
+  } catch (e) { /* storage blocked: nothing is noted */ }
+}
+
+function clearQuizRun() {
+  try { sessionStorage.removeItem(QUIZ_RUN_KEY); } catch (e) { /* ignore */ }
+}
+
+function buildQuitRecord(note) {
+  return {
+    id: newPlayId(), at: note.at, end: 'quit',
+    level: note.level, category: note.category, topic: note.topic, topicName: note.topicName, type: note.type, difficulty: note.difficulty,
+    seconds: note.seconds, sameDuration: note.sameDuration, total: note.total, quitIn: note.question,
+  };
+}
+
+// Called once at start-up, before the first screen is shown (showing a screen removes the note). Always removes the note;
+// adds a quit play only after a reload, for a real quiz, from a note of the expected shape.
+function recordInterruptedQuiz() {
+  try {
+    const raw = sessionStorage.getItem(QUIZ_RUN_KEY);
+    if (raw === null) return false;
+    sessionStorage.removeItem(QUIZ_RUN_KEY);
+    if (!wasReloaded()) return false;
+    const note = JSON.parse(raw);
+    const shape = { level: 'string', category: 'string', topicName: 'string', type: 'string', difficulty: 'string', at: 'number', topic: 'number', total: 'number', question: 'number' };
+    if (!note || Object.keys(shape).some((key) => typeof note[key] !== shape[key]) || !quizIsReal(note)) return false;
+    const history = loadHistory();
+    if (!history) return false;
+    history.plays.unshift(buildQuitRecord(note));
     return saveHistory(history.plays);
   } catch (e) {
     return false;

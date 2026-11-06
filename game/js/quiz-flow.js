@@ -3,7 +3,7 @@
              renderQuestion, updateScoreDisplay, submitAnswer, goNext, skipQuestion, requestQuit
    Needs: CONFIG, el, fmt, englishText, noteText, hashString, mulberry32, makeLorem, state, $, playSound, t, GLOSSARY,
           quizKey, getQuestions, prepareQuiz, correctAnswerText, showScreen, getQuestionSeconds, openModal,
-          closeModal, startTimer, resumeTimer, pauseTimer, stopTimer, renderFillTap, RENDERERS, showResults, sinkWalker */
+          closeModal, startTimer, resumeTimer, pauseTimer, stopTimer, renderFillTap, RENDERERS, showResults, sinkWalker, saveQuizRun */
 'use strict';
 /* =========================================================================
  * QUIZ FLOW
@@ -109,6 +109,7 @@ function renderQuestion() {
   area.replaceChildren();
   (q.type === 'fill' && state.smartBoard ? renderFillTap : RENDERERS[q.type])(q, area);
   startTimer(getQuestionSeconds(), false);
+  saveQuizRun(); // a reload from here on is recorded as a quit in the history
 }
 
 function updateScoreDisplay() {

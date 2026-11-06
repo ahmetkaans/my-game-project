@@ -19,6 +19,10 @@ const I18N = {
     historyEmpty: 'No plays yet. Finish a quiz and it will show up here.', historyPerfect: 'All answers correct',
     historyReview: 'Questions to review', historySkipped: 'Skipped', historyTimedOut: 'Time ran out',
     historyUnavailable: 'The history can\'t be shown in this browser.',
+    historyQuitTag: 'Quit', historyQuitIn: 'Quit in question {n} of {total}', historyPlayAgain: 'Play again', historyQuitCount: 'Quit: {n}',
+    historyHowTitle: 'How your history works',
+    historyHowReloads: 'Only reloads are noticed: if you close the tab or the browser during a quiz, nothing is saved.',
+    historyHowAgain: 'Play again starts the quiz from the beginning.',
     mainMenu: 'Main menu', menuTree: 'Menu tree', settings: 'Settings', credits: 'Credits',
 
     chooseLevel: 'Choose your level.',
@@ -89,6 +93,10 @@ const I18N = {
     historyEmpty: 'Henüz oyun yok. Bir alıştırmayı bitirince burada görünür.', historyPerfect: 'Tüm cevaplar doğru',
     historyReview: 'Gözden geçirilecek sorular', historySkipped: 'Atlandı', historyTimedOut: 'Süre doldu',
     historyUnavailable: 'Geçmiş bu tarayıcıda gösterilemiyor.',
+    historyQuitTag: 'Yarıda bırakıldı', historyQuitIn: '{n}. soruda bırakıldı', historyPlayAgain: 'Yeniden oyna', historyQuitCount: 'Yarıda bırakılan: {n}',
+    historyHowTitle: 'Geçmişin nasıl çalışır',
+    historyHowReloads: 'Yalnızca sayfayı yeniden yüklemeler fark edilir: bir alıştırma sırasında sekmeyi ya da tarayıcıyı kapatırsan hiçbir şey kaydedilmez.',
+    historyHowAgain: 'Yeniden oyna, alıştırmayı baştan başlatır.',
     mainMenu: 'Ana menü', menuTree: 'Menü ağacı', settings: 'Ayarlar', credits: 'Emeği Geçenler',
 
     chooseLevel: 'Seviyeni seç.',

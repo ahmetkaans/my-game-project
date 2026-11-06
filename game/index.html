@@ -121,11 +121,19 @@
     <button class="back-btn" id="history-back" type="button" data-i18n="backArrow">&larr; Back</button>
     <h1 data-i18n="historyTitle">History</h1>
     <p class="subtitle" data-i18n="historySubtitle">Your previous plays, newest first.</p>
+    <p class="history-quit-count" id="history-quit-count" hidden></p>
     <p class="history-message" id="history-message" hidden></p>
     <ol class="history-list" id="history-list"></ol>
     <p class="history-count" id="history-count" tabindex="-1" aria-live="polite"></p>
     <button class="history-more" id="history-more" type="button" data-i18n="historyMore">More</button>
-    <p class="history-note" id="history-note"></p>
+    <div class="history-how" id="history-how">
+      <p class="history-how-title" data-i18n="historyHowTitle">How your history works</p>
+      <ul>
+        <li id="history-note"></li>
+        <li data-i18n="historyHowReloads">Only reloads are noticed: if you close the tab or the browser during a quiz, nothing is saved.</li>
+        <li data-i18n="historyHowAgain">Play again starts the quiz from the beginning.</li>
+      </ul>
+    </div>
   </section>
 
   <!-- Screen: one play of the history (the summary and the questions to review) -->
