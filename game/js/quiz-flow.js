@@ -30,6 +30,7 @@ function startQuiz() {
     timer: { totalMs: 0, remainingMs: 0, intervalId: null, lastTs: 0, extension: false, lastTickSecond: null },
     answered: false,                            // current question locked?
     over: false,
+    recorded: false,                            // true once recordPlay() has saved this play in the history
     ui: {},                                     // per-question renderer state
   };
   showScreen('quiz');

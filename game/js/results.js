@@ -1,7 +1,7 @@
 /* js/results.js - the results screen
    Provides: statusLabel, renderResultsContent, showResults
    Needs: launchConfetti, CONFIG, el, fmt, englishText, noteText, clampScore, state, $, t, questionText,
-          correctAnswerText, showScreen, getNextExercise, stopTimer */
+          correctAnswerText, showScreen, getNextExercise, stopTimer, recordPlay */
 'use strict';
 /* =========================================================================
  * RESULTS
@@ -58,6 +58,7 @@ function renderResultsContent() {
 function showResults() {
   stopTimer();
   const quiz = state.quiz;
+  recordPlay();
   renderResultsContent();
   showScreen('results');
   const finalScore = clampScore(quiz.score);

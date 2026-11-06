@@ -2,9 +2,14 @@
 
 What changed in My Game Project, in plain language. The newest change is at the top. Every commit adds one entry here: its date, a short title and two or three sentences about what was added or changed. The code in brackets is the commit's ID on GitHub, so you can open that exact version.
 
+## 2026-11-07
+
+### The game now remembers finished plays (not shown yet)
+Every time a real quiz finishes, the game saves one record in the browser: where it was played, the score and the counts from the results page, and every question that was not fully correct with its answers and explanation. It keeps the last 500 plays, drops the oldest first, copes with a full or blocked storage, and never stops the results screen. Quit quizzes and placeholder quizzes are not recorded. There is no History screen yet: that is the next step. A new small function, `quizIsReal`, tells exactly which quizzes have real questions. README has a new History section with the decisions for the next steps.
+
 ## 2026-11-03
 
-### Smoother orange outlines in the Halloween theme
+### Smoother orange outlines in the Halloween theme (`bf1b1c1`)
 The thin 1px orange rings looked rough around the round Tree and Settings buttons. All the orange outlines in Trick or Treat (cards, menu and level buttons, pop-ups, the menu tree panel, the round buttons and the dashed "not finished" ones) are now 2px, set in one place (`--line` in `halloween.css`), so everything stays consistent. Only the Halloween theme changes. The notes say so, and the Roadmap keeps the antialiasing point open in case there are more cases.
 
 ### A small notice after the page is reloaded (`e579d40`)

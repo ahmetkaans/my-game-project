@@ -1,5 +1,5 @@
 /* js/questions.js - the quiz key, which parts have real questions, getting and shuffling questions, lorem questions, checking a typed Fill answer
-   Provides: quizKey, hasRealQuizzes, isInUnfinished, getQuestions, generateLoremQuestions, prepareQuiz,
+   Provides: quizKey, hasRealQuizzes, isInUnfinished, quizIsReal, getQuestions, generateLoremQuestions, prepareQuiz,
              balancedPositions, editDistance, normalizeAnswer, judgeFill, questionText, correctAnswerText
    Needs: CONFIG, hashString, mulberry32, makeLorem, QUESTION_BANK, fillBefore, fillAfter */
 'use strict';
@@ -23,14 +23,19 @@ function isInUnfinished(nav) {
   return !hasRealQuizzes(nav.level) || !hasRealQuizzes(nav.level, nav.category) || !hasRealQuizzes(nav.level, nav.category, nav.topic);
 }
 
+// True when this exact quiz (a full nav) has real questions in the bank, so getQuestions() does not fall back to lorem ipsum.
+// (Unlike isInUnfinished(), which asks about a whole part: a real part can still hold a lorem quiz.) The history records only real quizzes.
+function quizIsReal(nav) {
+  const bank = QUESTION_BANK[quizKey(nav)];
+  return Boolean(bank) && bank.length >= (nav.type === 'match' ? CONFIG.MATCH_MIN_QUESTIONS : CONFIG.QUESTIONS_PER_QUIZ);
+}
+
 // Stored shapes: the correct answer is first (mc options[0], fill bank[0]); prepareQuiz() shuffles.
 function getQuestions(nav) {
-  const bank = QUESTION_BANK[quizKey(nav)];
-  if (nav.type === 'match') {
+  if (quizIsReal(nav)) {
+    const bank = QUESTION_BANK[quizKey(nav)];
     // Matching quizzes have a variable length: use every question of the entry.
-    if (bank && bank.length >= CONFIG.MATCH_MIN_QUESTIONS) return bank;
-  } else if (bank && bank.length >= CONFIG.QUESTIONS_PER_QUIZ) {
-    return bank.slice(0, CONFIG.QUESTIONS_PER_QUIZ);
+    return nav.type === 'match' ? bank : bank.slice(0, CONFIG.QUESTIONS_PER_QUIZ);
   }
   return generateLoremQuestions(nav);
 }
