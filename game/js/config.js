@@ -25,11 +25,13 @@ const CONFIG = {
     { id: 'tf' },
     { id: 'match' },
   ],
+  // seconds: time per question. weight: how much a finished play of this difficulty counts in the overall result
+  // (a harder quiz counts more; the History screen tells the player these numbers).
   DIFFICULTIES: [
-    { id: 'easy', seconds: 60 },
-    { id: 'medium', seconds: 45 },
-    { id: 'hard', seconds: 30 },
-    { id: 'veryhard', seconds: 20 },
+    { id: 'easy', seconds: 60, weight: 1 },
+    { id: 'medium', seconds: 45, weight: 2 },
+    { id: 'hard', seconds: 30, weight: 3 },
+    { id: 'veryhard', seconds: 20, weight: 4 },
   ],
   SAME_DURATION_SECONDS: 60,     // used for every difficulty when the switch is ON
   QUESTIONS_PER_QUIZ: 8,
@@ -62,6 +64,7 @@ const CONFIG = {
   TREE_CLOSE_MS: 280,            // menu tree: how long the close animation runs before the panel is hidden (matches the CSS)
   HISTORY_MAX: 500,              // finished plays kept in the history; when it is full the oldest are dropped first
   HISTORY_PAGE_SIZE: 10,         // History screen: rows shown at first, and added by each press of "More"
+  OVERALL_RECENT_COUNT: 10,      // overall result: the "Recent plays" view uses this many of the newest finished plays
   HALLOWEEN_WALKER_DELAY_SECONDS: 3,        // Trick or Treat: the walker starts this long after the page opens (or after the switch is turned on)
   HALLOWEEN_WALKER_STOP_SECONDS: 2.5,       // it stops this long, and looks back
   HALLOWEEN_WALKER_SPEED: 28,               // walking speed in px per second, the same on every screen width (a calm walk; its feet and rope are made for it)

@@ -1,7 +1,7 @@
 /* js/history.js - the history of plays: one record per finished real quiz, and one per real quiz cut short by a reload; saved in the browser
    Provides: HISTORY_KEY, HISTORY_BACKUP_KEY, HISTORY_VERSION, QUIZ_RUN_KEY, newPlayId, buildPlayRecord, loadHistory, saveHistory,
              recordPlay, saveQuizRun, clearQuizRun, buildQuitRecord, recordInterruptedQuiz
-   Needs: CONFIG, state, quizIsReal, questionText, correctAnswerText, getTopics, getQuestionSeconds, clampScore, wasReloaded */
+   Needs: CONFIG, state, quizIsReal, questionText, correctAnswerText, getTopics, getQuestionSeconds, clampScore, wasReloaded, recordStats */
 'use strict';
 /* =========================================================================
  * HISTORY  (recording only for now; README.md, "History")
@@ -100,9 +100,11 @@ function recordPlay() {
     const quiz = state.quiz;
     if (!quiz || quiz.recorded || !quizIsReal(state.nav)) return false;
     quiz.recorded = true;
+    const play = buildPlayRecord(quiz, state.nav);
+    recordStats(play); // the overall result has its own totals: it does not depend on the history being saved (js/overall.js)
     const history = loadHistory();
     if (!history) return false;
-    history.plays.unshift(buildPlayRecord(quiz, state.nav));
+    history.plays.unshift(play);
     return saveHistory(history.plays);
   } catch (e) {
     return false;

@@ -4,7 +4,13 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-07
 
-### A quiz cut short by a reload now shows up in the History as a quit
+### Temporary test buttons for the History (to be deleted before publishing)
+A small box marked "TEST ONLY" in the bottom right corner has two buttons: "Add 15 random plays" fills the History with fake plays (real quizzes, random scores, questions to review, some quit plays, dates in the last 30 days), and "Remove all test data" takes out only the fake ones. It is one file (`js/demo-data.js`) and is listed in the notes with the steps to delete it before the game is published.
+
+### The game now keeps the totals for an overall result (not shown yet)
+The first step of the overall result: every finished real quiz now also adds its score to a small set of totals, one per difficulty (Easy, Medium, Hard, Very Hard). A harder quiz counts more: weights 1, 2, 3 and 4, set in `CONFIG` (for example Easy 100, Medium 70 and Hard 40 give 60, not 70). The totals are saved on their own, so clearing the history later will not change them. They also keep the last 10 plays, ready for a "Recent plays" view next to "All plays". The first time, they are built once from the plays already in the History. Quit plays never count. Nothing is shown on screen yet: the overall result block, its comment and the two buttons (Clear history, Reset calculation) come in the next steps. The Roadmap point about antialiasing was removed, because the 2px outlines fixed the only case.
+
+### A quiz cut short by a reload now shows up in the History as a quit (`5ac3c63`)
 When a quiz has started (Start pressed) and the page is reloaded, the History gets a new entry: a "Quit" tag, "Quit in question 3 of 8", and a Play again button that starts the same quiz again. Under the subtitle a small "Quit: n" counts them. Quit entries are never counted in any calculation. Play again starts the quiz from the beginning, not where it was left. Only reloads are tracked: a closed tab, a closed browser or a crash leave nothing, which is an accepted limit. The History screen says both things plainly in a new block at the bottom, "How your history works", always visible, with three short notes (together with the 500-play note, which moved in there). English and Turkish, light, dark and Trick or Treat.
 
 ### A History screen with every finished play (`5d85bba`)
@@ -16,7 +22,7 @@ Every time a real quiz finishes, the game saves one record in the browser: where
 ## 2026-11-03
 
 ### Smoother orange outlines in the Halloween theme (`bf1b1c1`)
-The thin 1px orange rings looked rough around the round Tree and Settings buttons. All the orange outlines in Trick or Treat (cards, menu and level buttons, pop-ups, the menu tree panel, the round buttons and the dashed "not finished" ones) are now 2px, set in one place (`--line` in `halloween.css`), so everything stays consistent. Only the Halloween theme changes. The notes say so, and the Roadmap keeps the antialiasing point open in case there are more cases.
+The thin 1px orange rings looked rough around the round Tree and Settings buttons. All the orange outlines in Trick or Treat (cards, menu and level buttons, pop-ups, the menu tree panel, the round buttons and the dashed "not finished" ones) are now 2px, set in one place (`--line` in `halloween.css`), so everything stays consistent. Only the Halloween theme changes. The notes say so. This was the only antialiasing case the owner saw, so the Roadmap point for it was removed.
 
 ### A small notice after the page is reloaded (`e579d40`)
 When the page is reloaded, the game starts again on the main menu, as before, but now a small pop-up says so: "Oops, you reloaded the page. When you reload the page, you go back to the main menu." (Turkish too, with an OK / Tamam button). It has no title, and Escape or a click outside closes it. With Trick or Treat on, the walker waits until it is closed. The pop-up engine can now show a pop-up without a title. The notes say that the browser's back and forward buttons are still not used, and the Roadmap has the idea for later.
