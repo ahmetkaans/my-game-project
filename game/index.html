@@ -122,6 +122,24 @@
     <h1 data-i18n="historyTitle">History</h1>
     <p class="subtitle" data-i18n="historySubtitle">Your previous plays, newest first.</p>
     <p class="history-quit-count" id="history-quit-count" hidden></p>
+    <div class="card overall" id="overall" hidden>
+      <p class="overall-title" id="overall-title" data-i18n="overallTitle">Your overall result</p>
+      <div id="overall-main">
+        <div class="segmented" role="group" aria-labelledby="overall-title">
+          <button type="button" id="overall-all" aria-pressed="true" data-i18n="overallAll">All plays</button>
+          <button type="button" id="overall-recent" aria-pressed="false" data-i18n="overallRecent">Recent plays</button>
+        </div>
+        <div id="overall-body" aria-live="polite">
+          <p class="overall-score" id="overall-score"></p>
+          <p class="overall-comment" id="overall-comment"></p>
+          <div class="history-pills overall-pills" id="overall-pills"></div>
+          <p class="overall-note" id="overall-recent-note" hidden></p>
+          <p class="overall-note" id="overall-weights"></p>
+          <p class="overall-note" id="overall-few" hidden></p>
+        </div>
+      </div>
+      <p class="overall-empty" id="overall-empty" hidden></p>
+    </div>
     <p class="history-message" id="history-message" hidden></p>
     <ol class="history-list" id="history-list"></ol>
     <p class="history-count" id="history-count" tabindex="-1" aria-live="polite"></p>
@@ -132,6 +150,7 @@
         <li id="history-note"></li>
         <li data-i18n="historyHowReloads">Only reloads are noticed: if you close the tab or the browser during a quiz, nothing is saved.</li>
         <li data-i18n="historyHowAgain">Play again starts the quiz from the beginning.</li>
+        <li data-i18n="overallQuitNote">Quit plays are not counted in your overall result.</li>
       </ul>
     </div>
   </section>

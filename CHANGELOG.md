@@ -4,10 +4,13 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-07
 
-### Temporary test buttons for the History (to be deleted before publishing)
+### The History now shows your overall result, with an All plays / Recent plays switch
+At the top of the History screen, a new block shows one number out of 100 for all your finished plays, a short comment that fits the score (five comments, English and Turkish), and a small pill for each difficulty (Easy, Medium, Hard, Very Hard). Harder quizzes count more (Easy 1, Medium 2, Hard 3, Very Hard 4) and the block says so. A switch changes between all plays and your recent plays (the last 10, or fewer if you have played less) and the game remembers your choice. With only a few plays it adds "Play a few more quizzes for a fairer picture." A brand-new History shows no block. A new note says quit plays are not counted. The two reset buttons (Clear history, Reset calculation) are still to come. The notes also had some broken Turkish letters repaired.
+
+### Temporary test buttons for the History (to be deleted before publishing) (`38ab2d5`)
 A small box marked "TEST ONLY" in the bottom right corner has two buttons: "Add 15 random plays" fills the History with fake plays (real quizzes, random scores, questions to review, some quit plays, dates in the last 30 days), and "Remove all test data" takes out only the fake ones. It is one file (`js/demo-data.js`) and is listed in the notes with the steps to delete it before the game is published.
 
-### The game now keeps the totals for an overall result (not shown yet)
+### The game now keeps the totals for an overall result (not shown yet) (`38ab2d5`)
 The first step of the overall result: every finished real quiz now also adds its score to a small set of totals, one per difficulty (Easy, Medium, Hard, Very Hard). A harder quiz counts more: weights 1, 2, 3 and 4, set in `CONFIG` (for example Easy 100, Medium 70 and Hard 40 give 60, not 70). The totals are saved on their own, so clearing the history later will not change them. They also keep the last 10 plays, ready for a "Recent plays" view next to "All plays". The first time, they are built once from the plays already in the History. Quit plays never count. Nothing is shown on screen yet: the overall result block, its comment and the two buttons (Clear history, Reset calculation) come in the next steps. The Roadmap point about antialiasing was removed, because the 2px outlines fixed the only case.
 
 ### A quiz cut short by a reload now shows up in the History as a quit (`5ac3c63`)

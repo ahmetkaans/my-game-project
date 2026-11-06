@@ -33,6 +33,18 @@
   .history-again { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-top: 10px; padding: 6px 14px; color: var(--accent); font-weight: 500; }
   .history-again svg { width: 16px; height: 16px; }
 
+  /* The overall result block at the top of the History screen: title, the All plays / Recent plays switch (the Settings .segmented), the number, the comment, the pills */
+  .overall { margin-bottom: 16px; padding: 14px 16px; }
+  .overall-title { margin: 0; color: var(--muted); font-size: 0.85rem; }
+  .overall .segmented { margin: 8px 0 12px; }
+  .overall-score { margin: 0; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .overall-num { color: var(--accent); font-size: 2.1rem; font-weight: 500; }
+  .overall-max { color: var(--muted); font-size: 0.9rem; }
+  .overall-comment { margin: 6px 0 10px; }
+  .overall-pills { margin: 0 0 10px; }
+  .overall-note { margin: 4px 0 0; color: var(--muted); font-size: 0.85rem; }
+  .overall-empty { margin: 8px 0 0; color: var(--muted); }
+
   .history-message { margin: 24px 0; text-align: center; color: var(--muted); }
   .history-count { margin: 14px 0 6px; text-align: center; color: var(--muted); font-size: 0.9rem; }
   .history-count:focus { outline: none; }

@@ -1,9 +1,10 @@
-/* js/history-screen.js - the History screens: the list of finished plays, one play in detail, and the buttons that open them
-   Provides: HISTORY_SCREENS, historyView, isPlayRecord, readHistoryPlays, historyDate, historyPath, historyMeta, historyCounts,
+/* js/history-screen.js - the History screens: the overall result block, the list of finished plays, one play in detail, and the buttons that open them
+   Provides: HISTORY_SCREENS, OVERALL_VIEW_KEY, historyView, overallView, renderOverall, setOverallView, isPlayRecord, readHistoryPlays, historyDate, historyPath, historyMeta, historyCounts,
              historyScore, historyTag, historyRow, appendHistoryRows, updateHistoryFooter, renderHistoryList, renderHistoryDetail,
              historyQuitRow, historyPlayAgain, updateHistoryQuitCount, refreshHistoryScreen, openHistory, closeHistory, openHistoryPlay,
              backToHistoryList, showMoreHistory, initHistory
-   Needs: CONFIG, el, fmt, englishText, noteText, state, $, t, ICONS, loadHistory, showScreen, renderResultsContent, getTopics,
+   Needs: CONFIG, el, fmt, englishText, noteText, state, $, t, ICONS, loadHistory, loadStats, overallResult, overallBand, loadPref, savePref,
+          showScreen, renderResultsContent, getTopics,
           quizIsReal, startQuiz */
 'use strict';
 /* =========================================================================
@@ -11,6 +12,7 @@
  * Back returns to the same rows at the same scroll position; README.md, "History")
  * ========================================================================= */
 const HISTORY_SCREENS = ['history', 'history-detail'];
+const OVERALL_VIEW_KEY = 'lg-overall-view'; // 'all' or 'recent': the last choice of the switch in the overall result block
 // plays: the saved plays read when the screen was opened; shown: rows on the list; scrollY: where the list was left when a play was opened;
 // openId: the play shown in detail; from: the screen the History was opened from (Back goes there)
 const historyView = { plays: [], ok: true, shown: 0, scrollY: 0, openId: null, from: 'level' };
@@ -130,6 +132,48 @@ function appendHistoryRows(from, to) {
   $('#history-list').append(...historyView.plays.slice(from, to).map(historyRow));
 }
 
+// ---- The overall result block (the maths is in js/overall.js) ----
+// Which view is shown is the student's last choice, remembered like a setting; "All plays" the first time.
+function overallView() {
+  return loadPref(OVERALL_VIEW_KEY, 'all') === 'recent' ? 'recent' : 'all';
+}
+
+// Hidden when the totals can't be read, and on a brand-new History (no counted play and no play in the list: the list message says
+// it). When there are plays but none is counted (after "Reset calculation") it shows only its empty text. It is updated in place, so
+// the switch keeps the keyboard focus. The comment is chosen from the whole number shown, so it never disagrees with it.
+function renderOverall() {
+  const stats = loadStats();
+  const counted = stats ? overallResult(stats).plays : 0;
+  const box = $('#overall');
+  box.hidden = !stats || (counted === 0 && historyView.plays.length === 0);
+  if (box.hidden) return;
+  $('#overall-main').hidden = counted === 0;
+  $('#overall-empty').hidden = counted > 0;
+  $('#overall-empty').textContent = t('overallEmpty');
+  if (counted === 0) return;
+  const view = overallView();
+  const result = overallResult(stats, view === 'recent');
+  const score = Math.round(result.overall);
+  $('#overall-all').setAttribute('aria-pressed', String(view === 'all'));
+  $('#overall-recent').setAttribute('aria-pressed', String(view === 'recent'));
+  $('#overall-score').replaceChildren(el('span', { class: 'overall-num', text: String(score) }), el('span', { class: 'overall-max', text: ` / ${CONFIG.SCORE_MAX}` }));
+  $('#overall-comment').textContent = t(`overallComment${overallBand(score)}`);
+  $('#overall-pills').replaceChildren(...CONFIG.DIFFICULTIES.map((d) => {
+    const value = result.byDifficulty[d.id];
+    return el('span', { text: `${t(`difficulty.${d.id}`)} ${value === null ? '–' : Math.round(value)}` });
+  }));
+  $('#overall-recent-note').hidden = view !== 'recent';
+  $('#overall-recent-note').textContent = result.plays === 1 ? t('overallRecentOne') : t('overallRecentLine', { n: result.plays });
+  $('#overall-weights').textContent = t('overallWeights', { list: CONFIG.DIFFICULTIES.map((d) => `${t(`difficulty.${d.id}`)} ×${d.weight}`).join(', ') });
+  $('#overall-few').hidden = result.plays >= CONFIG.OVERALL_MIN_PLAYS;
+  $('#overall-few').textContent = t('overallFew');
+}
+
+function setOverallView(view) {
+  savePref(OVERALL_VIEW_KEY, view);
+  renderOverall();
+}
+
 // "Quit: n" under the subtitle, only when there is a quit play in the list.
 function updateHistoryQuitCount() {
   const quits = historyView.plays.filter((p) => p.end === 'quit').length;
@@ -155,6 +199,7 @@ function renderHistoryList() {
   $('#history-note').textContent = t('historyNote', { n: CONFIG.HISTORY_MAX });
   $('#history-how').hidden = !view.ok; // the "How your history works" panel shows whenever the history can be read, also when it is empty
   updateHistoryQuitCount();
+  renderOverall();
   if (!hasList) { $('#history-more').hidden = true; return; }
   appendHistoryRows(0, Math.min(view.shown, view.plays.length));
   updateHistoryFooter();
@@ -240,4 +285,6 @@ function initHistory() {
   $('#history-back').addEventListener('click', closeHistory);
   $('#history-detail-back').addEventListener('click', backToHistoryList);
   $('#history-more').addEventListener('click', showMoreHistory);
+  $('#overall-all').addEventListener('click', () => setOverallView('all'));
+  $('#overall-recent').addEventListener('click', () => setOverallView('recent'));
 }

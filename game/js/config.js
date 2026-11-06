@@ -65,6 +65,8 @@ const CONFIG = {
   HISTORY_MAX: 500,              // finished plays kept in the history; when it is full the oldest are dropped first
   HISTORY_PAGE_SIZE: 10,         // History screen: rows shown at first, and added by each press of "More"
   OVERALL_RECENT_COUNT: 10,      // overall result: the "Recent plays" view uses this many of the newest finished plays
+  OVERALL_MIN_PLAYS: 3,          // overall result: with fewer plays than this in the shown view, "Play a few more quizzes for a fairer picture." shows
+  OVERALL_COMMENT_BANDS: [40, 60, 80, 95], // overall result: the comment changes at these whole scores (below 40, 40-59, 60-79, 80-94, 95 and up)
   HALLOWEEN_WALKER_DELAY_SECONDS: 3,        // Trick or Treat: the walker starts this long after the page opens (or after the switch is turned on)
   HALLOWEEN_WALKER_STOP_SECONDS: 2.5,       // it stops this long, and looks back
   HALLOWEEN_WALKER_SPEED: 28,               // walking speed in px per second, the same on every screen width (a calm walk; its feet and rope are made for it)

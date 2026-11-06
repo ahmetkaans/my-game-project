@@ -1,6 +1,6 @@
 /* js/overall.js - the overall result: running totals of the finished plays per difficulty, saved in the browser (recording and maths only for now)
    Provides: STATS_KEY, STATS_BACKUP_KEY, STATS_VERSION, emptyStats, cleanStats, addToStats, statsFromPlays, loadStats, saveStats,
-             recordStats, resetStats, overallResult
+             recordStats, resetStats, overallBand, overallResult
    Needs: CONFIG, loadHistory */
 'use strict';
 /* =========================================================================
@@ -107,6 +107,12 @@ function recordStats(play) {
 // "Reset calculation": empty totals (and an empty recent list), kept as saved empty totals.
 function resetStats() {
   return saveStats(emptyStats());
+}
+
+// Which of the five comments fits a whole score (what the student sees): 0 below the first limit of CONFIG.OVERALL_COMMENT_BANDS,
+// up to 4 at or above the last. It takes the rounded score, so the comment never disagrees with the number on the screen.
+function overallBand(score) {
+  return CONFIG.OVERALL_COMMENT_BANDS.filter((limit) => score >= limit).length;
 }
 
 // The overall result from the totals: { plays, overall, byDifficulty }. Every play counts as many times as the weight of its
