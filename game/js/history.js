@@ -1,6 +1,6 @@
 /* js/history.js - the history of plays: one record per finished real quiz, and one per real quiz cut short by a reload; saved in the browser
    Provides: HISTORY_KEY, HISTORY_BACKUP_KEY, HISTORY_VERSION, QUIZ_RUN_KEY, newPlayId, buildPlayRecord, loadHistory, saveHistory,
-             recordPlay, saveQuizRun, clearQuizRun, buildQuitRecord, recordInterruptedQuiz
+             clearHistory, recordPlay, saveQuizRun, clearQuizRun, buildQuitRecord, recordInterruptedQuiz
    Needs: CONFIG, state, quizIsReal, questionText, correctAnswerText, getTopics, getQuestionSeconds, clampScore, wasReloaded, recordStats */
 'use strict';
 /* =========================================================================
@@ -91,6 +91,18 @@ function saveHistory(plays) {
     }
   }
   return false;
+}
+
+// "Clear history": removes every play (and the backup of a damaged list). Does not touch the overall result totals. saveHistory([])
+// writes nothing for an empty list, so the saved list is removed instead. Returns false when the storage is blocked.
+function clearHistory() {
+  try {
+    localStorage.removeItem(HISTORY_KEY);
+    localStorage.removeItem(HISTORY_BACKUP_KEY);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 // Called by showResults(): saves the play that just finished. Only real quizzes, once per quiz (a language switch on the

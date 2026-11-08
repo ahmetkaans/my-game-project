@@ -55,6 +55,12 @@
   .history-how ul { margin: 0; padding: 0; list-style: none; }
   .history-how li { margin: 6px 0; }
 
+  /* The two quiet buttons at the very bottom (Clear history, Reset calculation): plain red text, each asks first */
+  .history-resets { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 20px; margin-top: 18px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .history-resets[hidden] { display: none; }
+  .history-danger { color: var(--bad); font-size: 0.9rem; }
+  .history-danger:hover:not(:disabled) { color: var(--bad); }
+
   .history-review-title { margin: 22px 0 -8px; color: var(--muted); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
   .history-qhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .history-tag { padding: 1px 10px; border: 1px solid currentColor; border-radius: 999px; color: var(--muted); font-size: 0.8rem; font-weight: 500; white-space: nowrap; }

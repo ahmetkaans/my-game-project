@@ -104,8 +104,10 @@ function recordStats(play) {
   }
 }
 
-// "Reset calculation": empty totals (and an empty recent list), kept as saved empty totals.
+// "Reset calculation": empty totals (and an empty recent list), kept as saved empty totals. Does not touch the history.
+// The backup of damaged totals is removed too. Returns false when the storage is blocked.
 function resetStats() {
+  try { localStorage.removeItem(STATS_BACKUP_KEY); } catch (e) { /* ignore */ }
   return saveStats(emptyStats());
 }
 

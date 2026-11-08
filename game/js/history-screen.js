@@ -1,9 +1,11 @@
 /* js/history-screen.js - the History screens: the overall result block, the list of finished plays, one play in detail, and the buttons that open them
-   Provides: HISTORY_SCREENS, OVERALL_VIEW_KEY, historyView, overallView, renderOverall, setOverallView, isPlayRecord, readHistoryPlays, historyDate, historyPath, historyMeta, historyCounts,
+   Provides: HISTORY_SCREENS, OVERALL_VIEW_KEY, historyView, overallView, renderOverall, setOverallView,
+             updateHistoryResets, askHistoryReset, showHistoryAfterReset, askClearHistory, askResetCalculation, isPlayRecord, readHistoryPlays, historyDate, historyPath, historyMeta, historyCounts,
              historyScore, historyTag, historyRow, appendHistoryRows, updateHistoryFooter, renderHistoryList, renderHistoryDetail,
              historyQuitRow, historyPlayAgain, updateHistoryQuitCount, refreshHistoryScreen, openHistory, closeHistory, openHistoryPlay,
              backToHistoryList, showMoreHistory, initHistory
-   Needs: CONFIG, el, fmt, englishText, noteText, state, $, t, ICONS, loadHistory, loadStats, overallResult, overallBand, loadPref, savePref,
+   Needs: CONFIG, el, fmt, englishText, noteText, state, $, t, ICONS, loadHistory, clearHistory, loadStats, resetStats, overallResult, overallBand,
+          loadPref, savePref, openModal, closeModal,
           showScreen, renderResultsContent, getTopics,
           quizIsReal, startQuiz */
 'use strict';
@@ -174,6 +176,49 @@ function setOverallView(view) {
   renderOverall();
 }
 
+// ---- The two quiet buttons at the very bottom: "Clear history" and "Reset calculation" ----
+// Each one is shown only when there is something to remove, and asks first: Cancel is the main button, and Escape or a click
+// outside also cancel. Neither touches the other's data (js/history.js clearHistory, js/overall.js resetStats).
+function updateHistoryResets() {
+  const history = loadHistory();
+  const stats = loadStats();
+  const canClear = Boolean(history) && history.plays.length > 0;
+  const canReset = Boolean(stats) && overallResult(stats).plays > 0;
+  $('#history-clear').hidden = !canClear;
+  $('#history-reset').hidden = !canReset;
+  $('#history-resets').hidden = !canClear && !canReset;
+}
+
+function askHistoryReset(texts, action) {
+  openModal({
+    title: t(texts.title),
+    body: t(texts.body),
+    dismissible: true,
+    buttons: [
+      { label: t('cancel'), primary: true, onClick: closeModal },
+      { label: t(texts.button), onClick: () => { closeModal(); action(); showHistoryAfterReset(); } },
+    ],
+  });
+}
+
+// The button that was pressed is gone now: the list, the block and the buttons are built again, and the keyboard focus goes to the title.
+function showHistoryAfterReset() {
+  Object.assign(historyView, readHistoryPlays(), { shown: CONFIG.HISTORY_PAGE_SIZE });
+  renderHistoryList();
+  window.scrollTo(0, 0);
+  const title = $('#screen-history h1');
+  title.tabIndex = -1;
+  title.focus({ preventScroll: true });
+}
+
+function askClearHistory() {
+  askHistoryReset({ title: 'historyClearTitle', body: 'historyClearBody', button: 'historyClearButton' }, clearHistory);
+}
+
+function askResetCalculation() {
+  askHistoryReset({ title: 'overallResetTitle', body: 'overallResetBody', button: 'overallResetButton' }, resetStats);
+}
+
 // "Quit: n" under the subtitle, only when there is a quit play in the list.
 function updateHistoryQuitCount() {
   const quits = historyView.plays.filter((p) => p.end === 'quit').length;
@@ -200,6 +245,7 @@ function renderHistoryList() {
   $('#history-how').hidden = !view.ok; // the "How your history works" panel shows whenever the history can be read, also when it is empty
   updateHistoryQuitCount();
   renderOverall();
+  updateHistoryResets();
   if (!hasList) { $('#history-more').hidden = true; return; }
   appendHistoryRows(0, Math.min(view.shown, view.plays.length));
   updateHistoryFooter();
@@ -287,4 +333,6 @@ function initHistory() {
   $('#history-more').addEventListener('click', showMoreHistory);
   $('#overall-all').addEventListener('click', () => setOverallView('all'));
   $('#overall-recent').addEventListener('click', () => setOverallView('recent'));
+  $('#history-clear').addEventListener('click', askClearHistory);
+  $('#history-reset').addEventListener('click', askResetCalculation);
 }

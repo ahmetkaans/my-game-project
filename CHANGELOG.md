@@ -2,9 +2,17 @@
 
 What changed in My Game Project, in plain language. The newest change is at the top. Every commit adds one entry here: its date, a short title and two or three sentences about what was added or changed. The code in brackets is the commit's ID on GitHub, so you can open that exact version.
 
+## 2026-11-08
+
+### Two buttons to clear the History and to reset the overall result
+At the very bottom of the History screen there are now two quiet red text buttons. "Clear history" removes all saved plays (quit plays too) and keeps the overall result. "Reset calculation" starts the overall result again from zero and keeps the plays. Each one asks first in a pop-up that says what goes, what stays and that it can't be undone; Cancel is the main button, and Escape or a click outside also cancels. A button shows only when there is something to remove. English and Turkish texts as approved.
+
 ## 2026-11-07
 
-### The History now shows your overall result, with an All plays / Recent plays switch
+### The website will be on GitHub Pages, not Cloudflare Pages
+Cloudflare Pages is blocked in Turkey, so the notes now say the game will be published with GitHub Pages instead, using a small automatic upload (a GitHub Actions workflow) that publishes the `game/` folder on every push, with no build step. The workflow will be added only after the temporary test buttons are deleted. This is a change to the notes only; the game is the same.
+
+### The History now shows your overall result, with an All plays / Recent plays switch (`5186b64`)
 At the top of the History screen, a new block shows one number out of 100 for all your finished plays, a short comment that fits the score (five comments, English and Turkish), and a small pill for each difficulty (Easy, Medium, Hard, Very Hard). Harder quizzes count more (Easy 1, Medium 2, Hard 3, Very Hard 4) and the block says so. A switch changes between all plays and your recent plays (the last 10, or fewer if you have played less) and the game remembers your choice. With only a few plays it adds "Play a few more quizzes for a fairer picture." A brand-new History shows no block. A new note says quit plays are not counted. The two reset buttons (Clear history, Reset calculation) are still to come. The notes also had some broken Turkish letters repaired.
 
 ### Temporary test buttons for the History (to be deleted before publishing) (`38ab2d5`)
