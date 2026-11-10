@@ -4,12 +4,18 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-08
 
-### Two buttons to clear the History and to reset the overall result
+### The rules for the tips are in (nothing new on screen yet)
+The game now knows which tips would fit a student, using the numbers you approved: a new personal best, welcome back after 3 days, trying the same quiz again after a weak play, reviewing mistakes, moving up a difficulty, trying another question type, and a good-news trend that never says "worse". It picks at most two, the most useful first, and the same plays always give the same tips. There are no sentences and no card yet: the texts (for your review in English and Turkish) and the card on the History screen come next. The notes have a new "Tips" section with all of this.
+
+### The saved totals now keep the numbers the tips will need (nothing new on screen)
+The overall result's saved totals moved to a second version. They now also remember the best score of each difficulty, how many plays were of each question type, and the most recent finished play (where it was played, its score, and whether it was a new best). The game builds them again from your History the first time, oldest to newest. "Clear history" leaves these numbers alone, and "Reset calculation" empties them. Nothing changes on screen; the tips that use these numbers come next.
+
+### Two buttons to clear the History and to reset the overall result (`90c7003`)
 At the very bottom of the History screen there are now two quiet red text buttons. "Clear history" removes all saved plays (quit plays too) and keeps the overall result. "Reset calculation" starts the overall result again from zero and keeps the plays. Each one asks first in a pop-up that says what goes, what stays and that it can't be undone; Cancel is the main button, and Escape or a click outside also cancels. A button shows only when there is something to remove. English and Turkish texts as approved.
 
 ## 2026-11-07
 
-### The website will be on GitHub Pages, not Cloudflare Pages
+### The website will be on GitHub Pages, not Cloudflare Pages (`90c7003`)
 Cloudflare Pages is blocked in Turkey, so the notes now say the game will be published with GitHub Pages instead, using a small automatic upload (a GitHub Actions workflow) that publishes the `game/` folder on every push, with no build step. The workflow will be added only after the temporary test buttons are deleted. This is a change to the notes only; the game is the same.
 
 ### The History now shows your overall result, with an All plays / Recent plays switch (`5186b64`)

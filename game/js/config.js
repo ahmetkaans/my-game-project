@@ -67,6 +67,18 @@ const CONFIG = {
   OVERALL_RECENT_COUNT: 10,      // overall result: the "Recent plays" view uses this many of the newest finished plays
   OVERALL_MIN_PLAYS: 3,          // overall result: with fewer plays than this in the shown view, "Play a few more quizzes for a fairer picture." shows
   OVERALL_COMMENT_BANDS: [40, 60, 80, 95], // overall result: the comment changes at these whole scores (below 40, 40-59, 60-79, 80-94, 95 and up)
+  TIPS_MAX: 2,                   // tips: at most this many are shown at a time (the best priority first)
+  TIPS_REVIEW_MIN_PLAYS: 3,      // tips: "review your mistakes" needs this many plays with questions to review in the history
+  TIPS_TREND_MIN_PLAYS: 20,      // tips: the good-news trend needs at least this many finished plays ...
+  TIPS_TREND_GAIN: 8,            // ... and the recent score at least this many points above the all-plays score
+  TIPS_WELCOME_BACK_DAYS: 3,     // tips: "welcome back" after this many days without a play (a "new best" older than this is not shown)
+  TIPS_RETRY_MIN_EARLIER: 3,     // tips: "try the same quiz again" needs this many earlier plays of that difficulty ...
+  TIPS_RETRY_DROP: 25,           // ... and the last play at least this many points below their average
+  TIPS_BALANCE_MIN_PLAYS: 10,    // tips: the difficulty hint needs this many finished plays ...
+  TIPS_BALANCE_SHARE: 0.7,       // ... this share of them in one difficulty ...
+  TIPS_BALANCE_MIN_AVERAGE: 70,  // ... and an average of at least this much in it
+  TIPS_TYPE_MIN_PLAYS: 10,       // tips: the question type hint needs this many finished plays ...
+  TIPS_TYPE_SHARE: 0.6,          // ... and this share of them in one question type
   HALLOWEEN_WALKER_DELAY_SECONDS: 3,        // Trick or Treat: the walker starts this long after the page opens (or after the switch is turned on)
   HALLOWEEN_WALKER_STOP_SECONDS: 2.5,       // it stops this long, and looks back
   HALLOWEEN_WALKER_SPEED: 28,               // walking speed in px per second, the same on every screen width (a calm walk; its feet and rope are made for it)
