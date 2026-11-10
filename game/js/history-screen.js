@@ -160,6 +160,7 @@ function renderOverall() {
   $('#overall-recent').setAttribute('aria-pressed', String(view === 'recent'));
   $('#overall-score').replaceChildren(el('span', { class: 'overall-num', text: String(score) }), el('span', { class: 'overall-max', text: ` / ${CONFIG.SCORE_MAX}` }));
   $('#overall-comment').textContent = t(`overallComment${overallBand(score)}`);
+  $('#overall-comment').hidden = result.plays < CONFIG.OVERALL_MIN_PLAYS; // one or two plays can't say whether to try harder quizzes: no comment yet, only the "few plays" line
   $('#overall-pills').replaceChildren(...CONFIG.DIFFICULTIES.map((d) => {
     const value = result.byDifficulty[d.id];
     return el('span', { text: `${t(`difficulty.${d.id}`)} ${value === null ? '–' : Math.round(value)}` });

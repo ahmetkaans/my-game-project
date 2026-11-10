@@ -4,13 +4,19 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-08
 
-### The tips now show on screen: a "Tips for you" card and a tip on the results screen
+### The Roadmap now holds the achievements idea (notes only)
+The README's Roadmap has a new item for the achievements you described: a menu with earned and not-yet-earned achievements, and a pop-up on the results screen when one is earned. It records every decision so far (one-time events, separate from the reset buttons, a link on the History screen, old plays earn them silently) and the order of work, and says to ask before building anything. The game itself is the same.
+
+### No more "try harder quizzes" after a single play
+The comment under the overall result (for example "Very good. Try the harder quizzes.") now appears only from the third play on. With one or two plays the number, the difficulty pills and the line "Play a few more quizzes for a fairer picture" still show, but no advice, because one play can't say whether a student is ready for harder quizzes. It works the same in "All plays" and "Recent plays".
+
+### The tips now show on screen: a "Tips for you" card and a tip on the results screen (`d3cf43c`)
 The History screen has a new card, "Tips for you", under the overall result, with at most two tips. Each has a round icon (green for praise, blue for a suggestion, gray for the review pointer, never red) and one sentence in English or Turkish. The review tip has a link that moves to the list, and the retry tip has a button that starts the same quiz again. The results screen shows one tip about the play you just finished: a new best, or a retry sentence. After "Reset calculation" the review tip now stays, because your History still has plays to review. A retry tip for a quiz that no longer exists is never shown. Six new small icons were added.
 
-### More test buttons, to try out the tips (temporary)
+### More test buttons, to try out the tips (temporary) (`d3cf43c`)
 The "TEST ONLY" box has a new "More" button. It opens a scenario list (one for each tip and one with everything at once) that builds a clean set of plays so that tip applies, a way to add one play with the difficulty, question type and score you choose, a way to make the newest play a few days old, and a text panel that shows the saved numbers, which tips apply and the exact sentence of each in English or Turkish. A scenario saves your real History first, and "Remove all test data" puts it back. The game also gained a small helper, `currentTips()`, that the card will use. Like the other test buttons, all of this is deleted before the game is published.
 
-### The sentences of the tips are in the game (nothing new on screen yet)
+### The sentences of the tips are in the game (nothing new on screen yet) (`d3cf43c`)
 All the tip sentences you reviewed are now in the game in English and Turkish, three versions for each kind of tip. The game picks the version from the number of plays, so the tip changes after each new play and stays the same when you open the History again. A new test checks that every tip has all its versions in both languages, that both languages use the same blanks, and that no sentence is ever left with a hole. The card that shows them comes next.
 
 ### The rules for the tips are in (nothing new on screen yet) (`ebfffcf`)
