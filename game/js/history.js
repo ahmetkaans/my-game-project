@@ -113,6 +113,7 @@ function recordPlay() {
     if (!quiz || quiz.recorded || !quizIsReal(state.nav)) return false;
     quiz.recorded = true;
     const play = buildPlayRecord(quiz, state.nav);
+    quiz.playAt = play.at; // the results screen shows a tip only when the last play of the totals is this one
     recordStats(play); // the overall result has its own totals: it does not depend on the history being saved (js/overall.js)
     const history = loadHistory();
     if (!history) return false;

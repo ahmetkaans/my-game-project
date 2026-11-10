@@ -45,6 +45,21 @@
   .overall-note { margin: 4px 0 0; color: var(--muted); font-size: 0.85rem; }
   .overall-empty { margin: 8px 0 0; color: var(--muted); }
 
+  /* The "Tips for you" card (History) and the one tip under the results hero: a round icon and one sentence per tip (green praise, blue suggestion, gray review: never red) */
+  .tips { margin-bottom: 16px; padding: 12px 16px; }
+  .tips-title { margin: 0 0 10px; color: var(--muted); font-size: 0.85rem; }
+  .tips-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .tip { display: flex; gap: 10px; align-items: flex-start; }
+  .tip-icon { flex: none; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+  .tip-icon svg { width: 16px; height: 16px; }
+  .tip.is-good .tip-icon { color: var(--ok); background: color-mix(in srgb, var(--ok) 16%, var(--surface)); }
+  .tip.is-try .tip-icon { color: var(--accent); background: var(--accent-soft); }
+  .tip.is-quiet .tip-icon { color: var(--muted); background: color-mix(in srgb, var(--muted) 16%, var(--surface)); }
+  .tip-body { min-width: 0; }
+  .tip-text { margin: 0; line-height: 1.5; }
+  .tip-action { min-height: 36px; padding: 0; color: var(--accent); }
+  .tip-button { margin-top: 6px; }
+
   .history-message { margin: 24px 0; text-align: center; color: var(--muted); }
   .history-count { margin: 14px 0 6px; text-align: center; color: var(--muted); font-size: 0.9rem; }
   .history-count:focus { outline: none; }

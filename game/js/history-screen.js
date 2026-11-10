@@ -1,11 +1,11 @@
 /* js/history-screen.js - the History screens: the overall result block, the list of finished plays, one play in detail, and the buttons that open them
    Provides: HISTORY_SCREENS, OVERALL_VIEW_KEY, historyView, overallView, renderOverall, setOverallView,
-             updateHistoryResets, askHistoryReset, showHistoryAfterReset, askClearHistory, askResetCalculation, isPlayRecord, readHistoryPlays, historyDate, historyPath, historyMeta, historyCounts,
+             scrollToHistoryList, tipWithAction, renderTips, updateHistoryResets, askHistoryReset, showHistoryAfterReset, askClearHistory, askResetCalculation, isPlayRecord, readHistoryPlays, historyDate, historyPath, historyMeta, historyCounts,
              historyScore, historyTag, historyRow, appendHistoryRows, updateHistoryFooter, renderHistoryList, renderHistoryDetail,
              historyQuitRow, historyPlayAgain, updateHistoryQuitCount, refreshHistoryScreen, openHistory, closeHistory, openHistoryPlay,
              backToHistoryList, showMoreHistory, initHistory
    Needs: CONFIG, el, fmt, englishText, noteText, state, $, t, ICONS, loadHistory, clearHistory, loadStats, resetStats, overallResult, overallBand,
-          loadPref, savePref, openModal, closeModal,
+          loadPref, savePref, prefersReducedMotion, currentTips, tipElement, openModal, closeModal,
           showScreen, renderResultsContent, getTopics,
           quizIsReal, startQuiz */
 'use strict';
@@ -176,6 +176,38 @@ function setOverallView(view) {
   renderOverall();
 }
 
+// ---- The "Tips for you" card (the rules and the sentences are in js/tips.js) ----
+// The review tip has a link that moves to the list below; the retry tip has a button that starts the same quiz again, like Play again.
+function scrollToHistoryList() {
+  const list = $('#history-list');
+  list.tabIndex = -1;
+  list.focus({ preventScroll: true });
+  list.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+}
+
+function tipWithAction(tip) {
+  const item = tipElement(tip);
+  const body = item.querySelector('.tip-body');
+  if (tip.kind === 'review') {
+    const link = el('button', { class: 'link-btn tip-action', type: 'button', text: t('tipReviewLink') });
+    link.addEventListener('click', scrollToHistoryList);
+    body.append(link);
+  } else if (tip.kind === 'retry') {
+    const p = tip.params;
+    const button = el('button', { class: 'history-again tip-button', type: 'button', text: t('tipRetryButton') });
+    button.addEventListener('click', () => historyPlayAgain({ level: p.level, category: p.category, topic: p.topic, type: p.type, difficulty: p.d }));
+    body.append(button);
+  }
+  return item;
+}
+
+// Hidden when no tip applies (also on a brand-new History). The card is built again whenever the list is (opening, Back, language).
+function renderTips() {
+  const tips = currentTips();
+  $('#tips').hidden = tips.length === 0;
+  $('#tips-list').replaceChildren(...tips.map(tipWithAction));
+}
+
 // ---- The two quiet buttons at the very bottom: "Clear history" and "Reset calculation" ----
 // Each one is shown only when there is something to remove, and asks first: Cancel is the main button, and Escape or a click
 // outside also cancel. Neither touches the other's data (js/history.js clearHistory, js/overall.js resetStats).
@@ -245,6 +277,7 @@ function renderHistoryList() {
   $('#history-how').hidden = !view.ok; // the "How your history works" panel shows whenever the history can be read, also when it is empty
   updateHistoryQuitCount();
   renderOverall();
+  renderTips();
   updateHistoryResets();
   if (!hasList) { $('#history-more').hidden = true; return; }
   appendHistoryRows(0, Math.min(view.shown, view.plays.length));

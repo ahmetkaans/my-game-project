@@ -4,10 +4,19 @@ What changed in My Game Project, in plain language. The newest change is at the 
 
 ## 2026-11-08
 
-### The rules for the tips are in (nothing new on screen yet)
+### The tips now show on screen: a "Tips for you" card and a tip on the results screen
+The History screen has a new card, "Tips for you", under the overall result, with at most two tips. Each has a round icon (green for praise, blue for a suggestion, gray for the review pointer, never red) and one sentence in English or Turkish. The review tip has a link that moves to the list, and the retry tip has a button that starts the same quiz again. The results screen shows one tip about the play you just finished: a new best, or a retry sentence. After "Reset calculation" the review tip now stays, because your History still has plays to review. A retry tip for a quiz that no longer exists is never shown. Six new small icons were added.
+
+### More test buttons, to try out the tips (temporary)
+The "TEST ONLY" box has a new "More" button. It opens a scenario list (one for each tip and one with everything at once) that builds a clean set of plays so that tip applies, a way to add one play with the difficulty, question type and score you choose, a way to make the newest play a few days old, and a text panel that shows the saved numbers, which tips apply and the exact sentence of each in English or Turkish. A scenario saves your real History first, and "Remove all test data" puts it back. The game also gained a small helper, `currentTips()`, that the card will use. Like the other test buttons, all of this is deleted before the game is published.
+
+### The sentences of the tips are in the game (nothing new on screen yet)
+All the tip sentences you reviewed are now in the game in English and Turkish, three versions for each kind of tip. The game picks the version from the number of plays, so the tip changes after each new play and stays the same when you open the History again. A new test checks that every tip has all its versions in both languages, that both languages use the same blanks, and that no sentence is ever left with a hole. The card that shows them comes next.
+
+### The rules for the tips are in (nothing new on screen yet) (`ebfffcf`)
 The game now knows which tips would fit a student, using the numbers you approved: a new personal best, welcome back after 3 days, trying the same quiz again after a weak play, reviewing mistakes, moving up a difficulty, trying another question type, and a good-news trend that never says "worse". It picks at most two, the most useful first, and the same plays always give the same tips. There are no sentences and no card yet: the texts (for your review in English and Turkish) and the card on the History screen come next. The notes have a new "Tips" section with all of this.
 
-### The saved totals now keep the numbers the tips will need (nothing new on screen)
+### The saved totals now keep the numbers the tips will need (nothing new on screen) (`ebfffcf`)
 The overall result's saved totals moved to a second version. They now also remember the best score of each difficulty, how many plays were of each question type, and the most recent finished play (where it was played, its score, and whether it was a new best). The game builds them again from your History the first time, oldest to newest. "Clear history" leaves these numbers alone, and "Reset calculation" empties them. Nothing changes on screen; the tips that use these numbers come next.
 
 ### Two buttons to clear the History and to reset the overall result (`90c7003`)

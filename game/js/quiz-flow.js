@@ -31,6 +31,7 @@ function startQuiz() {
     answered: false,                            // current question locked?
     over: false,
     recorded: false,                            // true once recordPlay() has saved this play in the history
+    playAt: null,                               // the time of the play recordPlay() saved (the results screen shows a tip only for this play)
     ui: {},                                     // per-question renderer state
   };
   showScreen('quiz');

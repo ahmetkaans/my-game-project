@@ -113,6 +113,9 @@
       </div>
       <button class="link-btn history-link" id="results-history" type="button"><span class="history-link-icon" id="results-history-icon" aria-hidden="true"></span><span data-i18n="historyLink">See your history</span></button>
     </div>
+    <div class="card tips results-tip" id="results-tip" hidden>
+      <ul class="tips-list" id="results-tip-list"></ul>
+    </div>
     <ol class="results-list" id="results-list"></ol>
   </section>
 
@@ -139,6 +142,10 @@
         </div>
       </div>
       <p class="overall-empty" id="overall-empty" hidden></p>
+    </div>
+    <div class="card tips" id="tips" hidden>
+      <p class="tips-title" id="tips-title" data-i18n="tipsTitle">Tips for you</p>
+      <ul class="tips-list" id="tips-list" aria-labelledby="tips-title"></ul>
     </div>
     <p class="history-message" id="history-message" hidden></p>
     <ol class="history-list" id="history-list"></ol>

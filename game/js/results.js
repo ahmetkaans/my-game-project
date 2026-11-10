@@ -1,7 +1,7 @@
 /* js/results.js - the results screen
-   Provides: statusLabel, renderResultsContent, showResults
+   Provides: statusLabel, renderResultsContent, renderResultsTip, showResults
    Needs: launchConfetti, CONFIG, el, fmt, englishText, noteText, clampScore, state, $, t, questionText,
-          correctAnswerText, showScreen, getNextExercise, stopTimer, recordPlay */
+          correctAnswerText, showScreen, getNextExercise, stopTimer, recordPlay, resultsTips, tipElement */
 'use strict';
 /* =========================================================================
  * RESULTS
@@ -53,6 +53,15 @@ function renderResultsContent() {
   }));
 
   $('#results-next').hidden = !getNextExercise(state.nav);   // hidden after the very last quiz
+  renderResultsTip();
+}
+
+// The one tip about the play just finished (a new best, or a retry tip as a sentence only: the Retry button is right above it).
+// Nothing for a quiz that was not recorded.
+function renderResultsTip() {
+  const tips = state.quiz && state.quiz.recorded ? resultsTips(state.quiz.playAt) : [];
+  $('#results-tip').hidden = tips.length === 0;
+  $('#results-tip-list').replaceChildren(...tips.map(tipElement));
 }
 
 function showResults() {
